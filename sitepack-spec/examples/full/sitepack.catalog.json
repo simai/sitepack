@@ -1,0 +1,28 @@
+{
+  "artifacts": [
+    {
+      "id": "entities.content",
+      "mediaType": "application/vnd.sitepack.entity-graph+ndjson",
+      "path": "artifacts/entities/content.ndjson",
+      "size": 153
+    },
+    {
+      "id": "assets.index",
+      "mediaType": "application/vnd.sitepack.asset-index+ndjson",
+      "path": "artifacts/assets/index.ndjson",
+      "size": 240
+    },
+    {
+      "id": "config.kv",
+      "mediaType": "application/vnd.sitepack.config-kv+ndjson",
+      "path": "artifacts/config/kv.ndjson",
+      "size": 240
+    },
+    {
+      "id": "recordset.example_table",
+      "mediaType": "application/vnd.sitepack.recordset+ndjson",
+      "path": "artifacts/recordsets/example_table.ndjson",
+      "size": 143
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "spec": {
+    "name": "sitepack-envelope",
+    "version": "0.1.0"
+  },
+  "createdAt": "2025-01-01T00:00:00Z",
+  "encryption": {
+    "scheme": "age",
+    "mode": "recipients",
+    "recipients": [
+      "age1ql3z7t4m0u8t9x8u2m3v0z4n9l2q0s9j3h5k7r8p2t0w9v7k8m4n3"
+    ]
+  },
+  "payload": {
+    "file": "example.sitepack.enc",
+    "originalExtension": ".sitepack",
+    "container": "zip",
+    "payloadDigest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "payloadSize": 1234
+  },
+  "annotations": {
+    "note": "Example header without binary payload"
+  }
+}

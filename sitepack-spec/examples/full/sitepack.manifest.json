@@ -1,0 +1,17 @@
+{
+  "spec": {
+    "name": "sitepack",
+    "version": "0.1.0"
+  },
+  "package": {
+    "id": "full"
+  },
+  "createdAt": "2025-01-01T00:00:00Z",
+  "profiles": ["full"],
+  "artifacts": [
+    "entities.content",
+    "assets.index",
+    "config.kv",
+    "recordset.example_table"
+  ]
+}

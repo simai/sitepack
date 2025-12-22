@@ -1,0 +1,10 @@
+{
+  "artifacts": [
+    {
+      "id": "config.kv",
+      "mediaType": "application/vnd.sitepack.config-kv+ndjson",
+      "path": "artifacts/config/kv.ndjson",
+      "size": 354
+    }
+  ]
+}

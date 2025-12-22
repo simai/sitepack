@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sitepack.org/schemas/config-kv.schema.json",
+  "title": "SitePack Config KV",
+  "type": "object",
+  "required": ["scope", "key", "value"],
+  "properties": {
+    "scope": { "type": "string", "minLength": 1 },
+    "namespace": { "type": "string" },
+    "key": { "type": "string", "minLength": 1 },
+    "value": {},
+    "sensitivity": {
+      "type": "string",
+      "enum": ["public", "private", "secret"]
+    },
+    "applyPolicy": {
+      "type": "string",
+      "enum": ["auto", "manual", "never"]
+    }
+  },
+  "additionalProperties": true
+}

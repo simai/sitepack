@@ -1,0 +1,2 @@
+{"scope":"public","namespace":"site","key":"title","value":"Full Example","sensitivity":"public","applyPolicy":"auto"}
+{"scope":"private","namespace":"features","key":"betaMode","value":false,"sensitivity":"private","applyPolicy":"manual"}

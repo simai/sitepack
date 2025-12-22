@@ -1,0 +1,40 @@
+{
+  "artifacts": [
+    {
+      "id": "entities.content",
+      "mediaType": "application/vnd.sitepack.entity-graph+ndjson",
+      "path": "artifacts/entities/content.ndjson",
+      "size": 130
+    },
+    {
+      "id": "assets.index",
+      "mediaType": "application/vnd.sitepack.asset-index+ndjson",
+      "path": "artifacts/assets/index.ndjson",
+      "size": 246
+    },
+    {
+      "id": "config.kv",
+      "mediaType": "application/vnd.sitepack.config-kv+ndjson",
+      "path": "artifacts/config/kv.ndjson",
+      "size": 124
+    },
+    {
+      "id": "recordset.example_table",
+      "mediaType": "application/vnd.sitepack.recordset+ndjson",
+      "path": "artifacts/recordsets/example_table.ndjson",
+      "size": 72
+    },
+    {
+      "id": "code.readme",
+      "mediaType": "text/markdown",
+      "path": "artifacts/code/README.md",
+      "size": 144
+    },
+    {
+      "id": "code.software_manifest",
+      "mediaType": "application/vnd.sitepack.software-manifest+json",
+      "path": "artifacts/code/software-manifest.json",
+      "size": 129
+    }
+  ]
+}

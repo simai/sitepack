@@ -1,0 +1,2 @@
+{"id":"page-1","type":"content.page","attributes":{"title":"About","slug":"about","content":{"format":"html","data":"<p>About us</p>"}},"relations":{"categories":["cat-1"],"tags":["tag-1"],"assets":["asset-hero"]}}
+{"id":"post-1","type":"content.post","attributes":{"title":"First Post","slug":"first-post","content":{"format":"markdown","data":"Welcome to the blog."}},"relations":{"categories":["cat-1"],"tags":["tag-1"],"assets":["asset-thumb"]}}

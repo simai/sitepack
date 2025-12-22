@@ -1,0 +1,3 @@
+{"scope":"public","namespace":"site","key":"title","value":"Demo Site","sensitivity":"public","applyPolicy":"auto"}
+{"scope":"private","namespace":"build","key":"enableSearch","value":true,"sensitivity":"private","applyPolicy":"manual"}
+{"scope":"secret","namespace":"auth","key":"apiKey","value":"REDACTED","sensitivity":"secret","applyPolicy":"never"}

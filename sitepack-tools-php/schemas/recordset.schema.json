@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sitepack.org/schemas/recordset.schema.json",
+  "title": "SitePack Recordset Entry",
+  "type": "object",
+  "required": ["recordset", "data"],
+  "properties": {
+    "recordset": { "type": "string", "minLength": 1 },
+    "key": { "type": "string" },
+    "data": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": true
+}

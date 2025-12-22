@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sitepack.org/schemas/manifest.schema.json",
+  "title": "SitePack Manifest",
+  "type": "object",
+  "required": ["spec", "package", "createdAt", "profiles", "artifacts"],
+  "properties": {
+    "spec": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "sitepack" },
+        "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" }
+      },
+      "additionalProperties": false
+    },
+    "package": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "profiles": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "artifacts": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    },
+    "provenance": { "type": "object", "additionalProperties": true },
+    "annotations": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": true
+}

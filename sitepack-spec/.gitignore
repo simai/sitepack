@@ -1,0 +1,7 @@
+dist/
+*.sitepack
+*.sitepack.enc
+*.log
+node_modules/
+vendor/
+.DS_Store

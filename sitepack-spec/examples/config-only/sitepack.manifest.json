@@ -1,0 +1,12 @@
+{
+  "spec": {
+    "name": "sitepack",
+    "version": "0.1.0"
+  },
+  "package": {
+    "id": "config-only"
+  },
+  "createdAt": "2025-01-01T00:00:00Z",
+  "profiles": ["config-only"],
+  "artifacts": ["config.kv"]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "example-plugin",
+  "version": "1.0.0",
+  "entry": "index.js",
+  "description": "Example code bundle for SitePack"
+}

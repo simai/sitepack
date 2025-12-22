@@ -1,0 +1,12 @@
+{
+  "spec": {
+    "name": "sitepack",
+    "version": "0.1.0"
+  },
+  "package": {
+    "id": "hello-world"
+  },
+  "createdAt": "2025-01-01T00:00:00Z",
+  "profiles": ["content+assets"],
+  "artifacts": ["entities.content", "assets.index"]
+}
