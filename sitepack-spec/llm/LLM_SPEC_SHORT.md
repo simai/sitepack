@@ -1,4 +1,4 @@
-# SitePack v0.2.0 — Short Specification
+# SitePack v0.3.0 — Short Specification
 
 ## 1. Purpose
 SitePack is a packaging format for website data export/import. A package includes required metadata and a set of artifacts.
@@ -9,6 +9,13 @@ SitePack is a packaging format for website data export/import. A package include
 - Importer MUST detect container format by content.
 - TAR MAY be supported additionally.
 
+## 2.1 Volume Sets (distribution)
+- Entry file: `sitepack.volumes.json` (`application/vnd.sitepack.volume-set+json`).
+- `maxPartSize` SHOULD be 104857600 bytes (100 MiB).
+- Volumes are ZIP `.sitepack` files; unpack in ascending index order into one directory.
+- Verify each volume `sha256` and `size` before unpacking.
+- If `encryption.scheme = "age"`, the volume file is encrypted and `envelopeFile` points to a SitePack envelope header.
+
 ## 3. Required files
 The root of an unpacked package MUST include:
 - `sitepack.manifest.json`
@@ -16,7 +23,7 @@ The root of an unpacked package MUST include:
 
 ## 4. Manifest (short)
 `sitepack.manifest.json` includes:
-- `spec`: `{ name: "sitepack", version: "0.2.0" }`
+- `spec`: `{ name: "sitepack", version: "0.3.0" }`
 - `package.id`
 - `createdAt` (date-time)
 - `profiles` (array of strings)
@@ -29,6 +36,11 @@ The root of an unpacked package MUST include:
 - `path`
 - `size`
 - `digest` (SHOULD, sha256)
+
+## 5.1 Chunked assets
+- Asset index entries are either single-blob (`path`) or chunked (`chunks[]`).
+- Chunked assets are assembled by concatenating chunks by ascending `index`.
+- Importers MUST verify each chunk hash/size and the overall asset hash/size.
 
 ## 6. Core media types (MUST understand)
 - `application/vnd.sitepack.entity-graph+ndjson`
@@ -57,7 +69,7 @@ The root of an unpacked package MUST include:
 
 ## 10. Digest and size
 - `digest` format: `sha256:<hex>`.
-- In v0.2 `digest` SHOULD, but `size` MUST.
+- In v0.3 `digest` SHOULD, but `size` MUST.
 
 ## 11. Import security
 - Block path traversal, absolute paths, null bytes.

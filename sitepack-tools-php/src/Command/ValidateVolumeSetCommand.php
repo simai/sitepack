@@ -11,6 +11,7 @@ use SitePack\Validator\PackageValidator;
 use SitePack\Validator\ReportWriter;
 use SitePack\Validator\SafePath;
 use SitePack\Validator\SchemaValidator;
+use SitePack\Validator\VolumeSetValidator;
 use SitePack\Report\ValidationReport;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,11 +19,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ValidatePackageCommand extends Command
+class ValidateVolumeSetCommand extends Command
 {
-    protected static $defaultName = 'package';
+    protected static $defaultName = 'volumes';
 
-    protected static $defaultDescription = 'Validate an unpacked SitePack package';
+    protected static $defaultDescription = 'Validate a SitePack Volume Set descriptor and assembled package';
 
     /**
      * @return void
@@ -30,7 +31,7 @@ class ValidatePackageCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('packageRoot', InputArgument::REQUIRED, 'Path to unpacked package')
+            ->addArgument('volumesPath', InputArgument::REQUIRED, 'Path to sitepack.volumes.json')
             ->addOption('schemas', null, InputOption::VALUE_REQUIRED, 'Path to JSON schemas directory')
             ->addOption('profile', null, InputOption::VALUE_REQUIRED, 'Profile for selective validation')
             ->addOption('no-digest', null, InputOption::VALUE_NONE, 'Skip digest verification')
@@ -47,9 +48,9 @@ class ValidatePackageCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $packageRoot = (string) $input->getArgument('packageRoot');
-        if ($packageRoot === '' || !is_dir($packageRoot)) {
-            $output->writeln('Error: package path does not exist or is not a directory');
+        $volumesPath = (string) $input->getArgument('volumesPath');
+        if ($volumesPath === '' || !is_file($volumesPath)) {
+            $output->writeln('Error: volume set descriptor path does not exist or is not a file');
             return 2;
         }
 
@@ -65,13 +66,22 @@ class ValidatePackageCommand extends Command
 
         $schemaValidator = new SchemaValidator($schemasDir);
         $ndjsonValidator = new NdjsonValidator($schemaValidator);
-        $validator = new PackageValidator(
+        $packageValidator = new PackageValidator(
             $schemaValidator,
             $ndjsonValidator,
             new DigestCalculator(),
             new SafePath(),
             new ReportWriter(),
             new FileUtil()
+        );
+
+        $validator = new VolumeSetValidator(
+            $schemaValidator,
+            new DigestCalculator(),
+            new SafePath(),
+            new ReportWriter(),
+            new FileUtil(),
+            $packageValidator
         );
 
         $toolInfo = [
@@ -85,7 +95,7 @@ class ValidatePackageCommand extends Command
         $skipDigest = (bool) $input->getOption('no-digest');
         $checkAssetBlobs = (bool) $input->getOption('check-asset-blobs');
         $result = $validator->validate(
-            $packageRoot,
+            $volumesPath,
             $profile !== null ? (string) $profile : null,
             $skipDigest,
             $checkAssetBlobs,

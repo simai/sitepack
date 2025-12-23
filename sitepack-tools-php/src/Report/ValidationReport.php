@@ -133,6 +133,19 @@ class ValidationReport
     }
 
     /**
+     * @param string $type
+     * @param string $path
+     * @return void
+     */
+    public function setTarget(string $type, string $path): void
+    {
+        $this->target = [
+            'type' => $type,
+            'path' => $path,
+        ];
+    }
+
+    /**
      * @return int
      */
     public function getErrorCount(): int

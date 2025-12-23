@@ -7,6 +7,7 @@
 - `application/vnd.sitepack.recordset+ndjson` — recordset data (NDJSON).
 
 ## Recommended
+- `application/vnd.sitepack.volume-set+json` — volume set descriptor (`sitepack.volumes.json`).
 - `application/vnd.sitepack.capabilities+json` — tool capabilities.
 - `application/vnd.sitepack.transform-plan+json` — transform plan.
 - `application/vnd.sitepack.software-manifest+json` — code/software metadata.

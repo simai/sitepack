@@ -1,4 +1,4 @@
-# SitePack v0.2.0 — Specification
+# SitePack v0.3.0 — Specification
 
 ## Keywords
 The keywords **MUST**, **SHOULD**, and **MAY** are to be interpreted as described in RFC 2119.
@@ -12,6 +12,7 @@ SitePack is an open format for packaging website data for transfer between syste
 ## 2. Terms
 - **Package**: a container with SitePack files.
 - **Artifact**: a file inside the package described in the catalog.
+- **Volume Set**: a distribution descriptor for split packages.
 - **Catalog**: the `sitepack.catalog.json` file listing artifacts.
 - **Entity**: a content object (page, post, item, etc.).
 - **Recordset**: tabular data (NDJSON records).
@@ -28,6 +29,17 @@ SitePack is an open format for packaging website data for transfer between syste
 - Implementations **MUST** support ZIP.
 - TAR support **MAY** be implemented additionally.
 - Importers **MUST** detect container format by content, not by extension.
+
+### 3.1 Distribution: Volume Sets
+Volume Sets describe a split package distributed across multiple volumes.
+
+- Entry file: `sitepack.volumes.json` (media type `application/vnd.sitepack.volume-set+json`).
+- `maxPartSize` **SHOULD** be set to `104857600` bytes (100 MiB) unless a tool requires another value.
+- The bootstrap volume **SHOULD** be `volumeIndex = 1` and **MUST** contain `sitepack.manifest.json` and `sitepack.catalog.json`.
+- Each volume file is an ordinary `.sitepack` ZIP. To assemble a package, an importer **MUST** unpack volumes in ascending index order into a single temporary directory.
+- Before unpacking, importers **MUST** verify each volume file `sha256` and `size` against the Volume Set descriptor.
+- Volumes **MAY** be encrypted individually using SitePack envelope + age.
+- If `encryption.scheme = "age"`, the volume file is an encrypted payload; `envelopeFile` **MUST** point to the corresponding SitePack envelope header (`*.sitepack.enc.json`).
 
 ## 4. Required files
 The root of an unpacked package **MUST** contain:
@@ -58,8 +70,15 @@ An artifact is a file inside the package described in the catalog. The catalog c
 - `mediaType` (**MUST**): artifact media type.
 - `path` (**MUST**): relative path inside the package.
 - `size` (**MUST**): file size in bytes.
-- `digest` (**SHOULD** in v0.2): file checksum.
+- `digest` (**SHOULD** in v0.3): file checksum.
 - `annotations` (**MAY**): extension object.
+
+### 5.1 Assets: chunked blobs
+Asset entries in the asset index may represent a single blob (`path`) or a chunked blob (`chunks`).
+
+- When `chunks` are present, the final asset bytes are the concatenation of chunks in ascending `index` order.
+- Importers **MUST** verify each chunk `sha256` and `size`, and then verify the overall asset `sha256` and `size`.
+- Exporters **SHOULD** keep chunk sizes at or below `maxPartSize` (default 100 MiB).
 
 ## 6. Entities (portable layer)
 
@@ -149,7 +168,7 @@ Profiles define the expected artifacts and intent of the package:
 - `content+assets`: content entities + asset index.
 - `full`: content + assets + config + recordsets.
 - `full+code`: `full` plus code artifacts and software manifest.
-- `snapshot`: full static export/snapshot (descriptive profile, no implementation requirements in v0.2).
+- `snapshot`: full static export/snapshot (descriptive profile, no implementation requirements in v0.3).
 
 ## 9. Unknown handling
 - Unknown `mediaType`: the importer **MUST** skip the artifact and **MUST** log the event.
@@ -157,7 +176,7 @@ Profiles define the expected artifacts and intent of the package:
 
 ## 10. Integrity and digest
 - Digest format: `sha256:<hex>`.
-- In v0.2, `digest` in the catalog **SHOULD** be provided but is not required.
+- In v0.3, `digest` in the catalog **SHOULD** be provided but is not required.
 - `size` for each artifact **MUST** be provided.
 
 ## 11. Import security

@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { Command } = require('commander');
 const pkg = require('../package.json');
-const { validatePackage, validateEnvelope } = require('./validator');
+const { validatePackage, validateEnvelope, validateVolumes } = require('./validator');
 
 const defaultSchemasDir = path.resolve(__dirname, '..', 'schemas');
 
@@ -115,10 +115,41 @@ async function runEnvelopeValidation(encJsonPath, options) {
   process.exit(computeExitCode(report, options.strict));
 }
 
+async function runVolumesValidation(volumesPath, options) {
+  const targetPath = path.resolve(volumesPath);
+  if (!fs.existsSync(targetPath)) {
+    console.error(`Path does not exist: ${targetPath}`);
+    process.exit(2);
+  }
+  if (!fs.statSync(targetPath).isFile()) {
+    console.error(`Expected volume set descriptor file: ${targetPath}`);
+    process.exit(2);
+  }
+
+  const schemasDir = options.schemas ? path.resolve(options.schemas) : defaultSchemasDir;
+  if (!fs.existsSync(schemasDir)) {
+    console.error(`Schemas directory not found: ${schemasDir}`);
+    process.exit(2);
+  }
+
+  const report = await validateVolumes({
+    volumesPath: targetPath,
+    schemasDir,
+    profile: options.profile,
+    noDigest: options.digest === false,
+    checkAssetBlobs: Boolean(options.checkAssetBlobs),
+    toolName: 'sitepack-validate',
+    toolVersion: pkg.version
+  });
+
+  outputReport(report, options);
+  process.exit(computeExitCode(report, options.strict));
+}
+
 async function main() {
   const program = new Command();
   program.name('sitepack-validate');
-  program.description('CLI validator for unpacked SitePack v0.2.0 packages');
+  program.description('CLI validator for unpacked SitePack v0.3.0 packages');
   program.option('-f, --format <format>', 'Output format: text|json', 'text');
   program.option('--quiet', 'Minimal console output');
   program.option('--strict', 'Treat warnings as errors');
@@ -140,6 +171,18 @@ async function main() {
     .option('--schemas <dir>', 'Path to JSON schemas directory', defaultSchemasDir)
     .option('--check-payload-file', 'Check that payload.file exists next to enc.json')
     .action(runEnvelopeValidation);
+
+  program
+    .command('volumes <pathToVolumesJson>')
+    .description('Validate a SitePack Volume Set descriptor and assembled package')
+    .option('-f, --format <format>', 'Output format: text|json', 'text')
+    .option('--quiet', 'Minimal console output')
+    .option('--strict', 'Treat warnings as errors')
+    .option('--schemas <dir>', 'Path to JSON schemas directory', defaultSchemasDir)
+    .option('--profile <name>', 'Validate only artifacts for the selected profile')
+    .option('--no-digest', 'Skip digest verification even if present')
+    .option('--check-asset-blobs', 'Check existence and integrity of files referenced in asset-index')
+    .action(runVolumesValidation);
 
   program.exitOverride();
 

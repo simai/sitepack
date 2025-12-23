@@ -16,6 +16,13 @@ Path to the unpacked package (directory).
 - Respect `applyPolicy` for config (e.g., `never` is not auto-applied).
 - If a `Transform Plan` exists and is supported, MAY apply steps in order.
 - Enforce path safety (no traversal, no absolute, no null bytes).
+- If a `sitepack.volumes.json` descriptor is provided, validate it, verify each volume `sha256`/`size`, and assemble volumes into a temporary directory before importing.
+- If a volume entry uses `encryption.scheme = "age"`, the importer MUST use the referenced envelope header to locate the encrypted payload and decrypt before assembly (or fail with a clear error if unsupported).
+
+## Chunked assets
+- Asset index entries may be single-blob (`path`) or chunked (`chunks[]`).
+- For chunked assets, reconstruct the asset by concatenating chunks in ascending `index` order.
+- Importers MUST validate each chunk `sha256`/`size` and the overall asset `sha256`/`size`.
 
 ## Relations
 - Importers SHOULD use a two-pass strategy:

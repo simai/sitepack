@@ -12,7 +12,8 @@ const schemaFiles = {
   recordset: 'recordset.schema.json',
   capabilities: 'capabilities.schema.json',
   transformPlan: 'transform-plan.schema.json',
-  envelope: 'envelope.schema.json'
+  envelope: 'envelope.schema.json',
+  volumeSet: 'volume-set.schema.json'
 };
 
 function loadSchemas(schemasDir) {

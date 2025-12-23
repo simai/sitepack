@@ -37,7 +37,7 @@ async function validateNdjson(filePath, validator, options = {}) {
     }
 
     if (options.onRecord) {
-      const extra = options.onRecord(record, lineNumber);
+      const extra = await options.onRecord(record, lineNumber);
       if (Array.isArray(extra)) {
         for (const item of extra) {
           details.push({

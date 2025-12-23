@@ -1,7 +1,7 @@
 {
   "spec": {
     "name": "sitepack",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "package": {
     "id": "example-cross-relations"

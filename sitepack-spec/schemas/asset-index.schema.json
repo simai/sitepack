@@ -3,14 +3,61 @@
   "$id": "https://sitepack.org/schemas/asset-index.schema.json",
   "title": "SitePack Asset Index Entry",
   "type": "object",
-  "required": ["id", "sha256", "size"],
-  "properties": {
-    "id": { "type": "string", "minLength": 1 },
-    "sha256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
-    "size": { "type": "integer", "minimum": 0 },
-    "mime": { "type": "string" },
-    "originalName": { "type": "string" },
-    "path": { "type": "string" }
-  },
-  "additionalProperties": true
+  "oneOf": [
+    { "$ref": "#/$defs/single" },
+    { "$ref": "#/$defs/chunked" }
+  ],
+  "$defs": {
+    "common": {
+      "type": "object",
+      "required": ["id", "sha256", "size"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "mime": { "type": "string", "minLength": 1 },
+        "size": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+        "originalName": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "chunk": {
+      "type": "object",
+      "required": ["index", "size", "sha256", "path"],
+      "properties": {
+        "index": { "type": "integer", "minimum": 1 },
+        "size": { "type": "integer", "minimum": 0 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+        "path": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "single": {
+      "allOf": [
+        { "$ref": "#/$defs/common" },
+        {
+          "required": ["path"],
+          "not": { "required": ["chunks"] },
+          "properties": {
+            "path": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+    "chunked": {
+      "allOf": [
+        { "$ref": "#/$defs/common" },
+        {
+          "required": ["chunks"],
+          "not": { "required": ["path"] },
+          "properties": {
+            "chunks": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/chunk" }
+            }
+          }
+        }
+      ]
+    }
+  }
 }

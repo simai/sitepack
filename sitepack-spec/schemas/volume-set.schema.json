@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sitepack.org/schemas/volume-set.schema.json",
+  "title": "SitePack Volume Set",
+  "type": "object",
+  "required": ["spec", "kind", "packageId", "container", "maxPartSize", "volumes"],
+  "properties": {
+    "spec": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "sitepack" },
+        "version": { "const": "0.3.0" }
+      },
+      "additionalProperties": false
+    },
+    "kind": { "const": "volume-set" },
+    "packageId": { "type": "string", "minLength": 1 },
+    "container": { "enum": ["zip"] },
+    "maxPartSize": { "type": "integer", "minimum": 1 },
+    "bootstrap": {
+      "type": "object",
+      "properties": {
+        "volumeIndex": { "type": "integer", "minimum": 1 },
+        "containsManifest": { "type": "boolean" },
+        "containsCatalog": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "volumes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["index", "count", "file", "size", "sha256"],
+        "properties": {
+          "index": { "type": "integer", "minimum": 1 },
+          "count": { "type": "integer", "minimum": 1 },
+          "file": { "type": "string", "minLength": 1 },
+          "size": { "type": "integer", "minimum": 0 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "encryption": {
+            "type": "object",
+            "properties": {
+              "scheme": { "enum": ["none", "age"] },
+              "envelopeFile": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

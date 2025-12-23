@@ -1,7 +1,7 @@
 {
   "spec": {
     "name": "sitepack-envelope",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "createdAt": "2025-01-01T00:00:00Z",
   "encryption": {

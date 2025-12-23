@@ -380,30 +380,252 @@ class PackageValidator
                 return [];
             }
 
-            if (!property_exists($record, 'path') || !is_string($record->path) || trim($record->path) === '') {
-                return [];
+            $details = [];
+
+            $expectedSha = is_string($record->sha256 ?? null) ? strtolower($record->sha256) : null;
+            $expectedSize = is_int($record->size ?? null) ? $record->size : null;
+
+            if (property_exists($record, 'chunks') && is_array($record->chunks)) {
+                $chunkEntries = [];
+                $seenIndexes = [];
+                $canAssemble = true;
+
+                foreach ($record->chunks as $chunk) {
+                    if (!is_object($chunk)) {
+                        $details[] = [
+                            'level' => 'error',
+                            'code' => 'ASSET_CHUNK_INVALID',
+                            'message' => 'Chunk entry must be an object',
+                            'line' => $lineNumber,
+                        ];
+                        $canAssemble = false;
+                        continue;
+                    }
+
+                    $index = $chunk->index ?? null;
+                    if (!is_int($index) || $index < 1) {
+                        $details[] = [
+                            'level' => 'error',
+                            'code' => 'ASSET_CHUNK_INDEX_INVALID',
+                            'message' => 'Chunk index must be an integer >= 1',
+                            'line' => $lineNumber,
+                        ];
+                        $canAssemble = false;
+                        continue;
+                    }
+
+                    if (in_array($index, $seenIndexes, true)) {
+                        $details[] = [
+                            'level' => 'error',
+                            'code' => 'ASSET_CHUNK_INDEX_DUPLICATE',
+                            'message' => 'Duplicate chunk index: ' . (string) $index,
+                            'line' => $lineNumber,
+                        ];
+                        $canAssemble = false;
+                        continue;
+                    }
+                    $seenIndexes[] = $index;
+
+                    if (!is_string($chunk->path ?? null) || trim((string) $chunk->path) === '') {
+                        $details[] = [
+                            'level' => 'error',
+                            'code' => 'ASSET_CHUNK_PATH_MISSING',
+                            'message' => 'Chunk path is missing or invalid',
+                            'line' => $lineNumber,
+                        ];
+                        $canAssemble = false;
+                        continue;
+                    }
+
+                    $safe = $this->safePath->resolve($packageRoot, (string) $chunk->path);
+                    if (!$safe['ok'] || $safe['path'] === null) {
+                        $details[] = [
+                            'level' => 'error',
+                            'code' => 'ASSET_CHUNK_PATH_UNSAFE',
+                            'message' => 'Unsafe chunk path: ' . (string) $chunk->path,
+                            'line' => $lineNumber,
+                        ];
+                        $canAssemble = false;
+                        continue;
+                    }
+
+                    if (!is_file($safe['path'])) {
+                        $details[] = [
+                            'level' => 'error',
+                            'code' => 'ASSET_CHUNK_MISSING',
+                            'message' => 'Chunk file not found: ' . (string) $chunk->path,
+                            'line' => $lineNumber,
+                        ];
+                        $canAssemble = false;
+                        continue;
+                    }
+
+                    $actualSize = filesize($safe['path']);
+                    if ($actualSize === false) {
+                        $details[] = [
+                            'level' => 'error',
+                            'code' => 'ASSET_CHUNK_SIZE_ERROR',
+                            'message' => 'Failed to read chunk size: ' . (string) $chunk->path,
+                            'line' => $lineNumber,
+                        ];
+                        $canAssemble = false;
+                        continue;
+                    }
+
+                    if (is_int($chunk->size ?? null) && $actualSize !== $chunk->size) {
+                        $details[] = [
+                            'level' => 'error',
+                            'code' => 'ASSET_CHUNK_SIZE_MISMATCH',
+                            'message' => 'Chunk size mismatch: ' . (string) $actualSize . ' != ' . (string) $chunk->size,
+                            'line' => $lineNumber,
+                        ];
+                        $canAssemble = false;
+                    }
+
+                    if (is_string($chunk->sha256 ?? null)) {
+                        try {
+                            $actualSha = $this->digestCalculator->computeSha256Hex($safe['path']);
+                            if ($actualSha !== strtolower((string) $chunk->sha256)) {
+                                $details[] = [
+                                    'level' => 'error',
+                                    'code' => 'ASSET_CHUNK_DIGEST_MISMATCH',
+                                    'message' => 'Chunk digest mismatch: ' . $actualSha . ' != ' . (string) $chunk->sha256,
+                                    'line' => $lineNumber,
+                                ];
+                                $canAssemble = false;
+                            }
+                        } catch (Throwable $exception) {
+                            $details[] = [
+                                'level' => 'error',
+                                'code' => 'ASSET_CHUNK_DIGEST_ERROR',
+                                'message' => 'Chunk digest error: ' . $exception->getMessage(),
+                                'line' => $lineNumber,
+                            ];
+                            $canAssemble = false;
+                        }
+                    }
+
+                    $chunkEntries[] = [
+                        'index' => $index,
+                        'path' => $safe['path'],
+                        'size' => (int) $actualSize,
+                    ];
+                }
+
+                if (!empty($chunkEntries) && $canAssemble) {
+                    usort(
+                        $chunkEntries,
+                        static fn (array $left, array $right): int => $left['index'] <=> $right['index']
+                    );
+
+                    $totalSize = 0;
+                    $paths = [];
+                    foreach ($chunkEntries as $entry) {
+                        $totalSize += $entry['size'];
+                        $paths[] = $entry['path'];
+                    }
+
+                    if ($expectedSize !== null && $totalSize !== $expectedSize) {
+                        $details[] = [
+                            'level' => 'error',
+                            'code' => 'ASSET_SIZE_MISMATCH',
+                            'message' => 'Asset size mismatch: ' . (string) $totalSize . ' != ' . (string) $expectedSize,
+                            'line' => $lineNumber,
+                        ];
+                    }
+
+                    if ($expectedSha !== null) {
+                        try {
+                            $actualSha = $this->digestCalculator->computeSha256HexFromFiles($paths);
+                            if ($actualSha !== $expectedSha) {
+                                $details[] = [
+                                    'level' => 'error',
+                                    'code' => 'ASSET_DIGEST_MISMATCH',
+                                    'message' => 'Asset digest mismatch: ' . $actualSha . ' != ' . $expectedSha,
+                                    'line' => $lineNumber,
+                                ];
+                            }
+                        } catch (Throwable $exception) {
+                            $details[] = [
+                                'level' => 'error',
+                                'code' => 'ASSET_DIGEST_ERROR',
+                                'message' => 'Asset digest error: ' . $exception->getMessage(),
+                                'line' => $lineNumber,
+                            ];
+                        }
+                    }
+                }
+
+                return $details;
             }
 
-            $safe = $this->safePath->resolve($packageRoot, $record->path);
+            if (!is_string($record->path ?? null) || trim((string) $record->path) === '') {
+                return $details;
+            }
+
+            $safe = $this->safePath->resolve($packageRoot, (string) $record->path);
             if (!$safe['ok'] || $safe['path'] === null) {
-                return [[
-                    'level' => 'warning',
-                    'code' => 'INVALID_PATH',
-                    'message' => 'Unsafe asset blob path: ' . $record->path,
+                $details[] = [
+                    'level' => 'error',
+                    'code' => 'ASSET_BLOB_PATH_UNSAFE',
+                    'message' => 'Unsafe asset blob path: ' . (string) $record->path,
                     'line' => $lineNumber,
-                ]];
+                ];
+                return $details;
             }
 
             if (!is_file($safe['path'])) {
-                return [[
-                    'level' => 'warning',
-                    'code' => 'MISSING_ASSET_BLOB',
-                    'message' => 'Asset blob file not found: ' . $record->path,
+                $details[] = [
+                    'level' => 'error',
+                    'code' => 'ASSET_BLOB_MISSING',
+                    'message' => 'Asset blob file not found: ' . (string) $record->path,
                     'line' => $lineNumber,
-                ]];
+                ];
+                return $details;
             }
 
-            return [];
+            $actualSize = filesize($safe['path']);
+            if ($actualSize === false) {
+                $details[] = [
+                    'level' => 'error',
+                    'code' => 'ASSET_BLOB_SIZE_ERROR',
+                    'message' => 'Failed to read asset blob size: ' . (string) $record->path,
+                    'line' => $lineNumber,
+                ];
+                return $details;
+            }
+
+            if ($expectedSize !== null && $actualSize !== $expectedSize) {
+                $details[] = [
+                    'level' => 'error',
+                    'code' => 'ASSET_BLOB_SIZE_MISMATCH',
+                    'message' => 'Asset blob size mismatch: ' . (string) $actualSize . ' != ' . (string) $expectedSize,
+                    'line' => $lineNumber,
+                ];
+            }
+
+            if ($expectedSha !== null) {
+                try {
+                    $actualSha = $this->digestCalculator->computeSha256Hex($safe['path']);
+                    if ($actualSha !== $expectedSha) {
+                        $details[] = [
+                            'level' => 'error',
+                            'code' => 'ASSET_BLOB_DIGEST_MISMATCH',
+                            'message' => 'Asset blob digest mismatch: ' . $actualSha . ' != ' . $expectedSha,
+                            'line' => $lineNumber,
+                        ];
+                    }
+                } catch (Throwable $exception) {
+                    $details[] = [
+                        'level' => 'error',
+                        'code' => 'ASSET_BLOB_DIGEST_ERROR',
+                        'message' => 'Asset blob digest error: ' . $exception->getMessage(),
+                        'line' => $lineNumber,
+                    ];
+                }
+            }
+
+            return $details;
         };
     }
 

@@ -1,6 +1,6 @@
 # sitepack-tools-node
 
-CLI validator for unpacked SitePack v0.2.0 packages. It validates manifest, catalog, artifacts, and content against schemas, and writes `reports/validate.json`.
+CLI validator for unpacked SitePack v0.3.0 packages. It validates manifest, catalog, artifacts, and content against schemas, and writes `reports/validate.json`.
 
 ## Requirements
 - Node.js >= 18
@@ -31,11 +31,16 @@ Validate an encrypted envelope header:
 sitepack-validate envelope /path/to/example.sitepack.enc.json --check-payload-file
 ```
 
+Validate a volume set:
+```
+sitepack-validate volumes /path/to/sitepack.volumes.json
+```
+
 Options:
 - `--schemas <dir>` — path to JSON schemas (default `./schemas`).
 - `--no-digest` — skip digest verification.
 - `--strict` — treat warnings as errors (exit code 1).
-- `--check-asset-blobs` — verify asset blob files referenced in asset-index.
+- `--check-asset-blobs` — verify asset blob files referenced in asset-index (including chunked assets).
 - `--format text|json` — console output format.
 - `--quiet` — minimal console output.
 
@@ -48,13 +53,15 @@ Options:
    - `digest` matches (if provided).
 3. Core NDJSON types are validated line-by-line against schemas:
    - entity-graph, asset-index, config-kv, recordset.
+   - asset-index supports both single-blob and chunked assets.
 4. JSON artifacts (capabilities/transform-plan) are validated as full JSON documents.
 5. Unknown `mediaType` does not fail validation: file/size/digest are checked, content is skipped with a warning.
+6. Volume Set descriptors can be validated and assembled with the `volumes` command.
 
 Note on NDJSON empty lines: an empty line is skipped with a warning.
 
 ## Profile mode
-The `--profile` option verifies that the profile exists in `manifest.profiles` and validates the artifacts for that profile. In v0.2, profiles are an array, so the validator falls back to `manifest.artifacts` if a profile-to-artifact map is not available.
+The `--profile` option verifies that the profile exists in `manifest.profiles` and validates the artifacts for that profile. In v0.3, profiles are an array, so the validator falls back to `manifest.artifacts` if a profile-to-artifact map is not available.
 
 ## Report
 After validation, the tool writes:
@@ -65,10 +72,10 @@ After validation, the tool writes:
 Report structure:
 ```json
 {
-  "tool": { "name": "sitepack-validate", "version": "0.2.0" },
+  "tool": { "name": "sitepack-validate", "version": "0.3.0" },
   "startedAt": "...",
   "finishedAt": "...",
-  "target": { "type": "package|envelope", "path": "..." },
+  "target": { "type": "package|envelope|volume-set", "path": "..." },
   "summary": {
     "errors": 0,
     "warnings": 0,

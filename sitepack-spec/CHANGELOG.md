@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 - 2025-12-23
+- Added Volume Sets (multi-file distribution via `sitepack.volumes.json`, recommended 100 MiB parts).
+- Added Chunked Assets (large blobs split into chunks, validated by sha256).
+- Kept single-version policy across the whole project (package + envelope + volume-set).
+
 ## 0.2.0 - 2025-12-22
 - Standardized relation links (Link) and `relations: relationKey -> Link[]`.
 - Added recommended relation key patterns: `property.<CODE>`, `field.<CODE>`, URN refs.

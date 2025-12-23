@@ -1,0 +1,1 @@
+{"id":"ent_product_a","type":"content.item","attributes":{"title":"Chunked Asset Demo","slug":"chunked-asset-demo"},"relations":{"assets":["asset_logo_acme"]}}

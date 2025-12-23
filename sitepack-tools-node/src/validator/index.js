@@ -1,11 +1,13 @@
 const fs = require('fs/promises');
 const fsSync = require('fs');
 const path = require('path');
+const os = require('os');
+const unzipper = require('unzipper');
 const { createReport, finalizeReport, writeReport } = require('./report');
 const { loadSchemas } = require('./schema-loader');
 const { validateWithSchema } = require('./json-validate');
 const { validateNdjson } = require('./ndjson-validate');
-const { computeSha256 } = require('./digest');
+const { computeSha256, computeSha256Hex, computeSha256HexFromFiles } = require('./digest');
 const { resolveSafePath } = require('./path-safe');
 
 function addMessage(report, level, code, message, context = {}) {
@@ -93,6 +95,266 @@ function selectArtifactsForProfile(manifest, profile, report) {
     { profile }
   );
   return { selectedIds: new Set(manifestArtifacts), usedProfileMap: false };
+}
+
+async function validateAssetIndexRecord(record, lineNumber, options) {
+  const { packageRoot, checkAssetBlobs, mediaType } = options;
+  const details = [];
+
+  if (!checkAssetBlobs || mediaType !== 'application/vnd.sitepack.asset-index+ndjson') {
+    return details;
+  }
+
+  if (!record || typeof record !== 'object') {
+    return details;
+  }
+
+  const expectedSha = typeof record.sha256 === 'string' ? record.sha256.toLowerCase() : null;
+  const expectedSize = typeof record.size === 'number' ? record.size : null;
+
+  if (Array.isArray(record.chunks)) {
+    const chunkEntries = [];
+    const seenIndexes = new Set();
+    let canAssemble = true;
+
+    for (const chunk of record.chunks) {
+      if (!chunk || typeof chunk !== 'object') {
+        details.push({
+          level: 'error',
+          code: 'ASSET_CHUNK_INVALID',
+          message: 'Chunk entry must be an object'
+        });
+        canAssemble = false;
+        continue;
+      }
+
+      const index = Number(chunk.index);
+      if (!Number.isInteger(index) || index < 1) {
+        details.push({
+          level: 'error',
+          code: 'ASSET_CHUNK_INDEX_INVALID',
+          message: 'Chunk index must be an integer >= 1'
+        });
+        canAssemble = false;
+        continue;
+      }
+
+      if (seenIndexes.has(index)) {
+        details.push({
+          level: 'error',
+          code: 'ASSET_CHUNK_INDEX_DUPLICATE',
+          message: `Duplicate chunk index: ${index}`
+        });
+        canAssemble = false;
+        continue;
+      }
+      seenIndexes.add(index);
+
+      if (typeof chunk.path !== 'string' || chunk.path.trim() === '') {
+        details.push({
+          level: 'error',
+          code: 'ASSET_CHUNK_PATH_MISSING',
+          message: 'Chunk path is missing or not a string'
+        });
+        canAssemble = false;
+        continue;
+      }
+
+      const safe = resolveSafePath(packageRoot, chunk.path);
+      if (!safe.ok) {
+        details.push({
+          level: 'error',
+          code: 'ASSET_CHUNK_PATH_UNSAFE',
+          message: `Unsafe chunk path: ${chunk.path}`
+        });
+        canAssemble = false;
+        continue;
+      }
+
+      let stat;
+      try {
+        stat = await fs.stat(safe.resolved);
+      } catch (err) {
+        details.push({
+          level: 'error',
+          code: 'ASSET_CHUNK_MISSING',
+          message: `Chunk file not found: ${chunk.path}`
+        });
+        canAssemble = false;
+        continue;
+      }
+
+      if (!stat.isFile()) {
+        details.push({
+          level: 'error',
+          code: 'ASSET_CHUNK_NOT_REGULAR',
+          message: `Chunk path is not a regular file: ${chunk.path}`
+        });
+        canAssemble = false;
+        continue;
+      }
+
+      if (typeof chunk.size === 'number' && stat.size !== chunk.size) {
+        details.push({
+          level: 'error',
+          code: 'ASSET_CHUNK_SIZE_MISMATCH',
+          message: `Chunk size mismatch: ${stat.size} != ${chunk.size}`
+        });
+        canAssemble = false;
+      }
+
+      if (typeof chunk.sha256 === 'string') {
+        try {
+          const actualChunkSha = await computeSha256Hex(safe.resolved);
+          if (actualChunkSha !== chunk.sha256.toLowerCase()) {
+            details.push({
+              level: 'error',
+              code: 'ASSET_CHUNK_DIGEST_MISMATCH',
+              message: `Chunk digest mismatch: ${actualChunkSha} != ${chunk.sha256}`
+            });
+            canAssemble = false;
+          }
+        } catch (err) {
+          details.push({
+            level: 'error',
+            code: 'ASSET_CHUNK_DIGEST_ERROR',
+            message: `Chunk digest error: ${err.message}`
+          });
+          canAssemble = false;
+        }
+      }
+
+      chunkEntries.push({ index, path: safe.resolved, size: stat.size });
+    }
+
+    if (chunkEntries.length > 0 && canAssemble) {
+      chunkEntries.sort((a, b) => a.index - b.index);
+      const totalSize = chunkEntries.reduce((sum, entry) => sum + entry.size, 0);
+
+      if (expectedSize !== null && totalSize !== expectedSize) {
+        details.push({
+          level: 'error',
+          code: 'ASSET_SIZE_MISMATCH',
+          message: `Asset size mismatch: ${totalSize} != ${expectedSize}`
+        });
+      }
+
+      if (expectedSha) {
+        try {
+          const actualSha = await computeSha256HexFromFiles(chunkEntries.map((entry) => entry.path));
+          if (actualSha !== expectedSha) {
+            details.push({
+              level: 'error',
+              code: 'ASSET_DIGEST_MISMATCH',
+              message: `Asset digest mismatch: ${actualSha} != ${expectedSha}`
+            });
+          }
+        } catch (err) {
+          details.push({
+            level: 'error',
+            code: 'ASSET_DIGEST_ERROR',
+            message: `Asset digest error: ${err.message}`
+          });
+        }
+      }
+    }
+
+    return details;
+  }
+
+  if (typeof record.path !== 'string' || record.path.trim() === '') {
+    return details;
+  }
+
+  const safe = resolveSafePath(packageRoot, record.path);
+  if (!safe.ok) {
+    details.push({
+      level: 'error',
+      code: 'ASSET_BLOB_PATH_UNSAFE',
+      message: `Unsafe asset blob path: ${record.path}`
+    });
+    return details;
+  }
+
+  let stat;
+  try {
+    stat = await fs.stat(safe.resolved);
+  } catch (err) {
+    details.push({
+      level: 'error',
+      code: 'ASSET_BLOB_MISSING',
+      message: `Asset blob file not found: ${record.path}`
+    });
+    return details;
+  }
+
+  if (!stat.isFile()) {
+    details.push({
+      level: 'error',
+      code: 'ASSET_BLOB_NOT_REGULAR',
+      message: `Asset blob path is not a regular file: ${record.path}`
+    });
+    return details;
+  }
+
+  if (expectedSize !== null && stat.size !== expectedSize) {
+    details.push({
+      level: 'error',
+      code: 'ASSET_BLOB_SIZE_MISMATCH',
+      message: `Asset blob size mismatch: ${stat.size} != ${expectedSize}`
+    });
+  }
+
+  if (expectedSha) {
+    try {
+      const actualSha = await computeSha256Hex(safe.resolved);
+      if (actualSha !== expectedSha) {
+        details.push({
+          level: 'error',
+          code: 'ASSET_BLOB_DIGEST_MISMATCH',
+          message: `Asset blob digest mismatch: ${actualSha} != ${expectedSha}`
+        });
+      }
+    } catch (err) {
+      details.push({
+        level: 'error',
+        code: 'ASSET_BLOB_DIGEST_ERROR',
+        message: `Asset blob digest error: ${err.message}`
+      });
+    }
+  }
+
+  return details;
+}
+
+async function extractZip(zipPath, destDir, report) {
+  const directory = await unzipper.Open.file(zipPath);
+
+  for (const entry of directory.files) {
+    const safe = resolveSafePath(destDir, entry.path);
+    if (!safe.ok) {
+      addMessage(report, 'error', 'VOLUME_ENTRY_PATH_UNSAFE', `Unsafe entry path: ${entry.path}`, {
+        entryPath: entry.path,
+        volume: zipPath
+      });
+      entry.autodrain();
+      continue;
+    }
+
+    if (entry.type === 'Directory') {
+      await fs.mkdir(safe.resolved, { recursive: true });
+      continue;
+    }
+
+    await fs.mkdir(path.dirname(safe.resolved), { recursive: true });
+    await new Promise((resolve, reject) => {
+      entry
+        .stream()
+        .pipe(fsSync.createWriteStream(safe.resolved))
+        .on('finish', resolve)
+        .on('error', reject);
+    });
+  }
 }
 
 async function validatePackage(options) {
@@ -309,32 +571,12 @@ async function validatePackage(options) {
 
     if (ndjsonValidator) {
       const ndjsonResult = await validateNdjson(safePath.resolved, ndjsonValidator, {
-        onRecord: (record, line) => {
-          if (!checkAssetBlobs || art.mediaType !== 'application/vnd.sitepack.asset-index+ndjson') {
-            return [];
-          }
-          const details = [];
-          if (typeof record.path !== 'string' || record.path.trim() === '') {
-            return details;
-          }
-          const blobPath = resolveSafePath(packageRoot, record.path);
-          if (!blobPath.ok) {
-            details.push({
-              level: 'warning',
-              code: 'ASSET_BLOB_PATH_UNSAFE',
-              message: `Unsafe asset blob path: ${record.path}`
-            });
-            return details;
-          }
-          if (!fsSync.existsSync(blobPath.resolved)) {
-            details.push({
-              level: 'warning',
-              code: 'ASSET_BLOB_MISSING',
-              message: `Asset blob file not found: ${record.path}`
-            });
-          }
-          return details;
-        }
+        onRecord: (record, line) =>
+          validateAssetIndexRecord(record, line, {
+            packageRoot,
+            checkAssetBlobs,
+            mediaType: art.mediaType
+          })
       });
 
       report.summary.ndjsonLinesValidated += ndjsonResult.linesValidated;
@@ -456,7 +698,199 @@ async function validateEnvelope(options) {
   return report;
 }
 
+async function validateVolumes(options) {
+  const {
+    volumesPath,
+    schemasDir,
+    profile,
+    noDigest,
+    checkAssetBlobs,
+    toolName,
+    toolVersion
+  } = options;
+
+  const report = createReport({
+    toolName,
+    toolVersion,
+    targetType: 'volume-set',
+    targetPath: volumesPath
+  });
+
+  const { validators } = loadSchemas(schemasDir);
+  const baseDir = path.dirname(volumesPath);
+
+  if (!fsSync.existsSync(volumesPath)) {
+    addMessage(report, 'error', 'VOLUME_SET_MISSING', 'Volume set descriptor not found', { path: volumesPath });
+    finalizeReport(report);
+    await writeReport(report, baseDir);
+    return report;
+  }
+
+  const volumesResult = await readJsonFile(volumesPath);
+  if (!volumesResult.ok) {
+    addMessage(report, 'error', 'VOLUME_SET_PARSE_ERROR', `Failed to read volume set: ${volumesResult.error.message}`, {
+      path: volumesPath
+    });
+    finalizeReport(report);
+    await writeReport(report, baseDir);
+    return report;
+  }
+
+  const validation = validateWithSchema(validators.volumeSet, volumesResult.data);
+  if (!validation.valid) {
+    for (const err of validation.errors) {
+      addMessage(report, 'error', 'VOLUME_SET_SCHEMA_ERROR', err.message, {
+        path: volumesPath,
+        schemaPath: err.schemaPath
+      });
+    }
+  }
+
+  const volumes = Array.isArray(volumesResult.data?.volumes) ? volumesResult.data.volumes : [];
+  const volumeEntries = [];
+
+  for (const volume of volumes) {
+    if (!volume || typeof volume !== 'object') {
+      addMessage(report, 'error', 'VOLUME_ENTRY_INVALID', 'Volume entry must be an object');
+      continue;
+    }
+
+    if (typeof volume.file !== 'string' || volume.file.trim() === '') {
+      addMessage(report, 'error', 'VOLUME_FILE_INVALID', 'Volume file name is missing or invalid');
+      continue;
+    }
+
+    const safeFile = resolveSafePath(baseDir, volume.file);
+    if (!safeFile.ok) {
+      addMessage(report, 'error', safeFile.code, safeFile.message, { file: volume.file });
+      continue;
+    }
+
+    let stat;
+    try {
+      stat = await fs.stat(safeFile.resolved);
+    } catch (err) {
+      addMessage(report, 'error', 'VOLUME_FILE_MISSING', `Volume file not found: ${volume.file}`, {
+        file: volume.file
+      });
+      continue;
+    }
+
+    if (!stat.isFile()) {
+      addMessage(report, 'error', 'VOLUME_FILE_NOT_REGULAR', `Volume is not a regular file: ${volume.file}`, {
+        file: volume.file
+      });
+      continue;
+    }
+
+    if (typeof volume.size === 'number' && stat.size !== volume.size) {
+      addMessage(report, 'error', 'VOLUME_SIZE_MISMATCH', `Volume size mismatch: ${stat.size} != ${volume.size}`, {
+        file: volume.file
+      });
+    }
+
+    if (typeof volume.sha256 === 'string') {
+      try {
+        const actualSha = await computeSha256Hex(safeFile.resolved);
+        if (actualSha !== volume.sha256.toLowerCase()) {
+          addMessage(report, 'error', 'VOLUME_DIGEST_MISMATCH', `Volume digest mismatch: ${actualSha} != ${volume.sha256}`, {
+            file: volume.file
+          });
+        }
+      } catch (err) {
+        addMessage(report, 'error', 'VOLUME_DIGEST_ERROR', `Volume digest error: ${err.message}`, {
+          file: volume.file
+        });
+      }
+    }
+
+    const encryption = volume.encryption;
+    if (encryption && encryption.scheme === 'age') {
+      if (typeof encryption.envelopeFile !== 'string' || encryption.envelopeFile.trim() === '') {
+        addMessage(report, 'error', 'VOLUME_ENVELOPE_MISSING', 'encryption.envelopeFile is required for age volumes', {
+          file: volume.file
+        });
+      } else {
+        const safeEnvelope = resolveSafePath(baseDir, encryption.envelopeFile);
+        if (!safeEnvelope.ok) {
+          addMessage(report, 'error', safeEnvelope.code, safeEnvelope.message, { envelopeFile: encryption.envelopeFile });
+        } else if (!fsSync.existsSync(safeEnvelope.resolved)) {
+          addMessage(report, 'error', 'VOLUME_ENVELOPE_NOT_FOUND', 'Envelope file not found', {
+            envelopeFile: encryption.envelopeFile
+          });
+        }
+      }
+
+      addMessage(
+        report,
+        'error',
+        'VOLUME_ENCRYPTION_UNSUPPORTED',
+        'Encrypted volumes are not supported by this validator'
+      );
+    }
+
+    volumeEntries.push({
+      index: Number(volume.index) || 0,
+      path: safeFile.resolved,
+      file: volume.file
+    });
+  }
+
+  if (report.summary.errors > 0) {
+    finalizeReport(report);
+    await writeReport(report, baseDir);
+    return report;
+  }
+
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sitepack-volumes-'));
+
+  try {
+    const ordered = volumeEntries.sort((a, b) => a.index - b.index);
+    for (const volume of ordered) {
+      try {
+        await extractZip(volume.path, tempDir, report);
+      } catch (err) {
+        addMessage(report, 'error', 'VOLUME_EXTRACT_ERROR', `Failed to extract volume: ${err.message}`, {
+          file: volume.file
+        });
+      }
+    }
+
+    if (report.summary.errors > 0) {
+      finalizeReport(report);
+      await writeReport(report, baseDir);
+      return report;
+    }
+
+    const packageReport = await validatePackage({
+      packageRoot: tempDir,
+      schemasDir,
+      profile,
+      noDigest,
+      checkAssetBlobs,
+      toolName,
+      toolVersion
+    });
+
+    for (const msg of report.messages) {
+      addMessage(packageReport, msg.level, msg.code, msg.message, msg.context || {});
+    }
+
+    packageReport.target = {
+      type: 'volume-set',
+      path: volumesPath
+    };
+
+    finalizeReport(packageReport);
+    await writeReport(packageReport, baseDir);
+    return packageReport;
+  } finally {
+    await fs.rm(tempDir, { recursive: true, force: true });
+  }
+}
+
 module.exports = {
   validatePackage,
-  validateEnvelope
+  validateEnvelope,
+  validateVolumes
 };

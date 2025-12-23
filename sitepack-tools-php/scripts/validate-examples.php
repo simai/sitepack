@@ -27,6 +27,7 @@ $examples = [
     'full',
     'full-code',
     'cross-relations',
+    'chunked-assets',
 ];
 
 foreach ($examples as $name) {

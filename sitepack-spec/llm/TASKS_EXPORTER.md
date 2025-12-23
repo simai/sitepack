@@ -17,10 +17,17 @@ Any site data model (content, assets, config, tables). The exporter decides whic
 - `digest` — `sha256:<hex>`.
 - `relations` MUST be emitted as an object mapping relation keys to `Link[]`.
 - A Link MUST be either a string or an object with `ref` and optional `meta`.
+- If producing a split distribution, generate `sitepack.volumes.json` with `spec.version = 0.3.0`, `kind = volume-set`, and a `volumes[]` list.
+- `maxPartSize` SHOULD be 104857600 bytes (100 MiB) unless the user specifies otherwise.
 
 ## NDJSON
 - One JSON object per line.
 - No extra spaces and no empty lines.
+
+## Chunked assets
+- If an asset is chunked, emit `chunks[]` with `index`, `size`, `sha256`, and `path` for each chunk.
+- For chunked assets, omit `path` and include `chunks` at the asset level.
+- Compute and store both per-chunk sha256 and the overall asset sha256/size.
 
 ## Profiles (recommendations)
 - `config-only`: config only.
