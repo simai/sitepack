@@ -1,0 +1,16 @@
+{
+  "artifacts": [
+    {
+      "id": "art_entities_01",
+      "mediaType": "application/vnd.sitepack.entity-graph+ndjson",
+      "path": "artifacts/entities/content.ndjson",
+      "size": 460
+    },
+    {
+      "id": "art_assets_index_01",
+      "mediaType": "application/vnd.sitepack.asset-index+ndjson",
+      "path": "artifacts/assets/index.ndjson",
+      "size": 264
+    }
+  ]
+}

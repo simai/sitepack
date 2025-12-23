@@ -23,6 +23,7 @@ Implement a validator for an unpacked SitePack package and a validator for the e
   - asset-index -> `schemas/asset-index.schema.json`
   - config-kv -> `schemas/config-kv.schema.json`
   - recordset -> `schemas/recordset.schema.json`
+- Enforce relations encoding for entities: `relations` MUST be an object mapping keys to `Link[]`, where Link is a string or an object with `ref` and optional `meta`.
 - Unknown `mediaType` MUST be skipped but MUST be logged.
 
 ## Envelope checks

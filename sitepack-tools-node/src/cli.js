@@ -118,7 +118,7 @@ async function runEnvelopeValidation(encJsonPath, options) {
 async function main() {
   const program = new Command();
   program.name('sitepack-validate');
-  program.description('CLI validator for unpacked SitePack v0.1.0 packages');
+  program.description('CLI validator for unpacked SitePack v0.2.0 packages');
   program.option('-f, --format <format>', 'Output format: text|json', 'text');
   program.option('--quiet', 'Minimal console output');
   program.option('--strict', 'Treat warnings as errors');

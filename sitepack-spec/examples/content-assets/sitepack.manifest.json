@@ -1,12 +1,18 @@
 {
   "spec": {
     "name": "sitepack",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "package": {
     "id": "content-assets"
   },
   "createdAt": "2025-01-01T00:00:00Z",
-  "profiles": ["content+assets"],
-  "artifacts": ["entities.content", "entities.taxonomy", "assets.index"]
+  "profiles": [
+    "content+assets"
+  ],
+  "artifacts": [
+    "entities.content",
+    "entities.taxonomy",
+    "assets.index"
+  ]
 }

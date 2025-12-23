@@ -15,6 +15,8 @@ Any site data model (content, assets, config, tables). The exporter decides whic
 - `catalog.artifacts[]` — full list of artifacts with `id`, `mediaType`, `path`, `size`, and (preferably) `digest`.
 - `size` — byte length of the file.
 - `digest` — `sha256:<hex>`.
+- `relations` MUST be emitted as an object mapping relation keys to `Link[]`.
+- A Link MUST be either a string or an object with `ref` and optional `meta`.
 
 ## NDJSON
 - One JSON object per line.

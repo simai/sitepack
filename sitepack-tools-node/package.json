@@ -1,7 +1,7 @@
 {
   "name": "sitepack-tools-node",
-  "version": "0.1.0",
-  "description": "CLI validator for unpacked SitePack v0.1.0 packages",
+  "version": "0.2.0",
+  "description": "CLI validator for unpacked SitePack v0.2.0 packages",
   "license": "MIT",
   "bin": {
     "sitepack-validate": "bin/sitepack-validate"

@@ -16,7 +16,7 @@ if (!fs.existsSync(resolvedRoot)) {
 }
 
 const validatorBin = path.resolve(__dirname, '..', 'bin', 'sitepack-validate');
-const examples = ['hello-world', 'config-only', 'content-assets', 'full', 'full-code'];
+const examples = ['hello-world', 'config-only', 'content-assets', 'full', 'full-code', 'cross-relations'];
 
 for (const name of examples) {
   const target = path.join(resolvedRoot, name);

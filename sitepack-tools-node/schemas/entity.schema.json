@@ -8,9 +8,31 @@
     "id": { "type": "string", "minLength": 1 },
     "type": { "type": "string", "minLength": 1 },
     "attributes": { "type": "object", "additionalProperties": true },
-    "relations": { "type": "object", "additionalProperties": true },
+    "relations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "$ref": "#/$defs/link" }
+      }
+    },
     "source": { "type": "object", "additionalProperties": true },
     "meta": { "type": "object", "additionalProperties": true }
+  },
+  "$defs": {
+    "link": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "required": ["ref"],
+          "properties": {
+            "ref": { "type": "string", "minLength": 1 },
+            "meta": { "type": "object", "additionalProperties": true }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
   },
   "additionalProperties": true
 }

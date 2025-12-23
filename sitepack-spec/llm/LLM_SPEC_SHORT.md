@@ -1,4 +1,4 @@
-# SitePack v0.1.0 — Short Specification
+# SitePack v0.2.0 — Short Specification
 
 ## 1. Purpose
 SitePack is a packaging format for website data export/import. A package includes required metadata and a set of artifacts.
@@ -16,7 +16,7 @@ The root of an unpacked package MUST include:
 
 ## 4. Manifest (short)
 `sitepack.manifest.json` includes:
-- `spec`: `{ name: "sitepack", version: "0.1.0" }`
+- `spec`: `{ name: "sitepack", version: "0.2.0" }`
 - `package.id`
 - `createdAt` (date-time)
 - `profiles` (array of strings)
@@ -44,21 +44,28 @@ The root of an unpacked package MUST include:
 - `full+code`
 - `snapshot` (descriptive profile)
 
-## 8. Unknown handling
+## 8. Relations and Link encoding
+- `relations` is an object mapping relation keys to `Link[]`.
+- A Link is either a string or `{ "ref": "<string>", "meta"?: { ... } }`.
+- Recommended keys include `property.<CODE>` and `field.<CODE>`.
+- External references use URN format like `urn:<namespace>:<type>:<id>`.
+- Unresolved references MUST be recorded as warnings and MUST NOT be fatal.
+
+## 9. Unknown handling
 - Unknown `mediaType`: MUST skip and log.
 - Unknown `entity.type`: MUST NOT fail; MAY skip or import as opaque.
 
-## 9. Digest and size
+## 10. Digest and size
 - `digest` format: `sha256:<hex>`.
-- In v0.1 `digest` SHOULD, but `size` MUST.
+- In v0.2 `digest` SHOULD, but `size` MUST.
 
-## 10. Import security
+## 11. Import security
 - Block path traversal, absolute paths, null bytes.
 - Size/file count limits MUST be enforced.
 - Do not execute code automatically.
 - Do not auto-apply secret config.
 
-## 11. Encrypted Envelope (optional)
+## 12. Encrypted Envelope (optional)
 For transfer:
 - `*.sitepack.enc` — age-encrypted bytes of the original `.sitepack`.
 - `*.sitepack.enc.json` — public JSON header.
@@ -66,6 +73,6 @@ For transfer:
 The header MUST match `schemas/envelope.schema.json` and include `payload.payloadDigest` (sha256).
 After decryption, the package MUST be validated as a regular SitePack.
 
-## 12. Optional extensions
+## 13. Optional extensions
 - `Capabilities`: `application/vnd.sitepack.capabilities+json`
 - `Transform Plan`: `application/vnd.sitepack.transform-plan+json`

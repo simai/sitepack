@@ -1,6 +1,6 @@
 # sitepack-tools-node
 
-CLI validator for unpacked SitePack v0.1.0 packages. It validates manifest, catalog, artifacts, and content against schemas, and writes `reports/validate.json`.
+CLI validator for unpacked SitePack v0.2.0 packages. It validates manifest, catalog, artifacts, and content against schemas, and writes `reports/validate.json`.
 
 ## Requirements
 - Node.js >= 18
@@ -54,7 +54,7 @@ Options:
 Note on NDJSON empty lines: an empty line is skipped with a warning.
 
 ## Profile mode
-The `--profile` option verifies that the profile exists in `manifest.profiles` and validates the artifacts for that profile. In v0.1, profiles are an array, so the validator falls back to `manifest.artifacts` if a profile-to-artifact map is not available.
+The `--profile` option verifies that the profile exists in `manifest.profiles` and validates the artifacts for that profile. In v0.2, profiles are an array, so the validator falls back to `manifest.artifacts` if a profile-to-artifact map is not available.
 
 ## Report
 After validation, the tool writes:
@@ -65,7 +65,7 @@ After validation, the tool writes:
 Report structure:
 ```json
 {
-  "tool": { "name": "sitepack-validate", "version": "0.1.0" },
+  "tool": { "name": "sitepack-validate", "version": "0.2.0" },
   "startedAt": "...",
   "finishedAt": "...",
   "target": { "type": "package|envelope", "path": "..." },

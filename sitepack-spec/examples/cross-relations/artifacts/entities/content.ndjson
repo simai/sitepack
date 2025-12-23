@@ -1,0 +1,3 @@
+{"id":"ent_brand_acme","type":"taxonomy.tag","attributes":{"title":"ACME","slug":"acme"}}
+{"id":"ent_city_istanbul","type":"taxonomy.category","attributes":{"title":"Istanbul","slug":"istanbul"}}
+{"id":"ent_product_a","type":"content.item","attributes":{"title":"Product A","slug":"product-a"},"relations":{"property.BRAND":[{"ref":"ent_brand_acme","meta":{"sourceField":"PROPERTY_BRAND"}}],"property.CITY":["ent_city_istanbul"],"assets":["asset_logo_acme"]}}

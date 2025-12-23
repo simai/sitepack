@@ -4,14 +4,15 @@
     "version": "0.2.0"
   },
   "package": {
-    "id": "hello-world"
+    "id": "example-cross-relations"
   },
-  "createdAt": "2025-01-01T00:00:00Z",
+  "createdAt": "2025-12-22T00:00:00Z",
   "profiles": [
+    "content-only",
     "content+assets"
   ],
   "artifacts": [
-    "entities.content",
-    "assets.index"
+    "art_entities_01",
+    "art_assets_index_01"
   ]
 }

@@ -15,7 +15,7 @@ class Application extends SymfonyApplication
      */
     public function __construct()
     {
-        parent::__construct('sitepack-validate', '0.1.0');
+        parent::__construct('sitepack-validate', '0.2.0');
 
         $this->add(new ValidatePackageCommand());
         $this->add(new ValidateEnvelopeCommand());

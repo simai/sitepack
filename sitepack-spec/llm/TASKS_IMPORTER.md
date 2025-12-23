@@ -17,6 +17,12 @@ Path to the unpacked package (directory).
 - If a `Transform Plan` exists and is supported, MAY apply steps in order.
 - Enforce path safety (no traversal, no absolute, no null bytes).
 
+## Relations
+- Importers SHOULD use a two-pass strategy:
+  1) create entities (or placeholders) and build a mapping `sitepackEntityId -> targetSystemId`,
+  2) resolve and apply relations using the mapping.
+- If a Link cannot be resolved, it MUST be recorded as a warning and MUST NOT be fatal.
+
 ## Output
 Create `reports/import.json` with at least this structure:
 ```json

@@ -26,6 +26,7 @@ $examples = [
     'content-assets',
     'full',
     'full-code',
+    'cross-relations',
 ];
 
 foreach ($examples as $name) {

@@ -1,4 +1,4 @@
-# SitePack v0.1.0 — Specification
+# SitePack v0.2.0 — Specification
 
 ## Keywords
 The keywords **MUST**, **SHOULD**, and **MAY** are to be interpreted as described in RFC 2119.
@@ -58,35 +58,109 @@ An artifact is a file inside the package described in the catalog. The catalog c
 - `mediaType` (**MUST**): artifact media type.
 - `path` (**MUST**): relative path inside the package.
 - `size` (**MUST**): file size in bytes.
-- `digest` (**SHOULD** in v0.1): file checksum.
+- `digest` (**SHOULD** in v0.2): file checksum.
 - `annotations` (**MAY**): extension object.
 
-## 6. Core media types
+## 6. Entities (portable layer)
+
+### 6.1 Relation links (Link) and relations encoding
+
+#### A) `relations` field
+- `relations` is an object mapping `relationKey` -> `Link[]`.
+- Each relation value **MUST** be an array.
+
+#### B) Relation key naming
+- A relation key **SHOULD** be one of:
+  - a well-known key from `registry/entity-types.md` (e.g., `assets`, `parent`, `children`, `categories`, `tags`, `author`, `related`),
+  - `property.<CODE>` for CMS-style properties (e.g., `property.BRAND`, `property.RELATED_PRODUCTS`),
+  - `field.<CODE>` for CMS-style fields,
+  - vendor-namespaced keys **MAY** be used (e.g., `bitrix.property.BRAND`) but **SHOULD** be avoided in the portable layer unless necessary.
+
+#### C) Link encoding
+A Link **MUST** be either:
+1) a string (shorthand) containing a reference identifier, or
+2) an object:
+   `{ "ref": "<string>", "meta"?: { ... } }`
+
+Additional rules:
+- `ref` **MUST** be a string.
+- `meta` (if present) **MUST** be a JSON object.
+- `meta` is for non-normative hints (e.g., `sourceField`, `role`, `cardinality`) and **MUST NOT** be required for correctness.
+
+#### D) Reference targets
+- `ref` **MAY** point to:
+  - a SitePack entity id (e.g., `ent_...`),
+  - a SitePack asset id (e.g., `asset_...`),
+  - an external reference (URN), e.g., `urn:<namespace>:<type>:<id>`.
+- Importers **MUST NOT** fail on unknown URN namespaces; they **MUST** record a warning and continue.
+
+#### E) Importer behavior
+- Importers **SHOULD** perform a two-pass import:
+  1) create entities (or placeholders) and build a mapping `sitepackEntityId -> targetSystemId`,
+  2) resolve and apply relations using the mapping.
+- If a Link cannot be resolved:
+  - it **MUST NOT** be fatal,
+  - it **MUST** be recorded as a warning in the import report,
+  - it **MUST NOT** block importing other entities.
+
+#### F) Examples
+Example 1 (shorthand string link):
+```json
+{
+  "relations": {
+    "property.BRAND": ["ent_brand_1"]
+  }
+}
+```
+
+Example 2 (link with meta):
+```json
+{
+  "relations": {
+    "related": [
+      { "ref": "ent_42", "meta": { "role": "upsell" } }
+    ]
+  }
+}
+```
+
+Example 3 (external URN link):
+```json
+{
+  "relations": {
+    "property.CRM_DEAL": ["urn:bitrix:crm.deal:123"]
+  }
+}
+```
+
+This repository includes a canonical end-to-end example at `sitepack-spec/examples/cross-relations/` demonstrating entity→entity relations (`property.BRAND`, `property.CITY`) and entity→asset relations (`assets`) via `artifacts/assets/index.ndjson` and `artifacts/assets/blobs/sha256/9809156062446115f511b5367e69e86c695987b3b90021634a4e059d8f497b45.png`.
+
+## 7. Core media types
 A compatible tool **MUST** understand:
 - `application/vnd.sitepack.entity-graph+ndjson`
 - `application/vnd.sitepack.asset-index+ndjson`
 - `application/vnd.sitepack.config-kv+ndjson`
 - `application/vnd.sitepack.recordset+ndjson`
 
-## 7. Profiles
+## 8. Profiles
 Profiles define the expected artifacts and intent of the package:
 - `config-only`: configuration only (key-value).
 - `content-only`: content entities without assets.
 - `content+assets`: content entities + asset index.
 - `full`: content + assets + config + recordsets.
 - `full+code`: `full` plus code artifacts and software manifest.
-- `snapshot`: full static export/snapshot (descriptive profile, no implementation requirements in v0.1).
+- `snapshot`: full static export/snapshot (descriptive profile, no implementation requirements in v0.2).
 
-## 8. Unknown handling
+## 9. Unknown handling
 - Unknown `mediaType`: the importer **MUST** skip the artifact and **MUST** log the event.
 - Unknown `entity.type`: the importer **MUST NOT** fail; it **MAY** skip or import as opaque.
 
-## 9. Integrity and digest
+## 10. Integrity and digest
 - Digest format: `sha256:<hex>`.
-- In v0.1, `digest` in the catalog **SHOULD** be provided but is not required.
+- In v0.2, `digest` in the catalog **SHOULD** be provided but is not required.
 - `size` for each artifact **MUST** be provided.
 
-## 10. Import security
+## 11. Import security
 Importers **MUST** protect against:
 - path traversal (`..`), absolute paths, and null bytes in paths;
 - excessive file sizes and file counts (limits **MUST** be enforced; specific numbers **MAY** be implementation-defined).
@@ -95,15 +169,15 @@ Additional requirements:
 - Code artifacts **MUST NOT** be installed or executed automatically.
 - Secret configs **MUST NOT** be applied automatically.
 
-## 11. Capabilities (optional extension)
+## 12. Capabilities (optional extension)
 Extension for describing tool export/import capabilities. Media type:
 `application/vnd.sitepack.capabilities+json`.
 
-## 12. Transform Plan (optional extension)
+## 13. Transform Plan (optional extension)
 Extension for describing transformation steps. Media type:
 `application/vnd.sitepack.transform-plan+json`.
 
-## 13. Encrypted Envelope (optional extension)
+## 14. Encrypted Envelope (optional extension)
 For secure transfer, an external envelope is allowed:
 - `*.sitepack.enc` — age-encrypted file containing bytes of the original `.sitepack`.
 - `*.sitepack.enc.json` — public JSON header.
@@ -118,13 +192,13 @@ age -d input.sitepack.enc > output.sitepack
 ```
 After decryption, the package **MUST** be validated as a regular `.sitepack`.
 
-## 14. Version compatibility
+## 15. Version compatibility
 SitePack uses SemVer.
 - A **major** mismatch indicates incompatibility; the importer **MUST** reject such packages.
 - With matching **major**, the importer **MUST** accept packages with **minor** less than or equal to the supported version.
 - The importer **MAY** accept a higher **minor** if it can safely ignore unknown fields/artifacts.
 
-## 15. Appendix: recommended directory structure
+## 16. Appendix: recommended directory structure
 Recommended unpacked structure:
 ```
 sitepack.manifest.json
