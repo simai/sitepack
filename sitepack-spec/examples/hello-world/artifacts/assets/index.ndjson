@@ -1,1 +1,1 @@
-{"id":"asset-1","sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","size":12345,"mime":"image/png","originalName":"hello.png","path":"blobs/sha256/0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"}
+{"id":"asset-1","sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","size":12345,"mime":"image/png","originalName":"hello.png","path":"artifacts/assets/blobs/sha256/0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"}

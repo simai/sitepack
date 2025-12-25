@@ -55,7 +55,7 @@ The root of an unpacked package **MUST** contain:
 - `spec.version` — format version (SemVer).
 - `package.id` — package identifier.
 - `createdAt` — creation timestamp at the top level of the manifest.
-- `profiles` — list of profiles; semantically a profile -> `artifact.id` map referring to `artifacts`.
+- `profiles` — array of profile names (strings) describing intent; see section 9.
 - `artifacts` — array of `artifact.id` present in the package.
 - Additional fields are allowed (extensions, provenance, etc.).
 
@@ -83,6 +83,13 @@ Asset entries in the asset index may represent a single blob (`path`) or a chunk
 - When `chunks` are present, the final asset bytes are the concatenation of chunks in ascending `index` order.
 - Importers **MUST** verify each chunk `sha256` and `size`, and then verify the overall asset `sha256` and `size`.
 - Exporters **SHOULD** keep chunk sizes at or below `maxPartSize` (default 100 MiB).
+
+### 5.2 Blob storage paths
+Asset blobs are located by the `path` recorded in each asset-index entry.
+
+- Importers **MUST** read blobs exactly from the recorded `path` and **MUST NOT** assume a fixed directory layout.
+- Canonical recommendation: `artifacts/assets/blobs/sha256/<sha256>[.<ext>]`.
+- Alternate layouts (e.g., `blobs/sha256/...`) **MAY** appear in legacy packages; tools **MUST** still follow the recorded `path`.
 
 ## 6. Entities (portable layer)
 
@@ -256,6 +263,8 @@ sitepack.catalog.json
 artifacts/
   entities/
   assets/
+    blobs/
+      sha256/
   config/
   recordsets/
   code/

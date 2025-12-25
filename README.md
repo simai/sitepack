@@ -11,24 +11,37 @@ SitePack is an open standard for packaging website data for backup and migration
 Validate examples with the Node tool:
 ```
 cd sitepack-tools-node
-npm install
+npm ci
 npm run validate-examples -- ../sitepack-spec/examples
 ```
 
 Validate one unpacked package:
 ```
-./bin/sitepack-validate <path>
+node bin/sitepack-validate <packageRoot>
 ```
 
 Validate an envelope header:
 ```
-./bin/sitepack-validate envelope <path-to-enc-json>
+node bin/sitepack-validate envelope <path-to-enc-json>
+```
+
+Validate a volume set:
+```
+node bin/sitepack-validate volumes <path-to-volumes-json>
+```
+
+Create a volume set:
+```
+node bin/sitepack-volumes create <packageRoot> <outDir> --max-part-size 104857600
 ```
 
 PHP quickstart:
 ```
 cd sitepack-tools-php
 composer install
+./bin/sitepack-validate --quiet package <packageRoot>
+./bin/sitepack-validate envelope <path-to-enc-json>
+./bin/sitepack-validate volumes <path-to-volumes-json>
 php scripts/validate-examples.php ../sitepack-spec/examples
 ```
 

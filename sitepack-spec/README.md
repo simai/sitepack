@@ -20,4 +20,6 @@ Documentation and materials:
 Examples:
 - `cross-relations`: Demonstrates entity-to-entity and entity-to-asset relations using Link[] (`property.BRAND`, `property.CITY`, `assets`) plus an asset index and blob.
 - `chunked-assets`: Demonstrates chunked asset blobs using `chunks[]` in the asset index.
-- `volume-set-index-only`: Demonstrates a Volume Set descriptor without embedding volume files.
+- `objects-two-objects`: Demonstrates object index + passports + dataset selectors.
+- `volume-set-real`: Real multi-volume example with descriptor and `.sitepack` volume files.
+- `volume-set-index-only`: Descriptor-only Volume Set (no volume files).
