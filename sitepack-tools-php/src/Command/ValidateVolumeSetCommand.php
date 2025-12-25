@@ -37,8 +37,7 @@ class ValidateVolumeSetCommand extends Command
             ->addOption('no-digest', null, InputOption::VALUE_NONE, 'Skip digest verification')
             ->addOption('strict', null, InputOption::VALUE_NONE, 'Treat warnings as errors')
             ->addOption('check-asset-blobs', null, InputOption::VALUE_NONE, 'Check asset blob files and chunked assets')
-            ->addOption('format', null, InputOption::VALUE_REQUIRED, 'Output format: text|json', 'text')
-            ->addOption('quiet', null, InputOption::VALUE_NONE, 'Minimal output');
+            ->addOption('format', null, InputOption::VALUE_REQUIRED, 'Output format: text|json', 'text');
     }
 
     /**
@@ -105,7 +104,7 @@ class ValidateVolumeSetCommand extends Command
         $report = $result['report'];
         $reportPath = $result['reportPath'];
         $format = (string) $input->getOption('format');
-        $quiet = (bool) $input->getOption('quiet');
+        $quiet = $output->isQuiet();
 
         if ($format === 'json') {
             $output->writeln($report->toJson());
@@ -129,6 +128,7 @@ class ValidateVolumeSetCommand extends Command
     }
 
     /**
+    /**
      * @param ValidationReport $report
      * @param string $reportPath
      * @param bool $quiet
@@ -137,6 +137,10 @@ class ValidateVolumeSetCommand extends Command
      */
     private function printTextReport(ValidationReport $report, string $reportPath, bool $quiet, OutputInterface $output): void
     {
+        if ($quiet) {
+            return;
+        }
+
         $data = $report->toArray();
         $summary = $data['summary'];
 
@@ -155,10 +159,6 @@ class ValidateVolumeSetCommand extends Command
             sprintf('NDJSON lines validated: %d', $summary['ndjsonLinesValidated'])
         );
         $output->writeln('Report: ' . $reportPath);
-
-        if ($quiet) {
-            return;
-        }
 
         if (!empty($data['messages'])) {
             $output->writeln('Messages:');

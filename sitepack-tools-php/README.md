@@ -14,12 +14,12 @@ composer install
 ## Usage
 Validate an unpacked package:
 ```
-./bin/sitepack-validate /path/to/unpacked/sitepack
+./bin/sitepack-validate package /path/to/unpacked/sitepack
 ```
 
 Validate with a profile:
 ```
-./bin/sitepack-validate /path --profile content+assets
+./bin/sitepack-validate package /path --profile content+assets
 ```
 
 Validate an encrypted envelope header:
@@ -38,7 +38,7 @@ Options:
 - `--strict` — treat warnings as errors (exit code 1).
 - `--check-asset-blobs` — check existence and integrity of files referenced in asset-index (including chunked assets).
 - `--format=json|text` — console output format.
-- `--quiet` — minimal output (package command only).
+- `--quiet` — minimal output.
 
 ## Report
 The report is written to:

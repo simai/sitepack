@@ -21,6 +21,6 @@ class Application extends SymfonyApplication
         $this->add(new ValidatePackageCommand());
         $this->add(new ValidateEnvelopeCommand());
         $this->add(new ValidateVolumeSetCommand());
-        $this->setDefaultCommand('package', true);
+        $this->setDefaultCommand('package');
     }
 }

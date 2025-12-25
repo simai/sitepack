@@ -33,7 +33,7 @@ $examples = [
 
 foreach ($examples as $name) {
     $target = $examplesRoot . DIRECTORY_SEPARATOR . $name;
-    $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($binPath) . ' ' . escapeshellarg($target) . ' --quiet';
+    $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($binPath) . ' --quiet package ' . escapeshellarg($target);
     passthru($command, $exitCode);
     if ($exitCode !== 0) {
         fwrite(STDERR, "Validation failed: {$name}\n");
