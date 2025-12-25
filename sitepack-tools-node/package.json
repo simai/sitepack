@@ -1,14 +1,17 @@
 {
   "name": "sitepack-tools-node",
-  "version": "0.3.0",
-  "description": "CLI validator for unpacked SitePack v0.3.0 packages",
+  "version": "0.4.0",
+  "description": "CLI validator for unpacked SitePack v0.4.0 packages",
   "license": "MIT",
   "bin": {
-    "sitepack-validate": "bin/sitepack-validate"
+    "sitepack-validate": "bin/sitepack-validate",
+    "sitepack-volumes": "bin/sitepack-volumes"
   },
   "main": "src/cli.js",
   "scripts": {
-    "validate-examples": "node scripts/validate-examples.js"
+    "validate-examples": "node scripts/validate-examples.js",
+    "validate-invalid-examples": "node scripts/validate-invalid-examples.js ../sitepack-spec/examples-invalid",
+    "validate-volume-examples": "node scripts/validate-volume-examples.js ../sitepack-spec/examples"
   },
   "engines": {
     "node": ">=18"
@@ -17,6 +20,7 @@
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
     "commander": "^11.1.0",
-    "unzipper": "^0.10.14"
+    "unzipper": "^0.10.14",
+    "yazl": "^2.5.1"
   }
 }

@@ -17,7 +17,7 @@ Any site data model (content, assets, config, tables). The exporter decides whic
 - `digest` — `sha256:<hex>`.
 - `relations` MUST be emitted as an object mapping relation keys to `Link[]`.
 - A Link MUST be either a string or an object with `ref` and optional `meta`.
-- If producing a split distribution, generate `sitepack.volumes.json` with `spec.version = 0.3.0`, `kind = volume-set`, and a `volumes[]` list.
+- If producing a split distribution, generate `sitepack.volumes.json` with `spec.version = 0.4.0`, `kind = volume-set`, and a `volumes[]` list.
 - `maxPartSize` SHOULD be 104857600 bytes (100 MiB) unless the user specifies otherwise.
 
 ## NDJSON

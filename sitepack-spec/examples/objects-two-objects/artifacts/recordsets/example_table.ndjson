@@ -1,0 +1,4 @@
+{"recordset":"example_table","key":"1","data":{"group":"news","title":"News Item 1"}}
+{"recordset":"example_table","key":"2","data":{"group":"news","title":"News Item 2"}}
+{"recordset":"example_table","key":"3","data":{"group":"catalog","title":"Catalog Item A"}}
+{"recordset":"example_table","key":"4","data":{"group":"catalog","title":"Catalog Item B"}}

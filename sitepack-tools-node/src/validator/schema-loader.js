@@ -13,7 +13,10 @@ const schemaFiles = {
   capabilities: 'capabilities.schema.json',
   transformPlan: 'transform-plan.schema.json',
   envelope: 'envelope.schema.json',
-  volumeSet: 'volume-set.schema.json'
+  volumeSet: 'volume-set.schema.json',
+  datasetSelector: 'dataset-selector.schema.json',
+  objectIndex: 'object-index.schema.json',
+  objectPassport: 'object-passport.schema.json'
 };
 
 function loadSchemas(schemasDir) {

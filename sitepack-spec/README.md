@@ -1,4 +1,4 @@
-# SitePack v0.3.0
+# SitePack v0.4.0
 
 SitePack is an open format for packaging website data for export/import between systems. A package contains two required files (manifest and catalog) and a set of artifacts (entities, assets, config, recordsets, etc.).
 

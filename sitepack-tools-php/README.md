@@ -1,6 +1,6 @@
 # sitepack-tools-php
 
-CLI validator for unpacked SitePack v0.3.0 packages on PHP 8.1+. It validates manifest, catalog, artifacts, and NDJSON against draft 2020-12 JSON Schema and writes `reports/validate.json`.
+CLI validator for unpacked SitePack v0.4.0 packages on PHP 8.1+. It validates manifest, catalog, artifacts, and NDJSON against draft 2020-12 JSON Schema and writes `reports/validate.json`.
 
 ## Requirements
 - PHP 8.1+

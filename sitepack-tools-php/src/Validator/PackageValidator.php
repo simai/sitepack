@@ -125,6 +125,8 @@ class PackageValidator
         $jsonMap = [
             'application/vnd.sitepack.capabilities+json' => 'capabilities',
             'application/vnd.sitepack.transform-plan+json' => 'transform-plan',
+            'application/vnd.sitepack.object-index+json' => 'object-index',
+            'application/vnd.sitepack.object-passport+json' => 'object-passport',
         ];
 
         foreach ($catalogArtifacts as $artifact) {
@@ -244,6 +246,8 @@ class PackageValidator
             $report->addArtifact($artifactEntry);
         }
 
+        $this->validateObjectsLayer($packageRoot, $catalogArtifacts, $report);
+
         $report->markFinished();
         $reportPath = $this->reportWriter->write($report, $packageRoot);
 
@@ -281,6 +285,281 @@ class PackageValidator
         }
 
         return $jsonResult['data'];
+    }
+
+    /**
+     * @param string $packageRoot
+     * @param array<int, object> $catalogArtifacts
+     * @param ValidationReport $report
+     * @return void
+     */
+    private function validateObjectsLayer(string $packageRoot, array $catalogArtifacts, ValidationReport $report): void
+    {
+        $objectIndexArtifacts = [];
+        foreach ($catalogArtifacts as $artifact) {
+            $mediaType = is_string($artifact->mediaType ?? null) ? $artifact->mediaType : '';
+            if ($mediaType === 'application/vnd.sitepack.object-index+json') {
+                $objectIndexArtifacts[] = $artifact;
+            }
+        }
+
+        if (count($objectIndexArtifacts) === 0) {
+            return;
+        }
+
+        $artifactIds = [];
+        $artifactByPath = [];
+        foreach ($catalogArtifacts as $artifact) {
+            if (is_string($artifact->id ?? null) && $artifact->id !== '') {
+                $artifactIds[$artifact->id] = true;
+            }
+            if (is_string($artifact->path ?? null) && $artifact->path !== '') {
+                $artifactByPath[$artifact->path] = $artifact;
+            }
+        }
+
+        foreach ($objectIndexArtifacts as $artifact) {
+            $indexPath = is_string($artifact->path ?? null) ? $artifact->path : '';
+            if (trim($indexPath) === '') {
+                $report->addMessage('error', 'OBJECT_INDEX_PATH_MISSING', 'Object index path is missing');
+                continue;
+            }
+
+            $safeIndex = $this->safePath->resolve($packageRoot, $indexPath);
+            if (!$safeIndex['ok'] || $safeIndex['path'] === null) {
+                $report->addMessage(
+                    'error',
+                    $safeIndex['code'] ?? 'INVALID_PATH',
+                    $safeIndex['message'] ?? 'Invalid path',
+                    ['path' => $indexPath]
+                );
+                continue;
+            }
+
+            if (!is_file($safeIndex['path'])) {
+                $report->addMessage(
+                    'error',
+                    'OBJECT_INDEX_MISSING',
+                    'Object index file not found',
+                    ['path' => $indexPath]
+                );
+                continue;
+            }
+
+            $indexResult = $this->fileUtil->readJsonFile($safeIndex['path']);
+            if (!$indexResult['ok'] || $indexResult['data'] === null) {
+                $report->addMessage(
+                    'error',
+                    'OBJECT_INDEX_PARSE_ERROR',
+                    'Failed to read object index: ' . (string) ($indexResult['error'] ?? ''),
+                    ['path' => $indexPath]
+                );
+                continue;
+            }
+
+            $indexValidation = $this->schemaValidator->validate('object-index', $indexResult['data']);
+            if (!$indexValidation['valid']) {
+                foreach ($indexValidation['errors'] as $message) {
+                    $report->addMessage(
+                        'error',
+                        'OBJECT_INDEX_SCHEMA_ERROR',
+                        $message,
+                        ['path' => $indexPath]
+                    );
+                }
+            }
+
+            $objects = [];
+            if (isset($indexResult['data']->objects) && is_array($indexResult['data']->objects)) {
+                $objects = $indexResult['data']->objects;
+            }
+
+            foreach ($objects as $entry) {
+                if (!is_object($entry)) {
+                    $report->addMessage(
+                        'error',
+                        'OBJECT_INDEX_ENTRY_INVALID',
+                        'Object index entry must be an object',
+                        ['path' => $indexPath]
+                    );
+                    continue;
+                }
+
+                $objectId = is_string($entry->id ?? null) ? $entry->id : '';
+                $passportPath = is_string($entry->passportPath ?? null) ? $entry->passportPath : '';
+
+                if (trim($objectId) === '') {
+                    $report->addMessage(
+                        'error',
+                        'OBJECT_INDEX_ENTRY_INVALID',
+                        'Object id is missing or invalid',
+                        ['path' => $indexPath]
+                    );
+                    continue;
+                }
+
+                if (trim($passportPath) === '') {
+                    $report->addMessage(
+                        'error',
+                        'OBJECT_PASSPORT_PATH_MISSING',
+                        "passportPath is missing for object '{$objectId}'",
+                        ['objectId' => $objectId]
+                    );
+                    continue;
+                }
+
+                if (!isset($artifactByPath[$passportPath])) {
+                    $report->addMessage(
+                        'error',
+                        'OBJECT_PASSPORT_NOT_IN_CATALOG',
+                        'passportPath is not listed in catalog: ' . $passportPath,
+                        ['objectId' => $objectId, 'passportPath' => $passportPath]
+                    );
+                }
+
+                $safePassport = $this->safePath->resolve($packageRoot, $passportPath);
+                if (!$safePassport['ok'] || $safePassport['path'] === null) {
+                    $report->addMessage(
+                        'error',
+                        $safePassport['code'] ?? 'INVALID_PATH',
+                        $safePassport['message'] ?? 'Invalid path',
+                        ['objectId' => $objectId, 'passportPath' => $passportPath]
+                    );
+                    continue;
+                }
+
+                if (!is_file($safePassport['path'])) {
+                    $report->addMessage(
+                        'error',
+                        'OBJECT_PASSPORT_MISSING',
+                        'Object passport file not found',
+                        ['objectId' => $objectId, 'passportPath' => $passportPath]
+                    );
+                    continue;
+                }
+
+                $passportResult = $this->fileUtil->readJsonFile($safePassport['path']);
+                if (!$passportResult['ok'] || $passportResult['data'] === null) {
+                    $report->addMessage(
+                        'error',
+                        'OBJECT_PASSPORT_PARSE_ERROR',
+                        'Failed to read object passport: ' . (string) ($passportResult['error'] ?? ''),
+                        ['objectId' => $objectId, 'passportPath' => $passportPath]
+                    );
+                    continue;
+                }
+
+                $passportValidation = $this->schemaValidator->validate('object-passport', $passportResult['data']);
+                if (!$passportValidation['valid']) {
+                    foreach ($passportValidation['errors'] as $message) {
+                        $report->addMessage(
+                            'error',
+                            'OBJECT_PASSPORT_SCHEMA_ERROR',
+                            $message,
+                            ['objectId' => $objectId, 'passportPath' => $passportPath]
+                        );
+                    }
+                }
+
+                $passportId = is_string($passportResult['data']->id ?? null) ? $passportResult['data']->id : '';
+                $objectRefId = '';
+                if (is_object($passportResult['data']->objectRef ?? null)) {
+                    $objectRefId = is_string($passportResult['data']->objectRef->id ?? null)
+                        ? $passportResult['data']->objectRef->id
+                        : '';
+                }
+
+                if ($passportId !== '' && $passportId !== $objectId) {
+                    $report->addMessage(
+                        'error',
+                        'OBJECT_PASSPORT_ID_MISMATCH',
+                        'Passport id does not match object index id: ' . $passportId . ' != ' . $objectId,
+                        ['objectId' => $objectId, 'passportId' => $passportId]
+                    );
+                }
+
+                if ($passportId !== '' && $objectRefId !== '' && $passportId !== $objectRefId) {
+                    $report->addMessage(
+                        'error',
+                        'OBJECT_PASSPORT_ID_MISMATCH',
+                        'Passport id does not match objectRef.id: ' . $passportId . ' != ' . $objectRefId,
+                        ['objectId' => $objectId, 'passportId' => $passportId, 'objectRefId' => $objectRefId]
+                    );
+                }
+
+                if ($objectRefId !== '' && $objectRefId !== $objectId) {
+                    $report->addMessage(
+                        'error',
+                        'OBJECT_PASSPORT_REF_MISMATCH',
+                        'objectRef.id does not match object index id: ' . $objectRefId . ' != ' . $objectId,
+                        ['objectId' => $objectId, 'objectRefId' => $objectRefId]
+                    );
+                }
+
+                $passportArtifacts = [];
+                if (isset($passportResult['data']->artifacts) && is_array($passportResult['data']->artifacts)) {
+                    $passportArtifacts = $passportResult['data']->artifacts;
+                }
+
+                foreach ($passportArtifacts as $artifactId) {
+                    if (!is_string($artifactId) || trim($artifactId) === '') {
+                        $report->addMessage(
+                            'error',
+                            'OBJECT_PASSPORT_ARTIFACT_INVALID',
+                            'Passport artifacts entry must be a string',
+                            ['objectId' => $objectId]
+                        );
+                        continue;
+                    }
+
+                    if (!isset($artifactIds[$artifactId])) {
+                        $report->addMessage(
+                            'error',
+                            'OBJECT_PASSPORT_ARTIFACT_MISSING',
+                            'Passport artifact is missing from catalog: ' . $artifactId,
+                            ['objectId' => $objectId, 'artifactId' => $artifactId]
+                        );
+                    }
+                }
+
+                $datasets = [];
+                if (isset($passportResult['data']->datasets) && is_array($passportResult['data']->datasets)) {
+                    $datasets = $passportResult['data']->datasets;
+                }
+
+                foreach ($datasets as $selector) {
+                    if (!is_object($selector)) {
+                        $report->addMessage(
+                            'error',
+                            'OBJECT_PASSPORT_DATASET_INVALID',
+                            'Dataset selector must be an object',
+                            ['objectId' => $objectId]
+                        );
+                        continue;
+                    }
+
+                    $artifactId = is_string($selector->artifactId ?? null) ? $selector->artifactId : '';
+                    if (trim($artifactId) === '') {
+                        $report->addMessage(
+                            'error',
+                            'OBJECT_PASSPORT_DATASET_INVALID',
+                            'datasetSelector.artifactId is missing',
+                            ['objectId' => $objectId]
+                        );
+                        continue;
+                    }
+
+                    if (!isset($artifactIds[$artifactId])) {
+                        $report->addMessage(
+                            'error',
+                            'OBJECT_PASSPORT_DATASET_ARTIFACT_MISSING',
+                            'Dataset artifact is missing from catalog: ' . $artifactId,
+                            ['objectId' => $objectId, 'artifactId' => $artifactId]
+                        );
+                    }
+                }
+            }
+        }
     }
 
     /**

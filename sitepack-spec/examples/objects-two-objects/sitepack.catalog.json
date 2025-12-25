@@ -1,0 +1,31 @@
+{
+  "artifacts": [
+    {
+      "id": "recordset.example_table",
+      "mediaType": "application/vnd.sitepack.recordset+ndjson",
+      "path": "artifacts/recordsets/example_table.ndjson",
+      "size": 356
+    },
+    {
+      "id": "objects.index",
+      "mediaType": "application/vnd.sitepack.object-index+json",
+      "path": "objects/index.json",
+      "size": 439,
+      "digest": "sha256:0fdd38d8563095e89468b4a247ec01aa7026cf013378a48d3cc065e46ebb1441"
+    },
+    {
+      "id": "objects.passport.example.news",
+      "mediaType": "application/vnd.sitepack.object-passport+json",
+      "path": "objects/example.news/passport.json",
+      "size": 458,
+      "digest": "sha256:73d8970ad8e7ab9d77d666651933eb53d21f2e4162c75749d3d655a5939c5700"
+    },
+    {
+      "id": "objects.passport.example.catalog",
+      "mediaType": "application/vnd.sitepack.object-passport+json",
+      "path": "objects/example.catalog/passport.json",
+      "size": 470,
+      "digest": "sha256:2fe34842fb84ded4df07c2576879c38f543d2ca79ac08ef74bab07a3def131d6"
+    }
+  ]
+}

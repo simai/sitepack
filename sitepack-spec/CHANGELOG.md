@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 - 2025-12-23
+- Added Objects layer (objects/index.json + passports + dataset selectors).
+- Added objects example package `examples/objects-two-objects`.
+
 ## 0.3.0 - 2025-12-23
 - Added Volume Sets (multi-file distribution via `sitepack.volumes.json`, recommended 100 MiB parts).
 - Added Chunked Assets (large blobs split into chunks, validated by sha256).

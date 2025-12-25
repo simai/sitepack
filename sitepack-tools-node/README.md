@@ -1,6 +1,6 @@
 # sitepack-tools-node
 
-CLI validator for unpacked SitePack v0.3.0 packages. It validates manifest, catalog, artifacts, and content against schemas, and writes `reports/validate.json`.
+CLI validator for unpacked SitePack v0.4.0 packages. It validates manifest, catalog, artifacts, and content against schemas, and writes `reports/validate.json`.
 
 ## Requirements
 - Node.js >= 18
@@ -36,6 +36,17 @@ Validate a volume set:
 sitepack-validate volumes /path/to/sitepack.volumes.json
 ```
 
+Create a volume set from an unpacked package:
+```
+sitepack-volumes create /path/to/unpacked/sitepack /path/to/output --max-part-size 104857600
+```
+Recommended `--max-part-size` is 104857600 (100 MiB) unless you need smaller parts.
+
+Extract volumes into a directory (ZIP overlay):
+```
+sitepack-volumes extract /path/to/sitepack.volumes.json /path/to/output
+```
+
 Options:
 - `--schemas <dir>` — path to JSON schemas (default `./schemas`).
 - `--no-digest` — skip digest verification.
@@ -55,13 +66,14 @@ Options:
    - entity-graph, asset-index, config-kv, recordset.
    - asset-index supports both single-blob and chunked assets.
 4. JSON artifacts (capabilities/transform-plan) are validated as full JSON documents.
-5. Unknown `mediaType` does not fail validation: file/size/digest are checked, content is skipped with a warning.
-6. Volume Set descriptors can be validated and assembled with the `volumes` command.
+5. Object index/passport artifacts are validated and cross-checked when an object index is present.
+6. Unknown `mediaType` does not fail validation: file/size/digest are checked, content is skipped with a warning.
+7. Volume Set descriptors can be validated and assembled with the `volumes` command.
 
 Note on NDJSON empty lines: an empty line is skipped with a warning.
 
 ## Profile mode
-The `--profile` option verifies that the profile exists in `manifest.profiles` and validates the artifacts for that profile. In v0.3, profiles are an array, so the validator falls back to `manifest.artifacts` if a profile-to-artifact map is not available.
+The `--profile` option verifies that the profile exists in `manifest.profiles` and validates the artifacts for that profile. In v0.4, profiles are an array, so the validator falls back to `manifest.artifacts` if a profile-to-artifact map is not available.
 
 ## Report
 After validation, the tool writes:
@@ -72,7 +84,7 @@ After validation, the tool writes:
 Report structure:
 ```json
 {
-  "tool": { "name": "sitepack-validate", "version": "0.3.0" },
+  "tool": { "name": "sitepack-validate", "version": "0.4.0" },
   "startedAt": "...",
   "finishedAt": "...",
   "target": { "type": "package|envelope|volume-set", "path": "..." },

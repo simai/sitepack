@@ -1,0 +1,26 @@
+{
+  "spec": {
+    "name": "sitepack",
+    "version": "0.4.0"
+  },
+  "kind": "object-passport",
+  "id": "example.catalog",
+  "type": "content.collection",
+  "title": "Catalog",
+  "objectRef": {
+    "id": "example.catalog",
+    "type": "content.collection"
+  },
+  "datasets": [
+    {
+      "artifactId": "recordset.example_table",
+      "where": [
+        {
+          "field": "/data/group",
+          "op": "=",
+          "value": "catalog"
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-# SitePack v0.3.0 — Specification
+# SitePack v0.4.0 — Specification
 
 ## Keywords
 The keywords **MUST**, **SHOULD**, and **MAY** are to be interpreted as described in RFC 2119.
@@ -17,6 +17,9 @@ SitePack is an open format for packaging website data for transfer between syste
 - **Entity**: a content object (page, post, item, etc.).
 - **Recordset**: tabular data (NDJSON records).
 - **Asset**: a binary resource (image, file, media).
+- **Object Index**: a human-friendly object list linking to passports.
+- **Object Passport**: object metadata linking to datasets and artifacts.
+- **Dataset Selector**: a selector referencing a dataset artifact and optional filter.
 - **Profile**: a package profile defining expected artifacts.
 - **Provenance**: origin metadata (source, version, authors), optional in metadata.
 - **Capabilities**: tool capabilities (export/import).
@@ -37,6 +40,7 @@ Volume Sets describe a split package distributed across multiple volumes.
 - `maxPartSize` **SHOULD** be set to `104857600` bytes (100 MiB) unless a tool requires another value.
 - The bootstrap volume **SHOULD** be `volumeIndex = 1` and **MUST** contain `sitepack.manifest.json` and `sitepack.catalog.json`.
 - Each volume file is an ordinary `.sitepack` ZIP. To assemble a package, an importer **MUST** unpack volumes in ascending index order into a single temporary directory.
+- The assembled directory is the package root; later volumes MAY overwrite earlier files on path collisions.
 - Before unpacking, importers **MUST** verify each volume file `sha256` and `size` against the Volume Set descriptor.
 - Volumes **MAY** be encrypted individually using SitePack envelope + age.
 - If `encryption.scheme = "age"`, the volume file is an encrypted payload; `envelopeFile` **MUST** point to the corresponding SitePack envelope header (`*.sitepack.enc.json`).
@@ -70,7 +74,7 @@ An artifact is a file inside the package described in the catalog. The catalog c
 - `mediaType` (**MUST**): artifact media type.
 - `path` (**MUST**): relative path inside the package.
 - `size` (**MUST**): file size in bytes.
-- `digest` (**SHOULD** in v0.3): file checksum.
+- `digest` (**SHOULD** in v0.4): file checksum.
 - `annotations` (**MAY**): extension object.
 
 ### 5.1 Assets: chunked blobs
@@ -154,32 +158,59 @@ Example 3 (external URN link):
 
 This repository includes a canonical end-to-end example at `sitepack-spec/examples/cross-relations/` demonstrating entity→entity relations (`property.BRAND`, `property.CITY`) and entity→asset relations (`assets`) via `artifacts/assets/index.ndjson` and `artifacts/assets/blobs/sha256/9809156062446115f511b5367e69e86c695987b3b90021634a4e059d8f497b45.png`.
 
-## 7. Core media types
+## 7. Objects layer
+The Objects layer is an optional, human-friendly index over package artifacts.
+
+### 7.1 Object index
+- File path: `objects/index.json`.
+- Media type: `application/vnd.sitepack.object-index+json`.
+- `kind` **MUST** be `object-index`.
+- Each object entry **MUST** include `id`, `type`, and `passportPath` (title is optional).
+- `passportPath` **MUST** be a package-relative path to the object's passport JSON.
+- `passportPath` **MUST** match a catalog `artifact.path`.
+
+### 7.2 Object passports
+- Media type: `application/vnd.sitepack.object-passport+json`.
+- `kind` **MUST** be `object-passport`.
+- `id` **MUST** match `objectRef.id` and the corresponding object index entry `id`.
+- If `artifacts[]` is present, each entry **MUST** be a catalog `artifact.id`.
+- If `datasets[]` is present, each `datasetSelector.artifactId` **MUST** be a catalog `artifact.id`.
+
+### 7.3 Dataset selectors
+Dataset selectors reference shared datasets and optional filters:
+- `artifactId` (**MUST**): catalog `artifact.id`.
+- `where` (**MAY**): array of conditions combined with logical AND.
+- Each condition:
+  - `field` (**MUST**): JSON Pointer string starting with `/`.
+  - `op` (**MUST**): `=` or `in`.
+  - `value` (**MUST**): a primitive for `=`; an array of primitives for `in`.
+
+## 8. Core media types
 A compatible tool **MUST** understand:
 - `application/vnd.sitepack.entity-graph+ndjson`
 - `application/vnd.sitepack.asset-index+ndjson`
 - `application/vnd.sitepack.config-kv+ndjson`
 - `application/vnd.sitepack.recordset+ndjson`
 
-## 8. Profiles
+## 9. Profiles
 Profiles define the expected artifacts and intent of the package:
 - `config-only`: configuration only (key-value).
 - `content-only`: content entities without assets.
 - `content+assets`: content entities + asset index.
 - `full`: content + assets + config + recordsets.
 - `full+code`: `full` plus code artifacts and software manifest.
-- `snapshot`: full static export/snapshot (descriptive profile, no implementation requirements in v0.3).
+- `snapshot`: full static export/snapshot (descriptive profile, no implementation requirements in v0.4).
 
-## 9. Unknown handling
+## 10. Unknown handling
 - Unknown `mediaType`: the importer **MUST** skip the artifact and **MUST** log the event.
 - Unknown `entity.type`: the importer **MUST NOT** fail; it **MAY** skip or import as opaque.
 
-## 10. Integrity and digest
+## 11. Integrity and digest
 - Digest format: `sha256:<hex>`.
-- In v0.3, `digest` in the catalog **SHOULD** be provided but is not required.
+- In v0.4, `digest` in the catalog **SHOULD** be provided but is not required.
 - `size` for each artifact **MUST** be provided.
 
-## 11. Import security
+## 12. Import security
 Importers **MUST** protect against:
 - path traversal (`..`), absolute paths, and null bytes in paths;
 - excessive file sizes and file counts (limits **MUST** be enforced; specific numbers **MAY** be implementation-defined).
@@ -188,15 +219,15 @@ Additional requirements:
 - Code artifacts **MUST NOT** be installed or executed automatically.
 - Secret configs **MUST NOT** be applied automatically.
 
-## 12. Capabilities (optional extension)
+## 13. Capabilities (optional extension)
 Extension for describing tool export/import capabilities. Media type:
 `application/vnd.sitepack.capabilities+json`.
 
-## 13. Transform Plan (optional extension)
+## 14. Transform Plan (optional extension)
 Extension for describing transformation steps. Media type:
 `application/vnd.sitepack.transform-plan+json`.
 
-## 14. Encrypted Envelope (optional extension)
+## 15. Encrypted Envelope (optional extension)
 For secure transfer, an external envelope is allowed:
 - `*.sitepack.enc` — age-encrypted file containing bytes of the original `.sitepack`.
 - `*.sitepack.enc.json` — public JSON header.
@@ -211,13 +242,13 @@ age -d input.sitepack.enc > output.sitepack
 ```
 After decryption, the package **MUST** be validated as a regular `.sitepack`.
 
-## 15. Version compatibility
+## 16. Version compatibility
 SitePack uses SemVer.
 - A **major** mismatch indicates incompatibility; the importer **MUST** reject such packages.
 - With matching **major**, the importer **MUST** accept packages with **minor** less than or equal to the supported version.
 - The importer **MAY** accept a higher **minor** if it can safely ignore unknown fields/artifacts.
 
-## 16. Appendix: recommended directory structure
+## 17. Appendix: recommended directory structure
 Recommended unpacked structure:
 ```
 sitepack.manifest.json

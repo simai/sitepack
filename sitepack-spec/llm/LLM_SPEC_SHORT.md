@@ -1,4 +1,4 @@
-# SitePack v0.3.0 — Short Specification
+# SitePack v0.4.0 — Short Specification
 
 ## 1. Purpose
 SitePack is a packaging format for website data export/import. A package includes required metadata and a set of artifacts.
@@ -23,7 +23,7 @@ The root of an unpacked package MUST include:
 
 ## 4. Manifest (short)
 `sitepack.manifest.json` includes:
-- `spec`: `{ name: "sitepack", version: "0.3.0" }`
+- `spec`: `{ name: "sitepack", version: "0.4.0" }`
 - `package.id`
 - `createdAt` (date-time)
 - `profiles` (array of strings)
@@ -69,7 +69,7 @@ The root of an unpacked package MUST include:
 
 ## 10. Digest and size
 - `digest` format: `sha256:<hex>`.
-- In v0.3 `digest` SHOULD, but `size` MUST.
+- In v0.4 `digest` SHOULD, but `size` MUST.
 
 ## 11. Import security
 - Block path traversal, absolute paths, null bytes.

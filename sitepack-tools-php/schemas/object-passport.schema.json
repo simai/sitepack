@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sitepack.org/schemas/object-passport.schema.json",
+  "title": "SitePack Object Passport",
+  "type": "object",
+  "required": ["spec", "kind", "id", "type", "objectRef"],
+  "properties": {
+    "spec": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "sitepack" },
+        "version": { "const": "0.4.0" }
+      },
+      "additionalProperties": false
+    },
+    "kind": { "const": "object-passport" },
+    "id": { "type": "string", "minLength": 1 },
+    "type": { "type": "string", "minLength": 1 },
+    "title": { "type": "string" },
+    "objectRef": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "datasets": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "https://sitepack.org/schemas/dataset-selector.schema.json" }
+    },
+    "annotations": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": false
+}

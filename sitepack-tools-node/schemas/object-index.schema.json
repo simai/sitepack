@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sitepack.org/schemas/object-index.schema.json",
+  "title": "SitePack Object Index",
+  "type": "object",
+  "required": ["spec", "kind", "objects"],
+  "properties": {
+    "spec": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "sitepack" },
+        "version": { "const": "0.4.0" }
+      },
+      "additionalProperties": false
+    },
+    "kind": { "const": "object-index" },
+    "objects": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "passportPath"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "type": { "type": "string", "minLength": 1 },
+          "title": { "type": "string" },
+          "passportPath": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

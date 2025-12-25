@@ -10,7 +10,7 @@
       "required": ["name", "version"],
       "properties": {
         "name": { "const": "sitepack" },
-        "version": { "const": "0.3.0" }
+        "version": { "const": "0.4.0" }
       },
       "additionalProperties": false
     },

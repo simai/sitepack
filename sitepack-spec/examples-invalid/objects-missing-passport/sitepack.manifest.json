@@ -1,0 +1,16 @@
+{
+  "spec": {
+    "name": "sitepack",
+    "version": "0.4.0"
+  },
+  "package": {
+    "id": "objects-missing-passport"
+  },
+  "createdAt": "2025-01-01T00:00:00Z",
+  "profiles": [
+    "objects-only"
+  ],
+  "artifacts": [
+    "objects.index"
+  ]
+}

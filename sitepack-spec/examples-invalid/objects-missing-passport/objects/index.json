@@ -1,0 +1,15 @@
+{
+  "spec": {
+    "name": "sitepack",
+    "version": "0.4.0"
+  },
+  "kind": "object-index",
+  "objects": [
+    {
+      "id": "obj.example",
+      "type": "content.collection",
+      "title": "Example Object",
+      "passportPath": "objects/obj.example/passport.json"
+    }
+  ]
+}

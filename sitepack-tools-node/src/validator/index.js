@@ -229,6 +229,23 @@ async function validateAssetIndexRecord(record, lineNumber, options) {
 
     if (chunkEntries.length > 0 && canAssemble) {
       chunkEntries.sort((a, b) => a.index - b.index);
+
+      let expectedIndex = 1;
+      for (const entry of chunkEntries) {
+        if (entry.index !== expectedIndex) {
+          details.push({
+            level: 'error',
+            code: 'ASSET_CHUNK_INDEX_GAP',
+            message: `Chunk index gap: expected ${expectedIndex}, got ${entry.index}`
+          });
+          canAssemble = false;
+          break;
+        }
+        expectedIndex += 1;
+      }
+    }
+
+    if (chunkEntries.length > 0 && canAssemble) {
       const totalSize = chunkEntries.reduce((sum, entry) => sum + entry.size, 0);
 
       if (expectedSize !== null && totalSize !== expectedSize) {
@@ -325,6 +342,226 @@ async function validateAssetIndexRecord(record, lineNumber, options) {
   }
 
   return details;
+}
+
+async function validateObjectsLayer(options) {
+  const {
+    packageRoot,
+    catalogArtifacts,
+    validators,
+    report,
+    validatedIds
+  } = options;
+
+  const objectIndexArtifacts = catalogArtifacts.filter(
+    (artifact) => artifact.mediaType === 'application/vnd.sitepack.object-index+json'
+  );
+
+  if (objectIndexArtifacts.length === 0) {
+    return;
+  }
+
+  const artifactIds = new Set();
+  const artifactByPath = new Map();
+  for (const artifact of catalogArtifacts) {
+    if (typeof artifact.id === 'string') {
+      artifactIds.add(artifact.id);
+    }
+    if (typeof artifact.path === 'string') {
+      artifactByPath.set(artifact.path, artifact);
+    }
+  }
+
+  for (const artifact of objectIndexArtifacts) {
+    if (typeof artifact.path !== 'string' || artifact.path.trim() === '') {
+      addMessage(report, 'error', 'OBJECT_INDEX_PATH_MISSING', 'Object index path is missing');
+      continue;
+    }
+
+    const safeIndexPath = resolveSafePath(packageRoot, artifact.path);
+    if (!safeIndexPath.ok) {
+      addMessage(report, 'error', safeIndexPath.code, safeIndexPath.message, {
+        path: artifact.path
+      });
+      continue;
+    }
+
+    if (!fsSync.existsSync(safeIndexPath.resolved)) {
+      addMessage(report, 'error', 'OBJECT_INDEX_MISSING', 'Object index file not found', {
+        path: artifact.path
+      });
+      continue;
+    }
+
+    const indexResult = await readJsonFile(safeIndexPath.resolved);
+    if (!indexResult.ok) {
+      addMessage(report, 'error', 'OBJECT_INDEX_PARSE_ERROR', `Failed to read object index: ${indexResult.error.message}`, {
+        path: artifact.path
+      });
+      continue;
+    }
+
+    if (!validatedIds.has(artifact.id)) {
+      const validation = validateWithSchema(validators.objectIndex, indexResult.data);
+      if (!validation.valid) {
+        for (const err of validation.errors) {
+          addMessage(report, 'error', 'OBJECT_INDEX_SCHEMA_ERROR', err.message, {
+            path: artifact.path,
+            schemaPath: err.schemaPath
+          });
+        }
+      }
+    }
+
+    const objects = Array.isArray(indexResult.data?.objects) ? indexResult.data.objects : [];
+    for (const obj of objects) {
+      if (!obj || typeof obj !== 'object') {
+        addMessage(report, 'error', 'OBJECT_INDEX_ENTRY_INVALID', 'Object index entry must be an object');
+        continue;
+      }
+
+      const objectId = typeof obj.id === 'string' ? obj.id : '';
+      const passportPath = typeof obj.passportPath === 'string' ? obj.passportPath : '';
+
+      if (objectId.trim() === '') {
+        addMessage(report, 'error', 'OBJECT_INDEX_ENTRY_INVALID', 'Object id is missing or invalid');
+        continue;
+      }
+
+      if (passportPath.trim() === '') {
+        addMessage(report, 'error', 'OBJECT_PASSPORT_PATH_MISSING', `passportPath is missing for object '${objectId}'`);
+        continue;
+      }
+
+      const passportArtifact = artifactByPath.get(passportPath);
+      if (!passportArtifact) {
+        addMessage(
+          report,
+          'error',
+          'OBJECT_PASSPORT_NOT_IN_CATALOG',
+          `passportPath is not listed in catalog: ${passportPath}`,
+          { objectId, passportPath }
+        );
+      }
+
+      const safePassportPath = resolveSafePath(packageRoot, passportPath);
+      if (!safePassportPath.ok) {
+        addMessage(report, 'error', safePassportPath.code, safePassportPath.message, {
+          objectId,
+          passportPath
+        });
+        continue;
+      }
+
+      if (!fsSync.existsSync(safePassportPath.resolved)) {
+        addMessage(report, 'error', 'OBJECT_PASSPORT_MISSING', 'Object passport file not found', {
+          objectId,
+          passportPath
+        });
+        continue;
+      }
+
+      const passportResult = await readJsonFile(safePassportPath.resolved);
+      if (!passportResult.ok) {
+        addMessage(
+          report,
+          'error',
+          'OBJECT_PASSPORT_PARSE_ERROR',
+          `Failed to read object passport: ${passportResult.error.message}`,
+          { objectId, passportPath }
+        );
+        continue;
+      }
+
+      if (!validatedIds.has(passportArtifact?.id)) {
+        const validation = validateWithSchema(validators.objectPassport, passportResult.data);
+        if (!validation.valid) {
+          for (const err of validation.errors) {
+            addMessage(report, 'error', 'OBJECT_PASSPORT_SCHEMA_ERROR', err.message, {
+              objectId,
+              passportPath,
+              schemaPath: err.schemaPath
+            });
+          }
+        }
+      }
+
+      const passportId = typeof passportResult.data?.id === 'string' ? passportResult.data.id : null;
+      const objectRefId = typeof passportResult.data?.objectRef?.id === 'string' ? passportResult.data.objectRef.id : null;
+
+      if (passportId && passportId !== objectId) {
+        addMessage(report, 'error', 'OBJECT_PASSPORT_ID_MISMATCH', `Passport id does not match object index id: ${passportId} != ${objectId}`, {
+          objectId,
+          passportId
+        });
+      }
+
+      if (passportId && objectRefId && passportId !== objectRefId) {
+        addMessage(
+          report,
+          'error',
+          'OBJECT_PASSPORT_ID_MISMATCH',
+          `Passport id does not match objectRef.id: ${passportId} != ${objectRefId}`,
+          { objectId, passportId, objectRefId }
+        );
+      }
+
+      if (objectRefId && objectRefId !== objectId) {
+        addMessage(
+          report,
+          'error',
+          'OBJECT_PASSPORT_REF_MISMATCH',
+          `objectRef.id does not match object index id: ${objectRefId} != ${objectId}`,
+          { objectId, objectRefId }
+        );
+      }
+
+      const passportArtifacts = Array.isArray(passportResult.data?.artifacts) ? passportResult.data.artifacts : [];
+      for (const artifactId of passportArtifacts) {
+        if (typeof artifactId !== 'string' || artifactId.trim() === '') {
+          addMessage(report, 'error', 'OBJECT_PASSPORT_ARTIFACT_INVALID', 'Passport artifacts entry must be a string', {
+            objectId
+          });
+          continue;
+        }
+        if (!artifactIds.has(artifactId)) {
+          addMessage(
+            report,
+            'error',
+            'OBJECT_PASSPORT_ARTIFACT_MISSING',
+            `Passport artifact is missing from catalog: ${artifactId}`,
+            { objectId, artifactId }
+          );
+        }
+      }
+
+      const datasets = Array.isArray(passportResult.data?.datasets) ? passportResult.data.datasets : [];
+      for (const selector of datasets) {
+        if (!selector || typeof selector !== 'object') {
+          addMessage(report, 'error', 'OBJECT_PASSPORT_DATASET_INVALID', 'Dataset selector must be an object', {
+            objectId
+          });
+          continue;
+        }
+        const artifactId = typeof selector.artifactId === 'string' ? selector.artifactId : '';
+        if (artifactId.trim() === '') {
+          addMessage(report, 'error', 'OBJECT_PASSPORT_DATASET_INVALID', 'datasetSelector.artifactId is missing', {
+            objectId
+          });
+          continue;
+        }
+        if (!artifactIds.has(artifactId)) {
+          addMessage(
+            report,
+            'error',
+            'OBJECT_PASSPORT_DATASET_MISSING',
+            `Dataset artifact is missing from catalog: ${artifactId}`,
+            { objectId, artifactId }
+          );
+        }
+      }
+    }
+  }
 }
 
 async function extractZip(zipPath, destDir, report) {
@@ -485,8 +722,12 @@ async function validatePackage(options) {
 
   const jsonValidators = {
     'application/vnd.sitepack.capabilities+json': validators.capabilities,
-    'application/vnd.sitepack.transform-plan+json': validators.transformPlan
+    'application/vnd.sitepack.transform-plan+json': validators.transformPlan,
+    'application/vnd.sitepack.object-index+json': validators.objectIndex,
+    'application/vnd.sitepack.object-passport+json': validators.objectPassport
   };
+
+  const validatedIds = new Set();
 
   for (const art of catalogArtifacts) {
     const artifactEntry = {
@@ -509,6 +750,7 @@ async function validatePackage(options) {
     }
 
     report.summary.artifactsValidated += 1;
+    validatedIds.add(art.id);
 
     const safePath = resolveSafePath(packageRoot, art.path);
     if (!safePath.ok) {
@@ -620,6 +862,14 @@ async function validatePackage(options) {
     finalizeArtifactStatus(artifactEntry);
     report.artifacts.push(artifactEntry);
   }
+
+  await validateObjectsLayer({
+    packageRoot,
+    catalogArtifacts,
+    validators,
+    report,
+    validatedIds
+  });
 
   finalizeReport(report);
   await writeReport(report, packageRoot);

@@ -1,0 +1,17 @@
+{
+  "spec": {
+    "name": "sitepack",
+    "version": "0.4.0"
+  },
+  "package": {
+    "id": "objects-passport-id-mismatch"
+  },
+  "createdAt": "2025-01-01T00:00:00Z",
+  "profiles": [
+    "objects-only"
+  ],
+  "artifacts": [
+    "objects.index",
+    "objects.passport.obj.example"
+  ]
+}

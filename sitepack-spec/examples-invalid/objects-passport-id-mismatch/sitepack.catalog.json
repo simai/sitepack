@@ -1,0 +1,16 @@
+{
+  "artifacts": [
+    {
+      "id": "objects.index",
+      "mediaType": "application/vnd.sitepack.object-index+json",
+      "path": "objects/index.json",
+      "size": 279
+    },
+    {
+      "id": "objects.passport.obj.example",
+      "mediaType": "application/vnd.sitepack.object-passport+json",
+      "path": "objects/obj.example/passport.json",
+      "size": 229
+    }
+  ]
+}

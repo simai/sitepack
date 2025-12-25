@@ -8,6 +8,8 @@
 
 ## Recommended
 - `application/vnd.sitepack.volume-set+json` — volume set descriptor (`sitepack.volumes.json`).
+- `application/vnd.sitepack.object-index+json` — objects index (`objects/index.json`).
+- `application/vnd.sitepack.object-passport+json` — object passport (`objects/<objectId>/passport.json`).
 - `application/vnd.sitepack.capabilities+json` — tool capabilities.
 - `application/vnd.sitepack.transform-plan+json` — transform plan.
 - `application/vnd.sitepack.software-manifest+json` — code/software metadata.

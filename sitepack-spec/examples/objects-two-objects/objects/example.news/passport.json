@@ -1,0 +1,26 @@
+{
+  "spec": {
+    "name": "sitepack",
+    "version": "0.4.0"
+  },
+  "kind": "object-passport",
+  "id": "example.news",
+  "type": "content.collection",
+  "title": "News",
+  "objectRef": {
+    "id": "example.news",
+    "type": "content.collection"
+  },
+  "datasets": [
+    {
+      "artifactId": "recordset.example_table",
+      "where": [
+        {
+          "field": "/data/group",
+          "op": "=",
+          "value": "news"
+        }
+      ]
+    }
+  ]
+}

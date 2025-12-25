@@ -1,0 +1,13 @@
+{
+  "spec": {
+    "name": "sitepack",
+    "version": "0.4.0"
+  },
+  "kind": "object-passport",
+  "id": "obj.other",
+  "type": "content.collection",
+  "objectRef": {
+    "id": "obj.example",
+    "type": "content.collection"
+  }
+}

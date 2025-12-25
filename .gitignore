@@ -6,3 +6,4 @@
 **/*.sitepack.enc
 **/*.log
 **/reports
+!sitepack-spec/examples/volume-set-real/*.sitepack
