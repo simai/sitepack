@@ -59,7 +59,7 @@
     ];
 
     return [
-        'baseUrl' => '',
+        'baseUrl' => rtrim((string) (getenv('DOCARA_BASE_URL') ?: ''), '/'),
         'production' => false,
         'modulePath' => getenv('DOCARA_MODULE_PATH') ?: null,
         'env' => getenv(),
