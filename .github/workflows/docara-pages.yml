@@ -1,0 +1,75 @@
+name: Publish Docara Site
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: none
+          tools: composer
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Composer dependencies
+        working-directory: docara
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Initialize Docara
+        working-directory: docara
+        env:
+          DOCARA_SKIP_FRONTEND_INSTALL: "true"
+        run: php vendor/bin/docara init --update
+
+      - name: Install frontend dependencies
+        working-directory: docara
+        run: npm install
+
+      - name: Build frontend assets
+        working-directory: docara
+        run: npm run prod
+
+      - name: Build Docara site
+        working-directory: docara
+        run: php vendor/bin/docara build production
+
+      - name: Disable Jekyll
+        run: touch docara/build_production/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docara/build_production
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

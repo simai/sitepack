@@ -7,3 +7,6 @@
 **/*.log
 **/reports
 !sitepack-spec/examples/volume-set-real/*.sitepack
+source
+!docara/source/
+!docara/source/**

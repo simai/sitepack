@@ -1,0 +1,10 @@
+.env
+vendor/
+node_modules/
+build_*/
+.cache/
+source/assets/build/
+output/
+*.bak
+*.bak_*
+*.codex-bak-*
