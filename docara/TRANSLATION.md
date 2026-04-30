@@ -18,11 +18,11 @@ Checked on 2026-04-30:
 
 - Base locale: `en`
 - Target locale: `ru`
-- TODO files: `36`
-- Missing RU target files: `24`
+- TODO files: `0`
+- Missing RU target files: `0`
 - Local target changes blocking automation: `0`
 
-The Russian documentation is therefore partial and must not be treated as equivalent to English until TODO reaches zero.
+The Russian documentation is synchronized with the current English source according to the local translation state.
 
 ## Commands
 
