@@ -1,5 +1,18 @@
 <?php
 return [
+    'actions' => 'Actions',
+    'dark' => 'Dark mode',
+    'default' => 'Default',
     'search' => 'Search',
+    'notFound' => 'Nothing found',
+    'settings' => 'Settings',
+    'on' => 'On',
+    'off' => 'Off',
     'edit article' => 'Edit article',
+    'report a bug' => 'Report a bug',
+    'wide' => 'Wide layout',
+    'text size' => 'Text size',
+    'reduced' => 'Reduced',
+    'increased' => 'Increased',
+    'navigation' => 'Navigation',
 ];
