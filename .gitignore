@@ -6,7 +6,10 @@
 **/*.sitepack.enc
 **/*.log
 **/reports
+**/.docara-state
+**/.docara-state/**
 !sitepack-spec/examples/volume-set-real/*.sitepack
 source
 !docara/source/
 !docara/source/**
+**/source/docs/.translate.php
