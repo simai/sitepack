@@ -69,6 +69,10 @@
         'cachePath' => $projectRoot . '/.cache',
         'siteName' => 'SitePack Documentation',
         'siteDescription' => 'SitePack specification and tooling documentation',
+        'brand' => [
+            'title' => 'SitePack Docs',
+            'logoSvg' => null,
+        ],
         'github' => 'https://github.com/simai/sitepack/',
         'turbo' => false,
         'locales' => [
