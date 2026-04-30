@@ -95,6 +95,8 @@ jobs:
               updated = updated.replace('window.location.replace("', f'window.location.replace("{prefix}/')
               updated = updated.replace('window.location.replace(`', f'window.location.replace(`{prefix}/')
               updated = updated.replace('"url": "\/', f'"url": "\/{prefix.strip("/")}/')
+              duplicate_locale = re.compile(r'(?P<root>' + re.escape(prefix) + r')?/(?P<locale>[a-z]{2}(?:-[a-z]{2})?)/(?P=locale)(?=[/"?#])')
+              updated = duplicate_locale.sub(lambda match: f'{match.group("root") or ""}/{match.group("locale")}', updated)
               if updated != text:
                   path.write_text(updated, encoding="utf-8")
           PY

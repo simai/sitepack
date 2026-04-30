@@ -57,23 +57,23 @@ return array (
         array (
           'source_hash' => 'aebce8eed34cb79a2ca775ffcae7bad57c2509c5',
           'source_size' => 1315,
-          'target_hash' => NULL,
+          'target_hash' => 'bc01dfd5726cb38840cba91434ceabc647603874',
           'needs_translate' => true,
           'has_local_changes' => false,
           'source_path' => 'en/sitepack-spec/CHANGELOG.md',
           'target_path' => 'ru/sitepack-spec/CHANGELOG.md',
-          'updated_at' => '2026-04-30T01:59:54+05:00',
+          'updated_at' => '2026-04-30T05:02:43+05:00',
         ),
         'sitepack-spec/SPEC.md' =>
         array (
           'source_hash' => '57df37f7560d8752aab0f5db2cb2901f302b7c90',
           'source_size' => 12201,
-          'target_hash' => NULL,
+          'target_hash' => 'a5df67db3a27fe3a36b237407bd769cce1b3060d',
           'needs_translate' => true,
           'has_local_changes' => false,
           'source_path' => 'en/sitepack-spec/SPEC.md',
           'target_path' => 'ru/sitepack-spec/SPEC.md',
-          'updated_at' => '2026-04-30T01:59:54+05:00',
+          'updated_at' => '2026-04-30T05:02:43+05:00',
         ),
         'sitepack-spec/examples/.settings.php' =>
         array (
@@ -151,6 +151,39 @@ return array (
           'source_path' => 'en/sitepack-spec/examples/full-code/artifacts/code/index.md',
           'target_path' => 'ru/sitepack-spec/examples/full-code/artifacts/code/index.md',
           'updated_at' => '2026-04-30T01:59:54+05:00',
+        ),
+        'sitepack-spec/examples/full-code/artifacts/index.md' =>
+        array (
+          'source_hash' => 'ec04482cccac054c303ed39144557465566ce2c4',
+          'source_size' => 151,
+          'target_hash' => NULL,
+          'needs_translate' => true,
+          'has_local_changes' => false,
+          'source_path' => 'en/sitepack-spec/examples/full-code/artifacts/index.md',
+          'target_path' => 'ru/sitepack-spec/examples/full-code/artifacts/index.md',
+          'updated_at' => '2026-04-30T04:58:58+05:00',
+        ),
+        'sitepack-spec/examples/full-code/index.md' =>
+        array (
+          'source_hash' => 'd5cb1998d970b8fe4b72e61e501401608cc65171',
+          'source_size' => 170,
+          'target_hash' => NULL,
+          'needs_translate' => true,
+          'has_local_changes' => false,
+          'source_path' => 'en/sitepack-spec/examples/full-code/index.md',
+          'target_path' => 'ru/sitepack-spec/examples/full-code/index.md',
+          'updated_at' => '2026-04-30T04:58:58+05:00',
+        ),
+        'sitepack-spec/examples/index.md' =>
+        array (
+          'source_hash' => 'adf48bee49302bce4d7f8ee4cb5b100db4e530ae',
+          'source_size' => 240,
+          'target_hash' => '686e7ac02c8dedbeccda20db0e594a53674e4e82',
+          'needs_translate' => true,
+          'has_local_changes' => false,
+          'source_path' => 'en/sitepack-spec/examples/index.md',
+          'target_path' => 'ru/sitepack-spec/examples/index.md',
+          'updated_at' => '2026-04-30T05:02:43+05:00',
         ),
         'sitepack-spec/examples/volume-set-index-only/.settings.php' =>
         array (
@@ -251,6 +284,17 @@ return array (
           'target_path' => 'ru/sitepack-spec/llm/TASKS_VALIDATOR.md',
           'updated_at' => '2026-04-30T01:59:54+05:00',
         ),
+        'sitepack-spec/llm/index.md' =>
+        array (
+          'source_hash' => '7b5d939e1e36c7a6bef49b805a383883cecfe31a',
+          'source_size' => 305,
+          'target_hash' => 'cb14f66d38368fb1d61ed638e79a7dc29fdbe6da',
+          'needs_translate' => true,
+          'has_local_changes' => false,
+          'source_path' => 'en/sitepack-spec/llm/index.md',
+          'target_path' => 'ru/sitepack-spec/llm/index.md',
+          'updated_at' => '2026-04-30T05:02:43+05:00',
+        ),
         'sitepack-spec/registry/.settings.php' =>
         array (
           'source_hash' => 'd4671c1788dca699cdca0d569fc43a2787c6de48',
@@ -283,6 +327,17 @@ return array (
           'source_path' => 'en/sitepack-spec/registry/entity-types.md',
           'target_path' => 'ru/sitepack-spec/registry/entity-types.md',
           'updated_at' => '2026-04-30T01:59:54+05:00',
+        ),
+        'sitepack-spec/registry/index.md' =>
+        array (
+          'source_hash' => '4f8697f3170ddb71532e160e46854d28a079cc3f',
+          'source_size' => 259,
+          'target_hash' => '5ddf633193130246b3adfa8720cf7c03fbcd4acd',
+          'needs_translate' => true,
+          'has_local_changes' => false,
+          'source_path' => 'en/sitepack-spec/registry/index.md',
+          'target_path' => 'ru/sitepack-spec/registry/index.md',
+          'updated_at' => '2026-04-30T05:02:43+05:00',
         ),
         'sitepack-spec/registry/media-types.md' =>
         array (
@@ -321,12 +376,12 @@ return array (
         array (
           'source_hash' => '0664b4de8bcdc869640967646c7a9088c6c8c8c6',
           'source_size' => 3430,
-          'target_hash' => NULL,
+          'target_hash' => 'c566c2605315c4ca9dd8227aa0768e4cbb727f8b',
           'needs_translate' => true,
           'has_local_changes' => false,
           'source_path' => 'en/sitepack-tools-node/index.md',
           'target_path' => 'ru/sitepack-tools-node/index.md',
-          'updated_at' => '2026-04-30T01:59:54+05:00',
+          'updated_at' => '2026-04-30T05:02:43+05:00',
         ),
         'sitepack-tools-php/.settings.php' =>
         array (
@@ -343,20 +398,20 @@ return array (
         array (
           'source_hash' => 'baa201e82b43a3ea807f3f060b74df497edc8556',
           'source_size' => 1794,
-          'target_hash' => NULL,
+          'target_hash' => '33ae7ed3cdfa8adbecf9cd3806265c1b7429cdb2',
           'needs_translate' => true,
           'has_local_changes' => false,
           'source_path' => 'en/sitepack-tools-php/index.md',
           'target_path' => 'ru/sitepack-tools-php/index.md',
-          'updated_at' => '2026-04-30T01:59:54+05:00',
+          'updated_at' => '2026-04-30T05:02:43+05:00',
         ),
       ),
-      'updated_at' => '2026-04-30T01:59:54+05:00',
+      'updated_at' => '2026-04-30T05:02:43+05:00',
       'orphans' =>
       array (
       ),
     ),
   ),
   'docs_dir' => '/Users/rim/Documents/GitHub/sitepack/docara/source/docs',
-  'updated_at' => '2026-04-30T01:59:54+05:00',
+  'updated_at' => '2026-04-30T05:02:43+05:00',
 );
