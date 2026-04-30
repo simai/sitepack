@@ -2,11 +2,11 @@
 extends: _core._layouts.documentation
 section: content
 title: Спецификация
-description: Перевод готовится
+description: Спецификация SitePack
 ---
 
 # Спецификация
 
-Перевод этой страницы готовится.
+Спецификация описывает формат пакета SitePack: обязательные файлы, структуру manifest и catalog, артефакты, связи, asset index, volume sets и безопасную передачу.
 
-Английская версия: [SPEC](https://simai.github.io/sitepack/en/sitepack-spec/SPEC).
+Актуальная полная версия спецификации доступна на английском языке: [SPEC](https://simai.github.io/sitepack/en/sitepack-spec/SPEC).

@@ -2,11 +2,11 @@
 extends: _core._layouts.documentation
 section: content
 title: Инструменты Node.js
-description: Перевод готовится
+description: Node.js инструменты SitePack
 ---
 
 # Инструменты Node.js
 
-Перевод этой страницы готовится.
+Раздел описывает Node.js-инструменты для проверки пакетов SitePack, примеров, envelope-файлов и наборов томов.
 
-Английская версия: [SitePack Tools Node](https://simai.github.io/sitepack/en/sitepack-tools-node).
+Актуальная подробная версия доступна на английском языке: [SitePack Tools Node](https://simai.github.io/sitepack/en/sitepack-tools-node).

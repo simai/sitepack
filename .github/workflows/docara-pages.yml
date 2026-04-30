@@ -87,11 +87,14 @@ jobs:
               (re.compile(r'(?P<attr>\b(?:href|src|action)=["\'])/(?!/)(?P<path>[^"\']*)'), rf'\g<attr>{prefix}/\g<path>'),
               (re.compile(r'(?P<attr>\bcontent=["\'])/(?!/)(?P<path>[^"\']*)'), rf'\g<attr>{prefix}/\g<path>'),
           ]
-          for path in list(root.rglob("*.html")) + list(root.rglob("*.json")):
+          for path in list(root.rglob("*.html")) + list(root.rglob("*.json")) + list(root.rglob("*.js")):
               text = path.read_text(encoding="utf-8")
               updated = text
               for pattern, replacement in patterns:
                   updated = pattern.sub(replacement, updated)
+              updated = updated.replace('fetch(`/search-index_', f'fetch(`{prefix}/search-index_')
+              updated = updated.replace('fetch("/search-index_', f'fetch("{prefix}/search-index_')
+              updated = updated.replace("fetch('/search-index_", f"fetch('{prefix}/search-index_")
               updated = updated.replace('window.location.replace("', f'window.location.replace("{prefix}/')
               updated = updated.replace('window.location.replace(`', f'window.location.replace(`{prefix}/')
               updated = updated.replace('"url": "\/', f'"url": "\/{prefix.strip("/")}/')
