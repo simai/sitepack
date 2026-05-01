@@ -15,4 +15,6 @@ return [
     'reduced' => 'Reduced',
     'increased' => 'Increased',
     'navigation' => 'Navigation',
+    'previous' => 'Previous',
+    'next' => 'Next',
 ];

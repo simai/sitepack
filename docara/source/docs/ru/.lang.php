@@ -15,4 +15,6 @@ return [
     'reduced' => 'Меньше',
     'increased' => 'Больше',
     'navigation' => 'Навигация',
+    'previous' => 'Назад',
+    'next' => 'Далее',
 ];
