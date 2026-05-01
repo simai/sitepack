@@ -2614,16 +2614,16 @@
         },
         {
             "name": "simai/docara",
-            "version": "v1.3.29",
+            "version": "v1.3.39",
             "source": {
                 "type": "git",
                 "url": "https://github.com/simai/docara.git",
-                "reference": "ae01ea86c9925f3ba3fd4dc87e23ebde21a2cdf1"
+                "reference": "2f2a4f4e4fab0c8ee84187184bcad8dc3d76f1fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simai/docara/zipball/ae01ea86c9925f3ba3fd4dc87e23ebde21a2cdf1",
-                "reference": "ae01ea86c9925f3ba3fd4dc87e23ebde21a2cdf1",
+                "url": "https://api.github.com/repos/simai/docara/zipball/2f2a4f4e4fab0c8ee84187184bcad8dc3d76f1fc",
+                "reference": "2f2a4f4e4fab0c8ee84187184bcad8dc3d76f1fc",
                 "shasum": ""
             },
             "require": {
@@ -2652,7 +2652,7 @@
                 "vlucas/phpdotenv": "^5.6"
             },
             "require-dev": {
-                "laravel/pint": "^1.16",
+                "laravel/pint": "^1.27.1",
                 "mockery/mockery": "^1.6",
                 "phpunit/phpunit": "^11.0.6"
             },
@@ -2702,9 +2702,9 @@
             ],
             "support": {
                 "issues": "https://github.com/simai/docara/issues",
-                "source": "https://github.com/simai/docara/tree/v1.3.29"
+                "source": "https://github.com/simai/docara/tree/v1.3.39"
             },
-            "time": "2026-02-19T12:34:19+00:00"
+            "time": "2026-05-01T09:53:32+00:00"
         },
         {
             "name": "spatie/backtrace",
@@ -3171,16 +3171,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v7.4.8",
+            "version": "v7.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "1e92e39c51f95b88e3d66fa2d9f06d1fb45dd707"
+                "reference": "d7d2b64a45a89d607865927b176fa51c33ddbb58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/1e92e39c51f95b88e3d66fa2d9f06d1fb45dd707",
-                "reference": "1e92e39c51f95b88e3d66fa2d9f06d1fb45dd707",
+                "url": "https://api.github.com/repos/symfony/console/zipball/d7d2b64a45a89d607865927b176fa51c33ddbb58",
+                "reference": "d7d2b64a45a89d607865927b176fa51c33ddbb58",
                 "shasum": ""
             },
             "require": {
@@ -3245,7 +3245,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v7.4.8"
+                "source": "https://github.com/symfony/console/tree/v7.4.9"
             },
             "funding": [
                 {
@@ -3265,7 +3265,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-30T13:54:39+00:00"
+            "time": "2026-04-22T15:21:55+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -3658,16 +3658,16 @@
         },
         {
             "name": "symfony/mime",
-            "version": "v7.4.8",
+            "version": "v7.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mime.git",
-                "reference": "6df02f99998081032da3407a8d6c4e1dcb5d4379"
+                "reference": "2d550c4758ba4c47519a6667c36553d535705b0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mime/zipball/6df02f99998081032da3407a8d6c4e1dcb5d4379",
-                "reference": "6df02f99998081032da3407a8d6c4e1dcb5d4379",
+                "url": "https://api.github.com/repos/symfony/mime/zipball/2d550c4758ba4c47519a6667c36553d535705b0c",
+                "reference": "2d550c4758ba4c47519a6667c36553d535705b0c",
                 "shasum": ""
             },
             "require": {
@@ -3723,7 +3723,7 @@
                 "mime-type"
             ],
             "support": {
-                "source": "https://github.com/symfony/mime/tree/v7.4.8"
+                "source": "https://github.com/symfony/mime/tree/v7.4.9"
             },
             "funding": [
                 {
@@ -3743,7 +3743,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-30T14:11:46+00:00"
+            "time": "2026-04-29T13:21:53+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",

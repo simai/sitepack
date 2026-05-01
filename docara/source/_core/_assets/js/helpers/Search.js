@@ -28,7 +28,7 @@ export class Search {
         this.wrap = document.getElementById('search_doc');
         this.searchButton = document.querySelector('.sf-button-search');
         this.inputContainer = this.wrap.querySelector('.sf-input-search-container');
-        this.menu = document.querySelector(".sf-menu-container");
+        this.menu = document.querySelector('.dc-menu-container, .sf-menu-container');
         this.input = document.getElementById('input_search').querySelector('input');
         this.resultsWrap = document.getElementById('search_results');
         this.resultsContainer = this.resultsWrap.querySelector('.docsearch-input__main');
@@ -115,7 +115,7 @@ export class Search {
 
     _renderByEvent(results, event) {
         if (event === 'focus') {
-            setTimeout(() => this.renderResults(results), 200);
+            setTimeout(() => this.renderResults(results), 100);
         } else {
             this.renderResults(results);
             this.closeState(this.value !== '');

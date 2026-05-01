@@ -111,6 +111,7 @@ async function initFuse() {
             return new Fuse(data, options);
         })
         .catch((e) => {
+            console.error(e);
             return null;
         });
 }
@@ -377,7 +378,9 @@ function init() {
     initMenuScrollButtons();
     initSearch();
     scrollToActiveMenu();
-    initReadMode();
+    window.addEventListener('sf-loader-ready', () => {
+        initReadMode();
+    });
 }
 
 const runInit = () => init();
@@ -551,9 +554,9 @@ function getNextOrPrevHiddenItem(container, items, next) {
 
 window.updateMenuScrollButtons = function updateMenuScrollButtons() {
     const menu = document.getElementById('top_menu');
-    const container = document.querySelector('.sf-menu-container');
-    const leftBtn = document.querySelector('.sf-menu-scroll.left');
-    const rightBtn = document.querySelector('.sf-menu-scroll.right');
+    const container = document.querySelector('.dc-menu-container');
+    const leftBtn = document.querySelector('.dc-menu-scroll.left');
+    const rightBtn = document.querySelector('.dc-menu-scroll.right');
 
     if (!menu || !container || (!leftBtn && !rightBtn)) return;
 
@@ -582,7 +585,7 @@ window.updateMenuScrollButtons = function updateMenuScrollButtons() {
 
 window.menuScroll = function (button, next = true) {
     const menu = document.getElementById('top_menu');
-    const container = document.querySelector('.sf-menu-container');
+    const container = document.querySelector('.dc-menu-container');
     if (!menu || !container) return;
     const items = Array.from(menu.children);
     const nextHidden = getNextOrPrevHiddenItem(menu, items, next);

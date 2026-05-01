@@ -9,7 +9,7 @@ export class SizeObserver {
         this.menuResizeWidth = null;
         this.mainResizeQueued = false;
         this.mainResizeWidth = null;
-        this.menuWrap = document.querySelector(".sf-menu-container");
+        this.menuWrap = document.querySelector('.dc-menu-container, .sf-menu-container');
         this.menu = this.menuWrap?.querySelector("#top_menu") ?? null;
     this.readState = false;
     this.headerWrap = document.querySelector(".header--wrap");
@@ -30,7 +30,7 @@ export class SizeObserver {
     }
 
   refreshElements = () => {
-    this.menuWrap = document.querySelector(".sf-menu-container");
+    this.menuWrap = document.querySelector('.dc-menu-container, .sf-menu-container');
     this.menu = this.menuWrap?.querySelector("#top_menu") ?? null;
     this.headerWrap = document.querySelector(".header--wrap");
     this.logo = this.headerWrap?.querySelector("a.logo") ?? null;

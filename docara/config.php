@@ -64,7 +64,7 @@
         'modulePath' => getenv('DOCARA_MODULE_PATH') ?: null,
         'env' => getenv(),
         'category' => false,
-        'cache' => true,
+        'cache' => false,
         'moduleCache' => false,
         'cachePath' => $projectRoot . '/.cache',
         'siteName' => 'SitePack Documentation',

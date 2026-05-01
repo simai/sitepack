@@ -1,6 +1,6 @@
 <div class="sf-settings-wrap sf-float-wrap">
     <button onclick="toggleFloat(this)" title="{{$page->translate('settings')}}"
-            class=" sf-icon-button radius-default sf-button-settings  sf-icon-button--size-1 sf-icon-button--link sf-icon-button--on-surface">
+            class=" sf-icon-button sf-icon-button--icon radius-default sf-button-settings  sf-icon-button--size-1 sf-icon-button--link sf-icon-button--on-surface">
         <i class="sf-icon">settings</i>
     </button>
     <div class="sf-settings-menu bg-surface-overlay">
