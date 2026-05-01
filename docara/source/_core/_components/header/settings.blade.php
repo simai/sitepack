@@ -8,13 +8,8 @@
         off='{{$page->translate('off')}}')#theme_switch
         [!Switch](size=1 title='{{$page->translate('wide')}}' on='{{$page->translate('on')}}'
         off='{{$page->translate('off')}}')#widescreen_switch
-        <div id="size_switch" class="sf-font-size-control lang_size">
-            <span class="sf-font-size-title">{{$page->translate('text size')}}</span>
-            <div class="sf-font-size-options" role="group" aria-label="{{$page->translate('text size')}}">
-                <button type="button" class="sf-font-size-option" data-font-index="0" data-font-size="14px" data-font-class="sf-font-small">{{$page->translate('reduced')}}</button>
-                <button type="button" class="sf-font-size-option" data-font-index="1" data-font-size="16px" data-font-class="">{{$page->translate('default')}}</button>
-                <button type="button" class="sf-font-size-option" data-font-index="2" data-font-size="18px" data-font-class="sf-font-big">{{$page->translate('increased')}}</button>
-            </div>
-        </div>
+        [!Radio className=lang_size name=radio_switch](size=1 type="font" count=3 text=A title="{{$page->translate('text size')}}"
+        checked=1 description=[{{$page->translate('reduced')}},{{$page->translate('default')}}
+        ,{{$page->translate('increased')}}])#size_switch
     </div>
 </div>

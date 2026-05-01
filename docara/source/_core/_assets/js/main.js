@@ -417,40 +417,6 @@ function initFontSize() {
         }
         document.documentElement.style.fontSize = state.size;
     }
-    const applyFontSize = (index, size, className) => {
-        document.documentElement.style.fontSize = size;
-        document.documentElement.classList.remove('sf-font-small', 'sf-font-big');
-        if (className) {
-            document.documentElement.classList.add(className);
-        }
-        localStorage.setItem(
-            'sf-fontSize',
-            JSON.stringify({
-                index,
-                className: className || false,
-                size,
-            }),
-        );
-    };
-    const activateFontSizeButtons = (index) => {
-        document.querySelectorAll('.sf-font-size-option').forEach((button) => {
-            button.classList.toggle('active', Number(button.dataset.fontIndex) === index);
-        });
-    };
-    document.querySelectorAll('.sf-font-size-option').forEach((button) => {
-        if (button.dataset.sfFontSizeBound === '1') {
-            return;
-        }
-        button.dataset.sfFontSizeBound = '1';
-        const index = Number(button.dataset.fontIndex || 1);
-        const size = button.dataset.fontSize || '16px';
-        const className = button.dataset.fontClass || false;
-        button.addEventListener('click', () => {
-            applyFontSize(index, size, className);
-            activateFontSizeButtons(index);
-        });
-    });
-    activateFontSizeButtons(state && Number.isInteger(state.index) ? state.index : 1);
     window.addEventListener('Radio:render', (event) => {
         const { detail } = event;
         const { html } = detail;
