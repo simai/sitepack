@@ -74,6 +74,7 @@
             'logoSvg' => null,
         ],
         'github' => 'https://github.com/simai/sitepack/',
+        'githubEditBasePath' => 'docara',
         'turbo' => false,
         'locales' => [
             'en' => 'English',
@@ -127,7 +128,21 @@
             return $current;
         },
         'gitHubUrl' => function ($page) {
-            return $page->configurator->getGitHubUrl($page);
+            $url = $page->configurator->getGitHubUrl($page);
+            $prefix = trim((string) ($page->githubEditBasePath ?? ''), '/');
+            if ($prefix === '') {
+                return $url;
+            }
+
+            $marker = '/blob/main/';
+            if (str_contains($url, $marker . $prefix . '/')) {
+                return $url;
+            }
+            if (str_contains($url, $marker)) {
+                return str_replace($marker, $marker . $prefix . '/', $url);
+            }
+
+            return $prefix . '/' . ltrim($url, '/');
         },
         'isHome' => function ($page) {
             $current = trim($page->getPath(), '/');
