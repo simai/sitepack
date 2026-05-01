@@ -1,6 +1,6 @@
 <?php
 return [
-    'title' => 'Документация SitePack',
+    'title' => 'SitePack',
     'showInMenu' => true,
     'order' => 10,
     'menu' => [

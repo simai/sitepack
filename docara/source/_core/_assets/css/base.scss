@@ -381,6 +381,10 @@ code.hljs .hljs-keyword, code.hljs .hljs-meta {
 
 /*header styles*/
 
+.header--wrap {
+  padding-inline: 1rem !important;
+}
+
 .sf-logo {
   gap: var(--sf-b3);
   color: var(--sf-on-surface);

@@ -1,6 +1,6 @@
 <?php
 return array (
-  'title' => 'SitePack Documentation',
+  'title' => 'SitePack',
   'showInMenu' => true,
   'order' => 10,
   'menu' =>
