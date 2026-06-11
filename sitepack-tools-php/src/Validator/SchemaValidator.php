@@ -81,6 +81,7 @@ class SchemaValidator
             'entity' => 'entity.schema.json',
             'asset-index' => 'asset-index.schema.json',
             'config-kv' => 'config-kv.schema.json',
+            'site-map' => 'site-map.schema.json',
             'recordset' => 'recordset.schema.json',
             'dataset-selector' => 'dataset-selector.schema.json',
             'object-index' => 'object-index.schema.json',

@@ -1,0 +1,61 @@
+{
+  "kind": "site-map",
+  "site": {
+    "id": "small-docs",
+    "title": "Small Docs",
+    "baseUrl": "https://example.org/docs",
+    "defaultLocale": "en",
+    "locales": ["en"]
+  },
+  "pages": [
+    {
+      "id": "page.home",
+      "locale": "en",
+      "path": "/",
+      "title": "Documentation",
+      "sort": 10,
+      "showInMenu": true,
+      "entityRefs": ["ent.docs.home"]
+    },
+    {
+      "id": "page.install",
+      "parentId": "page.home",
+      "locale": "en",
+      "path": "/install",
+      "title": "Install",
+      "sort": 20,
+      "showInMenu": true,
+      "entityRefs": ["ent.docs.install"]
+    },
+    {
+      "id": "page.migration",
+      "parentId": "page.home",
+      "locale": "en",
+      "path": "/migration",
+      "title": "Migration",
+      "sort": 30,
+      "showInMenu": true,
+      "entityRefs": ["ent.docs.migration"]
+    }
+  ],
+  "menus": [
+    {
+      "id": "main",
+      "title": "Main",
+      "locale": "en",
+      "items": [
+        {
+          "title": "Documentation",
+          "pageId": "page.home",
+          "items": [
+            { "title": "Install", "pageId": "page.install" },
+            { "title": "Migration", "pageId": "page.migration" }
+          ]
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    { "from": "/start", "to": "/install", "status": 301 }
+  ]
+}

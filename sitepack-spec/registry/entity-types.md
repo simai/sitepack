@@ -4,6 +4,7 @@
 - `content.page` — page.
 - `content.post` — post/news.
 - `content.item` — catalog item/general record.
+- `document.page` — documentation or long-form page.
 - `taxonomy.category` — category.
 - `taxonomy.tag` — tag.
 - `route.redirect` — redirect rule.

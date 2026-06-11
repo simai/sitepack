@@ -10,7 +10,7 @@
   "$defs": {
     "common": {
       "type": "object",
-      "required": ["id", "mime", "size", "sha256"],
+      "required": ["id", "sha256", "size"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "mime": { "type": "string", "minLength": 1 },

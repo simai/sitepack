@@ -21,6 +21,7 @@ SitePack is an open format for packaging website data for transfer between syste
 - **Object Passport**: object metadata linking to datasets and artifacts.
 - **Dataset Selector**: a selector referencing a dataset artifact and optional filter.
 - **Profile**: a package profile defining expected artifacts.
+- **Site Map**: a CMS-neutral website structure artifact describing site identity, locales, routes, pages, menus, redirects, and portable page references.
 - **Provenance**: origin metadata (source, version, authors), optional in metadata.
 - **Capabilities**: tool capabilities (export/import).
 - **Transform Plan**: plan of transformations applied during import/export.
@@ -200,17 +201,38 @@ A compatible tool **MUST** understand:
 - `application/vnd.sitepack.recordset+ndjson`
 
 ## 9. Profiles
-Profiles define the expected artifacts and intent of the package:
-- `config-only`: configuration only (key-value).
-- `content-only`: content entities without assets.
-- `content+assets`: content entities + asset index.
-- `full`: content + assets + config + recordsets.
-- `full+code`: `full` plus code artifacts and software manifest.
-- `snapshot`: full static export/snapshot (descriptive profile, no implementation requirements in v0.4).
+Profiles define expected artifacts, intent, and importer/exporter obligations. Profile contracts are specified in `profiles/`.
+
+Current portable profile contracts:
+
+- `config-only`: settings/options/configuration data.
+- `content-only`: content entities without required binary assets.
+- `site-structure`: site identity, locales, routes, page tree, menus, redirects, and metadata.
+- `content-assets`: content entities plus binary assets.
+- `site-snapshot`: archival or preview-oriented site snapshot.
+- `product-package`: installable product, solution, theme, plugin, industry pack, or starter-site metadata.
+
+Compatibility aliases:
+
+- `content+assets` is a legacy alias of `content-assets`.
+- `full+code` is a legacy alias of `full-code`.
+- `snapshot` is a legacy alias of `site-snapshot` for preview/archive packages.
+
+Tools SHOULD validate profile requirements when a profile contract is known.
+
+### 9.1 Site Map artifact
+
+The `site-structure` profile uses the Site Map artifact:
+
+- Media type: `application/vnd.sitepack.site-map+json`
+- Schema: `schemas/site-map.schema.json`
+
+The Site Map is CMS-neutral. It MUST NOT require Bitrix iblocks, Laravel Eloquent models, WordPress post ids, or any other platform-specific runtime model. Platform-specific route, page, menu, or layout details belong in declared extensions.
 
 ## 10. Unknown handling
 - Unknown `mediaType`: the importer **MUST** skip the artifact and **MUST** log the event.
 - Unknown `entity.type`: the importer **MUST NOT** fail; it **MAY** skip or import as opaque.
+- Unknown extensions: the importer **MUST** report unsupported extension artifacts and **MUST NOT** silently apply them. Archive tools **MUST** preserve unknown extension artifacts byte-for-byte.
 
 ## 11. Integrity and digest
 - Digest format: `sha256:<hex>`.

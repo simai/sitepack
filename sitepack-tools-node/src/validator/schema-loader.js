@@ -9,6 +9,7 @@ const schemaFiles = {
   entity: 'entity.schema.json',
   assetIndex: 'asset-index.schema.json',
   configKv: 'config-kv.schema.json',
+  siteMap: 'site-map.schema.json',
   recordset: 'recordset.schema.json',
   capabilities: 'capabilities.schema.json',
   transformPlan: 'transform-plan.schema.json',

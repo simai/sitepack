@@ -28,6 +28,101 @@ function addArtifactDetail(report, artifact, level, code, message, line) {
   }
 }
 
+const profileContracts = {
+  'config-only': {
+    requiredAny: [],
+    requiredAll: ['application/vnd.sitepack.config-kv+ndjson']
+  },
+  'content-only': {
+    requiredAny: [],
+    requiredAll: ['application/vnd.sitepack.entity-graph+ndjson']
+  },
+  'site-structure': {
+    requiredAny: [],
+    requiredAll: ['application/vnd.sitepack.site-map+json']
+  },
+  'content-assets': {
+    requiredAny: [],
+    requiredAll: [
+      'application/vnd.sitepack.entity-graph+ndjson',
+      'application/vnd.sitepack.asset-index+ndjson'
+    ]
+  },
+  'site-snapshot': {
+    requiredAll: [],
+    requiredAny: [
+      'application/vnd.sitepack.site-map+json',
+      'application/vnd.sitepack.entity-graph+ndjson',
+      'application/vnd.sitepack.asset-index+ndjson'
+    ]
+  },
+  'product-package': {
+    requiredAll: [],
+    requiredAny: [
+      'application/vnd.sitepack.config-kv+ndjson',
+      'application/vnd.sitepack.capabilities+json'
+    ]
+  },
+  full: {
+    requiredAny: [],
+    requiredAll: []
+  },
+  'full-code': {
+    requiredAny: [],
+    requiredAll: []
+  }
+};
+
+const profileAliases = {
+  'content+assets': 'content-assets',
+  snapshot: 'site-snapshot',
+  'full+code': 'full-code'
+};
+
+function canonicalProfileName(profile) {
+  return profileAliases[profile] || profile;
+}
+
+function validateProfileContracts(manifest, catalogArtifacts, report) {
+  const declaredProfiles = Array.isArray(manifest?.profiles) ? manifest.profiles : [];
+  const mediaTypes = new Set(
+    catalogArtifacts
+      .map((artifact) => artifact?.mediaType)
+      .filter((mediaType) => typeof mediaType === 'string' && mediaType !== '')
+  );
+
+  for (const declaredProfile of declaredProfiles) {
+    if (typeof declaredProfile !== 'string' || declaredProfile.trim() === '') {
+      continue;
+    }
+
+    const profile = canonicalProfileName(declaredProfile);
+    const contract = profileContracts[profile];
+    if (!contract) {
+      addMessage(report, 'warning', 'PROFILE_UNKNOWN', `Unknown profile contract: ${declaredProfile}`, {
+        profile: declaredProfile
+      });
+      continue;
+    }
+
+    for (const required of contract.requiredAll || []) {
+      if (!mediaTypes.has(required)) {
+        addMessage(report, 'error', 'PROFILE_REQUIRED_MEDIA_TYPE_MISSING', `Profile '${declaredProfile}' requires media type '${required}'`, {
+          profile: declaredProfile,
+          mediaType: required
+        });
+      }
+    }
+
+    if ((contract.requiredAny || []).length > 0 && !contract.requiredAny.some((mediaType) => mediaTypes.has(mediaType))) {
+      addMessage(report, 'error', 'PROFILE_REQUIRED_MEDIA_TYPE_MISSING', `Profile '${declaredProfile}' requires at least one supported media type`, {
+        profile: declaredProfile,
+        mediaTypes: contract.requiredAny
+      });
+    }
+  }
+}
+
 function finalizeArtifactStatus(artifact) {
   if (artifact.status === 'skipped') {
     return artifact;
@@ -691,6 +786,10 @@ async function validatePackage(options) {
     }
   }
 
+  if (manifest) {
+    validateProfileContracts(manifest, catalogArtifacts, report);
+  }
+
   let selectedIds = new Set(catalogArtifacts.map((item) => item.id));
   if (profile) {
     if (!manifest) {
@@ -722,6 +821,7 @@ async function validatePackage(options) {
 
   const jsonValidators = {
     'application/vnd.sitepack.capabilities+json': validators.capabilities,
+    'application/vnd.sitepack.site-map+json': validators.siteMap,
     'application/vnd.sitepack.transform-plan+json': validators.transformPlan,
     'application/vnd.sitepack.object-index+json': validators.objectIndex,
     'application/vnd.sitepack.object-passport+json': validators.objectPassport

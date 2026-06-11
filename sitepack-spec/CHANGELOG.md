@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+- Added conformance levels for Reader, Validator, Archive, Previewer, Importer, and Exporter.
+- Added portable profile contracts for configuration, content, site structure, content assets, snapshots, and product packages.
+- Added extension governance for platform-specific adapter data outside SitePack Core.
+- Added `application/vnd.sitepack.site-map+json` and the `site-structure` profile.
+- Added the `small-docs-site` example package for an adapter-neutral documentation site.
+- Added validator checks for declared profile requirements in the Node and PHP reference tools.
+- Added schema sync and aggregate validation targets to the root Makefile.
+- Updated the Node lockfile to remove known audit vulnerabilities in transitive dependencies.
+
 ## 0.4.0 - 2025-12-23
 - Added Objects layer (objects/index.json + passports + dataset selectors).
 - Added objects example package `examples/objects-two-objects`.

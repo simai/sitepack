@@ -7,6 +7,7 @@
 - `application/vnd.sitepack.recordset+ndjson` — recordset data (NDJSON).
 
 ## Recommended
+- `application/vnd.sitepack.site-map+json` — CMS-neutral site identity, routes, pages, menus, redirects and page references.
 - `application/vnd.sitepack.volume-set+json` — volume set descriptor (`sitepack.volumes.json`).
 - `application/vnd.sitepack.object-index+json` — objects index (`objects/index.json`).
 - `application/vnd.sitepack.object-passport+json` — object passport (`objects/<objectId>/passport.json`).

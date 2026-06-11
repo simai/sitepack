@@ -1,11 +1,13 @@
 # SitePack
 
-SitePack is an open standard for packaging website data for backup and migration between systems.
+SitePack is an open standard for packaging website data for backup and migration between systems. It is intended as a portable, document-like interchange format for websites: different systems can export, validate, archive, preview, and import packages through platform adapters.
 
 ## Projects
 - `sitepack-spec/` — specification, schemas, registries, and examples.
 - `sitepack-tools-node/` — Node.js reference validator.
 - `sitepack-tools-php/` — PHP reference validator.
+
+The standard is platform-neutral. Bitrix, Larena, WordPress, Drupal, static-site generators, and custom systems should be implemented as exporters/importers or extensions, not as the center of the core format.
 
 ## Quickstart
 Validate examples with the Node tool:
@@ -55,6 +57,12 @@ php scripts/validate-examples.php ../sitepack-spec/examples
 
 ## Versioning
 The specification and tools follow SemVer. See subproject changelogs for details.
+
+## Standards layers
+- Core: manifest, catalog, schemas, media types, objects, assets, relations, volumes, and envelope.
+- Conformance: `sitepack-spec/CONFORMANCE.md`.
+- Profiles: `sitepack-spec/profiles/`.
+- Extensions: `sitepack-spec/extensions/`.
 
 ## License
 MIT. See `LICENSE` in the repository root and in each subproject.

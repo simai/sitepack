@@ -1,0 +1,28 @@
+{
+  "spec": {
+    "name": "sitepack",
+    "version": "0.4.0"
+  },
+  "package": {
+    "id": "small-docs-site"
+  },
+  "createdAt": "2026-05-01T00:00:00Z",
+  "profiles": [
+    "site-structure",
+    "content-assets"
+  ],
+  "extensions": [
+    {
+      "id": "org.simai.larena.docara",
+      "version": "0.1.0",
+      "required": false,
+      "artifacts": [],
+      "notes": "Adapter hint only; the portable site-map and entity graph remain the source of truth."
+    }
+  ],
+  "artifacts": [
+    "site.map",
+    "entities.pages",
+    "assets.index"
+  ]
+}

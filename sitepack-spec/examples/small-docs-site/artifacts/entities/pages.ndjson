@@ -1,0 +1,3 @@
+{"id":"ent.docs.home","type":"document.page","attributes":{"title":"Documentation","format":"markdown","body":"# Documentation\n\nWelcome to the portable docs site."},"relations":{}}
+{"id":"ent.docs.install","type":"document.page","attributes":{"title":"Install","format":"markdown","body":"# Install\n\nRun the importer and review the report."},"relations":{"parent":["ent.docs.home"]}}
+{"id":"ent.docs.migration","type":"document.page","attributes":{"title":"Migration","format":"markdown","body":"# Migration\n\nMove data through SitePack, not direct CMS coupling."},"relations":{"parent":["ent.docs.home"]}}

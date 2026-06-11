@@ -10,6 +10,63 @@ use Throwable;
 
 class PackageValidator
 {
+    /**
+     * @var array<string, array{requiredAll:array<int, string>,requiredAny:array<int, string>}>
+     */
+    private const PROFILE_CONTRACTS = [
+        'config-only' => [
+            'requiredAll' => ['application/vnd.sitepack.config-kv+ndjson'],
+            'requiredAny' => [],
+        ],
+        'content-only' => [
+            'requiredAll' => ['application/vnd.sitepack.entity-graph+ndjson'],
+            'requiredAny' => [],
+        ],
+        'site-structure' => [
+            'requiredAll' => ['application/vnd.sitepack.site-map+json'],
+            'requiredAny' => [],
+        ],
+        'content-assets' => [
+            'requiredAll' => [
+                'application/vnd.sitepack.entity-graph+ndjson',
+                'application/vnd.sitepack.asset-index+ndjson',
+            ],
+            'requiredAny' => [],
+        ],
+        'site-snapshot' => [
+            'requiredAll' => [],
+            'requiredAny' => [
+                'application/vnd.sitepack.site-map+json',
+                'application/vnd.sitepack.entity-graph+ndjson',
+                'application/vnd.sitepack.asset-index+ndjson',
+            ],
+        ],
+        'product-package' => [
+            'requiredAll' => [],
+            'requiredAny' => [
+                'application/vnd.sitepack.config-kv+ndjson',
+                'application/vnd.sitepack.capabilities+json',
+            ],
+        ],
+        'full' => [
+            'requiredAll' => [],
+            'requiredAny' => [],
+        ],
+        'full-code' => [
+            'requiredAll' => [],
+            'requiredAny' => [],
+        ],
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    private const PROFILE_ALIASES = [
+        'content+assets' => 'content-assets',
+        'snapshot' => 'site-snapshot',
+        'full+code' => 'full-code',
+    ];
+
     private SchemaValidator $schemaValidator;
 
     private NdjsonValidator $ndjsonValidator;
@@ -108,6 +165,8 @@ class PackageValidator
             }
         }
 
+        $this->validateProfileContracts($manifest, $catalogArtifacts, $report);
+
         $selectedIds = $manifestArtifacts;
         if ($profile !== null) {
             $profileResult = $this->resolveProfileSelection($manifest, $profile, $report);
@@ -124,6 +183,7 @@ class PackageValidator
 
         $jsonMap = [
             'application/vnd.sitepack.capabilities+json' => 'capabilities',
+            'application/vnd.sitepack.site-map+json' => 'site-map',
             'application/vnd.sitepack.transform-plan+json' => 'transform-plan',
             'application/vnd.sitepack.object-index+json' => 'object-index',
             'application/vnd.sitepack.object-passport+json' => 'object-passport',
@@ -641,6 +701,75 @@ class PackageValidator
             'selected' => [],
             'usageError' => true,
         ];
+    }
+
+    /**
+     * @param object|null $manifest
+     * @param array<int, object> $catalogArtifacts
+     * @param ValidationReport $report
+     * @return void
+     */
+    private function validateProfileContracts(?object $manifest, array $catalogArtifacts, ValidationReport $report): void
+    {
+        if ($manifest === null || !isset($manifest->profiles) || !is_array($manifest->profiles)) {
+            return;
+        }
+
+        $mediaTypes = [];
+        foreach ($catalogArtifacts as $artifact) {
+            if (is_string($artifact->mediaType ?? null) && $artifact->mediaType !== '') {
+                $mediaTypes[$artifact->mediaType] = true;
+            }
+        }
+
+        foreach ($manifest->profiles as $declaredProfile) {
+            if (!is_string($declaredProfile) || trim($declaredProfile) === '') {
+                continue;
+            }
+
+            $profile = self::PROFILE_ALIASES[$declaredProfile] ?? $declaredProfile;
+            $contract = self::PROFILE_CONTRACTS[$profile] ?? null;
+
+            if ($contract === null) {
+                $report->addMessage(
+                    'warning',
+                    'PROFILE_UNKNOWN',
+                    'Unknown profile contract: ' . $declaredProfile,
+                    ['profile' => $declaredProfile]
+                );
+                continue;
+            }
+
+            foreach ($contract['requiredAll'] as $requiredMediaType) {
+                if (!isset($mediaTypes[$requiredMediaType])) {
+                    $report->addMessage(
+                        'error',
+                        'PROFILE_REQUIRED_MEDIA_TYPE_MISSING',
+                        "Profile '{$declaredProfile}' requires media type '{$requiredMediaType}'",
+                        ['profile' => $declaredProfile, 'mediaType' => $requiredMediaType]
+                    );
+                }
+            }
+
+            if (count($contract['requiredAny']) > 0) {
+                $found = false;
+                foreach ($contract['requiredAny'] as $requiredMediaType) {
+                    if (isset($mediaTypes[$requiredMediaType])) {
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    $report->addMessage(
+                        'error',
+                        'PROFILE_REQUIRED_MEDIA_TYPE_MISSING',
+                        "Profile '{$declaredProfile}' requires at least one supported media type",
+                        ['profile' => $declaredProfile, 'mediaTypes' => $contract['requiredAny']]
+                    );
+                }
+            }
+        }
     }
 
     /**

@@ -9,7 +9,16 @@
 **/.docara-state
 **/.docara-state/**
 !sitepack-spec/examples/volume-set-real/*.sitepack
-source
+source/
 !docara/source/
 !docara/source/**
 **/source/docs/.translate.php
+
+.env
+.env.*
+!.env.example
+output/
+*.bak
+*.bak_*
+*.bak-*
+*.codex-bak-*
