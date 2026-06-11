@@ -29,6 +29,8 @@ $examples = [
     'cross-relations',
     'chunked-assets',
     'objects-two-objects',
+    'small-docs-site',
+    'small-blog-site',
 ];
 
 foreach ($examples as $name) {

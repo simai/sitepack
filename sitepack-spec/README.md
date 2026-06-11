@@ -18,6 +18,7 @@ Documentation and materials:
 - Conformance: `CONFORMANCE.md`.
 - Profile contracts: `profiles/`.
 - Extension governance: `extensions/`.
+- Adapter proofs: `adapter-proofs/`.
 - JSON schemas: `schemas/`.
 - Registries: `registry/`.
 - Example packages: `examples/`.
@@ -30,3 +31,4 @@ Examples:
 - `volume-set-real`: Real multi-volume example with descriptor and `.sitepack` volume files.
 - `volume-set-index-only`: Descriptor-only Volume Set (no volume files).
 - `small-docs-site`: Adapter-neutral documentation site structure with pages, menu, redirect, and portable content entities.
+- `small-blog-site`: Adapter-neutral page/post structure with a WordPress-style extension hint.

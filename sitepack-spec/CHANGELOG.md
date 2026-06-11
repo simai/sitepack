@@ -6,6 +6,8 @@
 - Added extension governance for platform-specific adapter data outside SitePack Core.
 - Added `application/vnd.sitepack.site-map+json` and the `site-structure` profile.
 - Added the `small-docs-site` example package for an adapter-neutral documentation site.
+- Added adapter-proof documentation and the `small-blog-site` example package.
+- Added `small-docs-site` and `small-blog-site` to Node and PHP example validation coverage.
 - Added validator checks for declared profile requirements in the Node and PHP reference tools.
 - Added schema sync and aggregate validation targets to the root Makefile.
 - Updated the Node lockfile to remove known audit vulnerabilities in transitive dependencies.

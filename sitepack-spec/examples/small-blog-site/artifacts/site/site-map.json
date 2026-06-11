@@ -1,0 +1,53 @@
+{
+  "kind": "site-map",
+  "site": {
+    "id": "small-blog",
+    "title": "Small Blog",
+    "baseUrl": "https://example.org/blog",
+    "defaultLocale": "en",
+    "locales": ["en"]
+  },
+  "pages": [
+    {
+      "id": "page.home",
+      "locale": "en",
+      "path": "/",
+      "title": "Home",
+      "sort": 10,
+      "showInMenu": true,
+      "entityRefs": ["ent.page.home"]
+    },
+    {
+      "id": "page.about",
+      "locale": "en",
+      "path": "/about",
+      "title": "About",
+      "sort": 20,
+      "showInMenu": true,
+      "entityRefs": ["ent.page.about"]
+    },
+    {
+      "id": "post.first",
+      "locale": "en",
+      "path": "/posts/first-post",
+      "title": "First Post",
+      "sort": 100,
+      "showInMenu": false,
+      "entityRefs": ["ent.post.first"]
+    }
+  ],
+  "menus": [
+    {
+      "id": "primary",
+      "title": "Primary",
+      "locale": "en",
+      "items": [
+        { "title": "Home", "pageId": "page.home" },
+        { "title": "About", "pageId": "page.about" }
+      ]
+    }
+  ],
+  "redirects": [
+    { "from": "/hello-world", "to": "/posts/first-post", "status": 301 }
+  ]
+}

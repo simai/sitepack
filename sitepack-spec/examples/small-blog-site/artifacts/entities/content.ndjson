@@ -1,0 +1,3 @@
+{"id":"ent.page.home","type":"content.page","attributes":{"title":"Home","format":"markdown","body":"# Home\n\nWelcome to the portable blog."},"relations":{}}
+{"id":"ent.page.about","type":"content.page","attributes":{"title":"About","format":"markdown","body":"# About\n\nThis page can become a WordPress page, a static page, or another target platform page."},"relations":{}}
+{"id":"ent.post.first","type":"content.post","attributes":{"title":"First Post","format":"markdown","body":"# First Post\n\nThis post is portable content. WordPress-specific metadata belongs in an extension."},"relations":{}}

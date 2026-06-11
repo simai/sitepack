@@ -24,7 +24,9 @@ const examples = [
   'full-code',
   'cross-relations',
   'chunked-assets',
-  'objects-two-objects'
+  'objects-two-objects',
+  'small-docs-site',
+  'small-blog-site'
 ];
 
 for (const name of examples) {

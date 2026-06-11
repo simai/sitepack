@@ -1,0 +1,22 @@
+{
+  "artifacts": [
+    {
+      "id": "site.map",
+      "mediaType": "application/vnd.sitepack.site-map+json",
+      "path": "artifacts/site/site-map.json",
+      "size": 1114
+    },
+    {
+      "id": "entities.content",
+      "mediaType": "application/vnd.sitepack.entity-graph+ndjson",
+      "path": "artifacts/entities/content.ndjson",
+      "size": 604
+    },
+    {
+      "id": "assets.index",
+      "mediaType": "application/vnd.sitepack.asset-index+ndjson",
+      "path": "artifacts/assets/index.ndjson",
+      "size": 207
+    }
+  ]
+}
