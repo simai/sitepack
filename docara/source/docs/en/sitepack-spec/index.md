@@ -22,6 +22,7 @@ Documentation and materials:
 - JSON schemas: `schemas/`.
 - Registries: `registry/`.
 - Example packages: `examples/`.
+- Release notes: `releases/`.
 - LLM materials: `llm/`.
 
 Examples:

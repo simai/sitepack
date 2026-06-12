@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Prepared release candidate notes for `0.5.0-rc.1`.
 - Added conformance levels for Reader, Validator, Archive, Previewer, Importer, and Exporter.
 - Added portable profile contracts for configuration, content, site structure, content assets, snapshots, and product packages.
 - Added extension governance for platform-specific adapter data outside SitePack Core.

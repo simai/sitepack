@@ -63,6 +63,7 @@ The specification and tools follow SemVer. See subproject changelogs for details
 - Conformance: `sitepack-spec/CONFORMANCE.md`.
 - Profiles: `sitepack-spec/profiles/`.
 - Extensions: `sitepack-spec/extensions/`.
+- Release notes: `sitepack-spec/releases/`.
 
 ## License
 MIT. See `LICENSE` in the repository root and in each subproject.

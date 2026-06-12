@@ -19,6 +19,7 @@ Documentation and materials:
 - Profile contracts: `profiles/`.
 - Extension governance: `extensions/`.
 - Adapter proofs: `adapter-proofs/`.
+- Release notes: `releases/`.
 - JSON schemas: `schemas/`.
 - Registries: `registry/`.
 - Example packages: `examples/`.
