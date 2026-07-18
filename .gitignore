@@ -12,6 +12,7 @@
 source/
 !docara/source/
 !docara/source/**
+/docara/source/_core/*
 **/source/docs/.translate.php
 
 .env
