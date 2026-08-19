@@ -48,6 +48,10 @@ class NdjsonValidator
             $lineNumber += 1;
             $trimmed = trim($line);
             if ($trimmed === '') {
+                // A final newline is the normal NDJSON terminator, not an empty record.
+                if ($file->eof()) {
+                    continue;
+                }
                 if ($warnOnEmptyLine) {
                     $details[] = [
                         'level' => 'warning',
