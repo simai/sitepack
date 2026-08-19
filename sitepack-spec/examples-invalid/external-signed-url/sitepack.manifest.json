@@ -1,0 +1,7 @@
+{
+  "spec": { "name": "sitepack", "version": "1.0.0" },
+  "package": { "id": "external-signed-url" },
+  "createdAt": "2026-08-19T00:00:00Z",
+  "profiles": ["compact-snapshot"],
+  "artifacts": ["assets.index"]
+}

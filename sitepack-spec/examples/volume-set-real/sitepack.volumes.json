@@ -1,12 +1,12 @@
 {
   "spec": {
     "name": "sitepack",
-    "version": "0.4.0"
+    "version": "1.0.0"
   },
   "kind": "volume-set",
-  "packageId": "volume-set-real",
+  "packageId": "example-cross-relations",
   "container": "zip",
-  "maxPartSize": 1000,
+  "maxPartSize": 5000,
   "bootstrap": {
     "volumeIndex": 1,
     "containsManifest": true,
@@ -15,17 +15,10 @@
   "volumes": [
     {
       "index": 1,
-      "count": 2,
+      "count": 1,
       "file": "sitepack.part1.sitepack",
-      "size": 996,
-      "sha256": "e6ef91a7c9c8e88bccbce91f537a63d7b80399cae114b8b1e10636be1cfff4e1"
-    },
-    {
-      "index": 2,
-      "count": 2,
-      "file": "sitepack.part2.sitepack",
-      "size": 717,
-      "sha256": "bc49b66f85ce694d72183da985288d71c708a898dbcec515816e4af1de8606dd"
+      "size": 1712,
+      "sha256": "94a2062741e41feb5f982673cc251fe1e538172d0a7f7d1498f371a64a3cb791"
     }
   ]
 }

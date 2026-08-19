@@ -9,5 +9,6 @@ validate-node:
 
 validate-php:
 	cd sitepack-tools-php && composer install && php scripts/validate-examples.php ../sitepack-spec/examples
+	cd sitepack-tools-php && php scripts/validate-invalid-examples.php ../sitepack-spec/examples-invalid
 
 validate-all: check-schema-sync validate-node validate-php

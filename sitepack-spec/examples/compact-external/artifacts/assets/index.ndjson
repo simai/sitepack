@@ -1,0 +1,1 @@
+{"id":"asset-document","storage":"external","mime":"application/pdf","size":32768,"sha256":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","originalName":"document.pdf","sourceUrl":"https://files.example.test/archive/document.pdf","locator":{"provider":"s3-compatible","key":"organizations/42/documents/document.pdf","versionId":"version-7"}}

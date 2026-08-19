@@ -9,7 +9,7 @@ const { resolveSafePath } = require('./validator/path-safe');
 const { computeSha256Hex } = require('./validator/digest');
 
 const DEFAULT_MAX_PART_SIZE = 104857600;
-const TOOL_VERSION = '0.4.0';
+const TOOL_VERSION = '1.0.0';
 
 function normalizeRelPath(relPath) {
   const posixPath = relPath.replace(/\\/g, '/');
@@ -305,7 +305,7 @@ async function createVolumes(packageDir, outDir, options) {
   const descriptor = {
     spec: {
       name: 'sitepack',
-      version: '0.4.0'
+      version: '1.0.0'
     },
     kind: 'volume-set',
     packageId,

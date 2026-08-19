@@ -11,13 +11,9 @@ Initial profile contracts:
 - [`site-structure`](site-structure.md): site identity, locales, routes, pages, menus, redirects, and metadata.
 - [`content-assets`](content-assets.md): content entities and binary assets.
 - [`site-snapshot`](site-snapshot.md): archival or preview-oriented site snapshot.
+- [`compact-snapshot`](compact-snapshot.md): snapshot with stable external asset locators.
+- [`full-snapshot`](full-snapshot.md): self-contained snapshot with embedded assets.
 - [`product-package`](product-package.md): installable product, solution, theme, plugin, or starter-site metadata.
-
-Compatibility aliases:
-
-- `content+assets` is a legacy alias of `content-assets`.
-- `full+code` is a legacy alias of `full-code`.
-- `snapshot` is a legacy alias of `site-snapshot` when the package is preview/archive oriented.
 
 Profiles SHOULD be tested against at least two adapters before becoming stable. In the first phase, Bitrix and Larena are the main adapter checks. WordPress is the anti-bias check for portable website semantics.
 

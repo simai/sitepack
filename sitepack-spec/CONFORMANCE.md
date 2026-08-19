@@ -41,12 +41,14 @@ Requirements:
 - MUST verify `size`.
 - SHOULD verify `digest` when present.
 - MUST validate known core media types against their schemas.
+- MUST validate external locator safety without resolving provider credentials.
 - MUST check declared profile requirements when profile contracts are available.
 - MUST report unknown media types as warnings, not silent success.
 
 Allowed degradation:
 
 - MAY make asset blob verification optional, but the report MUST say whether blobs were checked.
+- MUST NOT claim `full-snapshot` conformance while external assets remain.
 
 ## Archive
 

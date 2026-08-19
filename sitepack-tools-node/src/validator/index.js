@@ -56,6 +56,22 @@ const profileContracts = {
       'application/vnd.sitepack.asset-index+ndjson'
     ]
   },
+  'compact-snapshot': {
+    requiredAll: [],
+    requiredAny: [
+      'application/vnd.sitepack.site-map+json',
+      'application/vnd.sitepack.entity-graph+ndjson',
+      'application/vnd.sitepack.asset-index+ndjson'
+    ]
+  },
+  'full-snapshot': {
+    requiredAll: [],
+    requiredAny: [
+      'application/vnd.sitepack.site-map+json',
+      'application/vnd.sitepack.entity-graph+ndjson',
+      'application/vnd.sitepack.asset-index+ndjson'
+    ]
+  },
   'product-package': {
     requiredAll: [],
     requiredAny: [
@@ -73,14 +89,8 @@ const profileContracts = {
   }
 };
 
-const profileAliases = {
-  'content+assets': 'content-assets',
-  snapshot: 'site-snapshot',
-  'full+code': 'full-code'
-};
-
 function canonicalProfileName(profile) {
-  return profileAliases[profile] || profile;
+  return profile;
 }
 
 function validateProfileContracts(manifest, catalogArtifacts, report) {
@@ -193,14 +203,50 @@ function selectArtifactsForProfile(manifest, profile, report) {
 }
 
 async function validateAssetIndexRecord(record, lineNumber, options) {
-  const { packageRoot, checkAssetBlobs, mediaType } = options;
+  const { packageRoot, checkAssetBlobs, mediaType, declaredProfiles = [] } = options;
   const details = [];
 
-  if (!checkAssetBlobs || mediaType !== 'application/vnd.sitepack.asset-index+ndjson') {
+  if (mediaType !== 'application/vnd.sitepack.asset-index+ndjson') {
     return details;
   }
 
   if (!record || typeof record !== 'object') {
+    return details;
+  }
+
+  if (record.storage === 'external') {
+    const key = record.locator && typeof record.locator.key === 'string'
+      ? record.locator.key
+      : '';
+    const sourceUrl = typeof record.sourceUrl === 'string' ? record.sourceUrl : '';
+    const secretPattern = /(?:^|[?&])(token|access_token|signature|sig|expires|x-amz-[^=]*|credential|cookie|authorization)=/i;
+
+    if (key.includes('://') || /:\/\/[^/\s]+@/.test(key) || secretPattern.test(key)) {
+      details.push({
+        level: 'error',
+        code: 'EXTERNAL_LOCATOR_UNSAFE',
+        message: 'External locator key must be a stable provider key without URL credentials or signed query parameters'
+      });
+    }
+    if (sourceUrl && (/\:\/\/[^/\s]+@/.test(sourceUrl) || secretPattern.test(sourceUrl))) {
+      details.push({
+        level: 'error',
+        code: 'EXTERNAL_SOURCE_URL_UNSAFE',
+        message: 'sourceUrl must not contain credentials or temporary signed query parameters'
+      });
+    }
+    if (declaredProfiles.includes('full-snapshot')) {
+      details.push({
+        level: 'error',
+        code: 'FULL_SNAPSHOT_EXTERNAL_ASSET',
+        message: 'full-snapshot requires every asset to be embedded'
+      });
+    }
+
+    return details;
+  }
+
+  if (!checkAssetBlobs) {
     return details;
   }
 
@@ -824,7 +870,9 @@ async function validatePackage(options) {
     'application/vnd.sitepack.site-map+json': validators.siteMap,
     'application/vnd.sitepack.transform-plan+json': validators.transformPlan,
     'application/vnd.sitepack.object-index+json': validators.objectIndex,
-    'application/vnd.sitepack.object-passport+json': validators.objectPassport
+    'application/vnd.sitepack.object-passport+json': validators.objectPassport,
+    'application/vnd.sitepack.enrichment-report+json': validators.enrichmentReport,
+    'application/vnd.sitepack.portable-metadata+json': validators.portableMetadata
   };
 
   const validatedIds = new Set();
@@ -917,7 +965,8 @@ async function validatePackage(options) {
           validateAssetIndexRecord(record, line, {
             packageRoot,
             checkAssetBlobs,
-            mediaType: art.mediaType
+            mediaType: art.mediaType,
+            declaredProfiles: Array.isArray(manifest.profiles) ? manifest.profiles : []
           })
       });
 

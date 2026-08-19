@@ -1,4 +1,4 @@
-# SitePack v0.4.0 — Specification
+# SitePack 1.0.0 — Specification
 
 ## Keywords
 The keywords **MUST**, **SHOULD**, and **MAY** are to be interpreted as described in RFC 2119.
@@ -16,7 +16,8 @@ SitePack is an open format for packaging website data for transfer between syste
 - **Catalog**: the `sitepack.catalog.json` file listing artifacts.
 - **Entity**: a content object (page, post, item, etc.).
 - **Recordset**: tabular data (NDJSON records).
-- **Asset**: a binary resource (image, file, media).
+- **Asset**: a binary resource (image, file, media), embedded in the package or referenced through a stable external locator.
+- **Enrichment**: creation of a new package by resolving external assets and embedding verified bytes.
 - **Object Index**: a human-friendly object list linking to passports.
 - **Object Passport**: object metadata linking to datasets and artifacts.
 - **Dataset Selector**: a selector referencing a dataset artifact and optional filter.
@@ -75,22 +76,35 @@ An artifact is a file inside the package described in the catalog. The catalog c
 - `mediaType` (**MUST**): artifact media type.
 - `path` (**MUST**): relative path inside the package.
 - `size` (**MUST**): file size in bytes.
-- `digest` (**SHOULD** in v0.4): file checksum.
+- `digest` (**SHOULD**): file checksum.
 - `annotations` (**MAY**): extension object.
 
-### 5.1 Assets: chunked blobs
-Asset entries in the asset index may represent a single blob (`path`) or a chunked blob (`chunks`).
+### 5.1 Assets
+Every asset entry **MUST** declare one storage variant:
+
+- `storage=embedded` with one package-relative `path`;
+- `storage=embedded` with ordered `chunks`;
+- `storage=external` with a stable `locator.provider` and `locator.key`.
+
+Embedded assets **MUST** include `size` and `sha256`. External assets **SHOULD** include them when known. A locator key is an opaque provider key, not a download URL.
 
 - When `chunks` are present, the final asset bytes are the concatenation of chunks in ascending `index` order.
 - Importers **MUST** verify each chunk `sha256` and `size`, and then verify the overall asset `sha256` and `size`.
 - Exporters **SHOULD** keep chunk sizes at or below `maxPartSize` (default 100 MiB).
+
+External locators **MUST NOT** contain credentials, cookies, bearer tokens, temporary signed URLs, or secrets. Providers and credentials are host configuration and never package content.
 
 ### 5.2 Blob storage paths
 Asset blobs are located by the `path` recorded in each asset-index entry.
 
 - Importers **MUST** read blobs exactly from the recorded `path` and **MUST NOT** assume a fixed directory layout.
 - Canonical recommendation: `artifacts/assets/blobs/sha256/<sha256>[.<ext>]`.
-- Alternate layouts (e.g., `blobs/sha256/...`) **MAY** appear in legacy packages; tools **MUST** still follow the recorded `path`.
+
+### 5.3 Enrichment
+
+Enrichment resolves `storage=external` entries through host-supplied providers, streams bytes into a new package, verifies known size/checksum, and writes an `application/vnd.sitepack.enrichment-report+json` artifact. It **MUST NOT** modify the source package. Unavailable, changed, and unsupported assets **MUST** be reported explicitly.
+
+An output package may declare `full-snapshot` only when every asset is embedded and verified.
 
 ## 6. Entities (portable layer)
 
@@ -199,6 +213,8 @@ A compatible tool **MUST** understand:
 - `application/vnd.sitepack.asset-index+ndjson`
 - `application/vnd.sitepack.config-kv+ndjson`
 - `application/vnd.sitepack.recordset+ndjson`
+- `application/vnd.sitepack.enrichment-report+json`
+- `application/vnd.sitepack.portable-metadata+json`
 
 ## 9. Profiles
 Profiles define expected artifacts, intent, and importer/exporter obligations. Profile contracts are specified in `profiles/`.
@@ -211,12 +227,8 @@ Current portable profile contracts:
 - `content-assets`: content entities plus binary assets.
 - `site-snapshot`: archival or preview-oriented site snapshot.
 - `product-package`: installable product, solution, theme, plugin, industry pack, or starter-site metadata.
-
-Compatibility aliases:
-
-- `content+assets` is a legacy alias of `content-assets`.
-- `full+code` is a legacy alias of `full-code`.
-- `snapshot` is a legacy alias of `site-snapshot` for preview/archive packages.
+- `compact-snapshot`: site snapshot that may retain stable external file locators.
+- `full-snapshot`: self-contained snapshot with every asset embedded.
 
 Tools SHOULD validate profile requirements when a profile contract is known.
 
@@ -236,7 +248,7 @@ The Site Map is CMS-neutral. It MUST NOT require Bitrix iblocks, Laravel Eloquen
 
 ## 11. Integrity and digest
 - Digest format: `sha256:<hex>`.
-- In v0.4, `digest` in the catalog **SHOULD** be provided but is not required.
+- `digest` in the catalog **SHOULD** be provided but is not required.
 - `size` for each artifact **MUST** be provided.
 
 ## 12. Import security
@@ -247,6 +259,7 @@ Importers **MUST** protect against:
 Additional requirements:
 - Code artifacts **MUST NOT** be installed or executed automatically.
 - Secret configs **MUST NOT** be applied automatically.
+- External locator keys and source URLs **MUST NOT** contain credentials or temporary authorization parameters.
 
 ## 13. Capabilities (optional extension)
 Extension for describing tool export/import capabilities. Media type:

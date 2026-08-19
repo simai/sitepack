@@ -1,0 +1,10 @@
+{
+  "artifacts": [
+    {
+      "id": "assets.index",
+      "mediaType": "application/vnd.sitepack.asset-index+ndjson",
+      "path": "artifacts/assets/index.ndjson",
+      "size": 210
+    }
+  ]
+}

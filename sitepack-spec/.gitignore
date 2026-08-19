@@ -1,5 +1,6 @@
 dist/
 *.sitepack
+!examples/volume-set-real/*.sitepack
 *.sitepack.enc
 *.log
 node_modules/

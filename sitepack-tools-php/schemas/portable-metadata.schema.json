@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sitepack.org/schemas/portable-metadata.schema.json",
+  "title": "SitePack Portable Metadata",
+  "type": "object",
+  "required": ["sourceSolution", "sourceSchemaVersion", "logicalIdNamespace", "canonicalEntityTypes"],
+  "properties": {
+    "sourceSolution": { "type": "string", "minLength": 1, "maxLength": 255 },
+    "sourceSchemaVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "logicalIdNamespace": { "type": "string", "minLength": 1, "maxLength": 255 },
+    "canonicalEntityTypes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9._-]{1,127}$" }
+    },
+    "sourceUrls": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "format": "uri" }
+    },
+    "unsupportedData": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "string", "pattern": "^[a-z0-9._-]+$" },
+          "message": { "type": "string", "maxLength": 2048 },
+          "logicalId": { "type": "string", "maxLength": 512 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9.-]+/[a-z0-9._-]+$" },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

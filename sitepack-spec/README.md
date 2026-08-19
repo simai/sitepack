@@ -1,4 +1,4 @@
-# SitePack v0.4.0
+# SitePack 1.0.0
 
 SitePack is an open format for packaging website data for export/import between systems. A package contains two required files (manifest and catalog) and a set of artifacts (entities, assets, config, recordsets, etc.).
 
@@ -8,7 +8,8 @@ Key decisions:
 - Secure transfer uses an external age envelope: `*.sitepack.enc` + `*.sitepack.enc.json`.
 - Relations are standardized using Link encoding with array-based `relations` values.
 - Volume Sets describe split package distribution (`sitepack.volumes.json`).
-- Asset index supports chunked blobs (`chunks[]`).
+- Asset index supports embedded files, chunked files, and safe external locators.
+- Compact packages can be enriched into new self-contained packages with a machine-readable report.
 - Conformance levels define what Reader, Validator, Archive, Previewer, Importer, and Exporter support mean.
 - Profile contracts describe portable obligations for configuration, site structure, content/assets, snapshots, and product packages.
 - Extension governance keeps Bitrix, Larena, WordPress, and other platform-specific data outside SitePack Core.
@@ -28,6 +29,7 @@ Documentation and materials:
 Examples:
 - `cross-relations`: Demonstrates entity-to-entity and entity-to-asset relations using Link[] (`property.BRAND`, `property.CITY`, `assets`) plus an asset index and blob.
 - `chunked-assets`: Demonstrates chunked asset blobs using `chunks[]` in the asset index.
+- `compact-external`: Demonstrates a compact snapshot with a stable external file locator.
 - `objects-two-objects`: Demonstrates object index + passports + dataset selectors.
 - `volume-set-real`: Real multi-volume example with descriptor and `.sitepack` volume files.
 - `volume-set-index-only`: Descriptor-only Volume Set (no volume files).

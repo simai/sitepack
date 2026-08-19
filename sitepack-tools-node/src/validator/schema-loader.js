@@ -17,7 +17,9 @@ const schemaFiles = {
   volumeSet: 'volume-set.schema.json',
   datasetSelector: 'dataset-selector.schema.json',
   objectIndex: 'object-index.schema.json',
-  objectPassport: 'object-passport.schema.json'
+  objectPassport: 'object-passport.schema.json',
+  enrichmentReport: 'enrichment-report.schema.json',
+  portableMetadata: 'portable-metadata.schema.json'
 };
 
 function loadSchemas(schemasDir) {

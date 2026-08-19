@@ -1,0 +1,7 @@
+{
+  "spec": { "name": "sitepack", "version": "1.0.0" },
+  "package": { "id": "full-snapshot-external" },
+  "createdAt": "2026-08-19T00:00:00Z",
+  "profiles": ["full-snapshot"],
+  "artifacts": ["assets.index"]
+}

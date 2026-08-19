@@ -86,6 +86,8 @@ class SchemaValidator
             'dataset-selector' => 'dataset-selector.schema.json',
             'object-index' => 'object-index.schema.json',
             'object-passport' => 'object-passport.schema.json',
+            'enrichment-report' => 'enrichment-report.schema.json',
+            'portable-metadata' => 'portable-metadata.schema.json',
             'capabilities' => 'capabilities.schema.json',
             'transform-plan' => 'transform-plan.schema.json',
             'envelope' => 'envelope.schema.json',

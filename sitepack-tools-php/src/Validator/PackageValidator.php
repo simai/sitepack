@@ -41,6 +41,22 @@ class PackageValidator
                 'application/vnd.sitepack.asset-index+ndjson',
             ],
         ],
+        'compact-snapshot' => [
+            'requiredAll' => [],
+            'requiredAny' => [
+                'application/vnd.sitepack.site-map+json',
+                'application/vnd.sitepack.entity-graph+ndjson',
+                'application/vnd.sitepack.asset-index+ndjson',
+            ],
+        ],
+        'full-snapshot' => [
+            'requiredAll' => [],
+            'requiredAny' => [
+                'application/vnd.sitepack.site-map+json',
+                'application/vnd.sitepack.entity-graph+ndjson',
+                'application/vnd.sitepack.asset-index+ndjson',
+            ],
+        ],
         'product-package' => [
             'requiredAll' => [],
             'requiredAny' => [
@@ -61,11 +77,7 @@ class PackageValidator
     /**
      * @var array<string, string>
      */
-    private const PROFILE_ALIASES = [
-        'content+assets' => 'content-assets',
-        'snapshot' => 'site-snapshot',
-        'full+code' => 'full-code',
-    ];
+    private const PROFILE_ALIASES = [];
 
     private SchemaValidator $schemaValidator;
 
@@ -187,6 +199,8 @@ class PackageValidator
             'application/vnd.sitepack.transform-plan+json' => 'transform-plan',
             'application/vnd.sitepack.object-index+json' => 'object-index',
             'application/vnd.sitepack.object-passport+json' => 'object-passport',
+            'application/vnd.sitepack.enrichment-report+json' => 'enrichment-report',
+            'application/vnd.sitepack.portable-metadata+json' => 'portable-metadata',
         ];
 
         foreach ($catalogArtifacts as $artifact) {
@@ -270,7 +284,12 @@ class PackageValidator
                     $safePath['path'],
                     $schemaName,
                     true,
-                    $this->buildAssetBlobChecker($packageRoot, $checkAssetBlobs, $mediaType)
+                    $this->buildAssetBlobChecker(
+                        $packageRoot,
+                        $checkAssetBlobs,
+                        $mediaType,
+                        is_object($manifest) && is_array($manifest->profiles ?? null) ? $manifest->profiles : []
+                    )
                 );
 
                 $report->incrementNdjsonLinesValidated($ndjsonResult['linesValidated']);
@@ -776,19 +795,60 @@ class PackageValidator
      * @param string $packageRoot
      * @param bool $checkAssetBlobs
      * @param string $mediaType
+     * @param array<int, string> $declaredProfiles
      * @return callable(object, int):array<int, array{level:string,code:string,message:string,line:int|null}>
      */
     private function buildAssetBlobChecker(
         string $packageRoot,
         bool $checkAssetBlobs,
-        string $mediaType
+        string $mediaType,
+        array $declaredProfiles
     ): callable {
-        return function (object $record, int $lineNumber) use ($packageRoot, $checkAssetBlobs, $mediaType): array {
-            if (!$checkAssetBlobs || $mediaType !== 'application/vnd.sitepack.asset-index+ndjson') {
+        return function (object $record, int $lineNumber) use ($packageRoot, $checkAssetBlobs, $mediaType, $declaredProfiles): array {
+            if ($mediaType !== 'application/vnd.sitepack.asset-index+ndjson') {
                 return [];
             }
 
             $details = [];
+
+            if (($record->storage ?? null) === 'external') {
+                $key = is_object($record->locator ?? null) && is_string($record->locator->key ?? null)
+                    ? (string) $record->locator->key
+                    : '';
+                $sourceUrl = is_string($record->sourceUrl ?? null) ? (string) $record->sourceUrl : '';
+                $secretPattern = '/(?:^|[?&])(token|access_token|signature|sig|expires|x-amz-[^=]*|credential|cookie|authorization)=/i';
+
+                if (str_contains($key, '://') || preg_match('/:\/\/[^\/\s]+@/', $key) === 1 || preg_match($secretPattern, $key) === 1) {
+                    $details[] = [
+                        'level' => 'error',
+                        'code' => 'EXTERNAL_LOCATOR_UNSAFE',
+                        'message' => 'External locator key must be a stable provider key without URL credentials or signed query parameters',
+                        'line' => $lineNumber,
+                    ];
+                }
+                if ($sourceUrl !== '' && (preg_match('/:\/\/[^\/\s]+@/', $sourceUrl) === 1 || preg_match($secretPattern, $sourceUrl) === 1)) {
+                    $details[] = [
+                        'level' => 'error',
+                        'code' => 'EXTERNAL_SOURCE_URL_UNSAFE',
+                        'message' => 'sourceUrl must not contain credentials or temporary signed query parameters',
+                        'line' => $lineNumber,
+                    ];
+                }
+                if (in_array('full-snapshot', $declaredProfiles, true)) {
+                    $details[] = [
+                        'level' => 'error',
+                        'code' => 'FULL_SNAPSHOT_EXTERNAL_ASSET',
+                        'message' => 'full-snapshot requires every asset to be embedded',
+                        'line' => $lineNumber,
+                    ];
+                }
+
+                return $details;
+            }
+
+            if (!$checkAssetBlobs) {
+                return [];
+            }
 
             $expectedSha = is_string($record->sha256 ?? null) ? strtolower($record->sha256) : null;
             $expectedSize = is_int($record->size ?? null) ? $record->size : null;

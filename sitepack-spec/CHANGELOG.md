@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## 1.0.0 - 2026-08-19
+- Added explicit embedded, chunked, and external asset storage variants.
+- Added compact and full snapshot profiles and a portable enrichment report.
+- Added portable metadata for future target recipes and canonical entity mapping.
+- Rejected credentials and temporary signed URLs in external asset metadata.
+- Removed pre-1 profile aliases and made `storage` explicit for every asset.
+- Released PHP and Node reference validators as 1.0.0.
+
+## Pre-1 development history
 - Prepared release candidate notes for `0.5.0-rc.1`.
 - Added conformance levels for Reader, Validator, Archive, Previewer, Importer, and Exporter.
 - Added portable profile contracts for configuration, content, site structure, content assets, snapshots, and product packages.

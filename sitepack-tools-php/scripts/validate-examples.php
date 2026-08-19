@@ -31,6 +31,7 @@ $examples = [
     'objects-two-objects',
     'small-docs-site',
     'small-blog-site',
+    'compact-external',
 ];
 
 foreach ($examples as $name) {

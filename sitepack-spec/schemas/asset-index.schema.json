@@ -4,22 +4,26 @@
   "title": "SitePack Asset Index Entry",
   "type": "object",
   "oneOf": [
-    { "$ref": "#/$defs/single" },
-    { "$ref": "#/$defs/chunked" }
+    { "$ref": "#/$defs/embeddedSingle" },
+    { "$ref": "#/$defs/embeddedChunked" },
+    { "$ref": "#/$defs/external" }
   ],
   "$defs": {
-    "common": {
+    "identity": {
       "type": "object",
-      "required": ["id", "sha256", "size"],
+      "required": ["id", "storage"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
+        "storage": { "enum": ["embedded", "external"] },
         "mime": { "type": "string", "minLength": 1 },
         "size": { "type": "integer", "minimum": 0 },
         "sha256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
-        "originalName": { "type": "string" }
+        "originalName": { "type": "string" },
+        "sourceUrl": { "type": "string", "format": "uri" }
       },
       "additionalProperties": true
     },
+    "integrity": { "required": ["size", "sha256"] },
     "chunk": {
       "type": "object",
       "required": ["index", "size", "sha256", "path"],
@@ -31,31 +35,53 @@
       },
       "additionalProperties": false
     },
-    "single": {
+    "embeddedSingle": {
       "allOf": [
-        { "$ref": "#/$defs/common" },
+        { "$ref": "#/$defs/identity" },
+        { "$ref": "#/$defs/integrity" },
         {
           "required": ["path"],
-          "not": { "required": ["chunks"] },
           "properties": {
+            "storage": { "const": "embedded" },
             "path": { "type": "string", "minLength": 1 }
-          }
+          },
+          "not": { "anyOf": [{ "required": ["chunks"] }, { "required": ["locator"] }] }
         }
       ]
     },
-    "chunked": {
+    "embeddedChunked": {
       "allOf": [
-        { "$ref": "#/$defs/common" },
+        { "$ref": "#/$defs/identity" },
+        { "$ref": "#/$defs/integrity" },
         {
           "required": ["chunks"],
-          "not": { "required": ["path"] },
           "properties": {
-            "chunks": {
-              "type": "array",
-              "minItems": 1,
-              "items": { "$ref": "#/$defs/chunk" }
+            "storage": { "const": "embedded" },
+            "chunks": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/chunk" } }
+          },
+          "not": { "anyOf": [{ "required": ["path"] }, { "required": ["locator"] }] }
+        }
+      ]
+    },
+    "external": {
+      "allOf": [
+        { "$ref": "#/$defs/identity" },
+        {
+          "required": ["locator"],
+          "properties": {
+            "storage": { "const": "external" },
+            "locator": {
+              "type": "object",
+              "required": ["provider", "key"],
+              "properties": {
+                "provider": { "type": "string", "pattern": "^[a-z][a-z0-9._-]{1,63}$" },
+                "key": { "type": "string", "minLength": 1, "maxLength": 2048 },
+                "versionId": { "type": "string", "minLength": 1, "maxLength": 512 }
+              },
+              "additionalProperties": false
             }
-          }
+          },
+          "not": { "anyOf": [{ "required": ["path"] }, { "required": ["chunks"] }] }
         }
       ]
     }

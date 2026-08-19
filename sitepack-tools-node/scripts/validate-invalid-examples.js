@@ -19,7 +19,9 @@ const validatorBin = path.resolve(__dirname, '..', 'bin', 'sitepack-validate');
 const examples = [
   'objects-missing-passport',
   'objects-passport-id-mismatch',
-  'objects-bad-selector-op'
+  'objects-bad-selector-op',
+  'external-signed-url',
+  'full-snapshot-external'
 ];
 
 for (const name of examples) {

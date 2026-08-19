@@ -1,0 +1,1 @@
+{"id":"asset-secret","storage":"external","locator":{"provider":"s3-compatible","key":"https://files.example.test/document.pdf?X-Amz-Signature=secret"}}

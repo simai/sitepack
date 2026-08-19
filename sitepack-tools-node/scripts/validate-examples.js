@@ -26,7 +26,8 @@ const examples = [
   'chunked-assets',
   'objects-two-objects',
   'small-docs-site',
-  'small-blog-site'
+  'small-blog-site',
+  'compact-external'
 ];
 
 for (const name of examples) {
