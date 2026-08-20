@@ -94,6 +94,13 @@ Embedded assets **MUST** include `size` and `sha256`. External assets **SHOULD**
 
 External locators **MUST NOT** contain credentials, cookies, bearer tokens, temporary signed URLs, or secrets. Providers and credentials are host configuration and never package content.
 
+`sourceUrl` is an optional human-readable public reference. It is not an asset
+locator and is never authoritative. Generic importers and enrichment tools
+**MUST NOT** fetch it directly; external bytes are resolved only through the
+registered provider identified by `locator.provider` and the opaque
+`locator.key`. A host implementation may display `sourceUrl` or use it for
+diagnostics after applying its own URL policy.
+
 ### 5.2 Blob storage paths
 Asset blobs are located by the `path` recorded in each asset-index entry.
 
