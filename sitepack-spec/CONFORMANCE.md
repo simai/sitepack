@@ -11,6 +11,9 @@ This document makes the phrase "supports SitePack" precise. A tool MUST NOT clai
 - Unknown artifacts and extensions MUST be handled predictably: preserve, skip, warn, or partially import with a report.
 - Importers and exporters SHOULD declare supported profiles and extensions.
 - Importers MUST produce a machine-readable report for unsupported, skipped, partially applied, or failed artifacts.
+- Snapshot exporters SHOULD use the deterministic distribution names defined
+  in `DISTRIBUTION-NAMING.md`; importers MUST continue to resolve content from
+  package metadata and Volume Set descriptors rather than filenames.
 
 ## Reader
 

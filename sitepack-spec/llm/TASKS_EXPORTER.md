@@ -19,6 +19,9 @@ Any site data model (content, assets, config, tables). The exporter decides whic
 - A Link MUST be either a string or an object with `ref` and optional `meta`.
 - If producing a split distribution, generate `sitepack.volumes.json` with `spec.version = 1.0.0`, `kind = volume-set`, and a `volumes[]` list.
 - `maxPartSize` SHOULD be 104857600 bytes (100 MiB) unless the user specifies otherwise.
+- For snapshot downloads, follow `DISTRIBUTION-NAMING.md`: use the canonical
+  site host, UTC timestamp and mode in the base name, and zero-padded
+  `.part-0001-of-0012.sitepack` volume names.
 
 ## NDJSON
 - One JSON object per line.

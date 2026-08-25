@@ -14,6 +14,7 @@ Key decisions:
 - Profile contracts describe portable obligations for configuration, site structure, content/assets, snapshots, and product packages.
 - Extension governance keeps Bitrix, Larena, WordPress, and other platform-specific data outside SitePack Core.
 - Optional detached Ed25519 signatures authenticate final package bytes without embedding trust or private keys in the archive.
+- Distribution naming gives snapshot files deterministic site, UTC timestamp, mode, and volume-part names.
 
 Documentation and materials:
 - Specification: `SPEC.md`.
@@ -23,6 +24,7 @@ Documentation and materials:
 - Adapter proofs: `adapter-proofs/`.
 - Release notes: `releases/`.
 - Detached signature contract: `SIGNATURES.md`.
+- Distribution naming contract: `DISTRIBUTION-NAMING.md`.
 - JSON schemas: `schemas/`.
 - Registries: `registry/`.
 - Example packages: `examples/`.

@@ -8,6 +8,24 @@ TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
 printf 'portable-sitepack-signature\n' > "$TMP/payload.sitepack"
+cat > "$TMP/sitepack.volumes.json" <<'JSON'
+{
+  "spec": {"name": "sitepack", "version": "1.0.0"},
+  "kind": "volume-set",
+  "packageId": "signature-interop",
+  "container": "zip",
+  "maxPartSize": 104857600,
+  "volumes": [
+    {
+      "index": 1,
+      "count": 1,
+      "file": "example.part-0001-of-0001.sitepack",
+      "size": 1,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ]
+}
+JSON
 
 $PHP -r '
   $seed = random_bytes(SODIUM_CRYPTO_SIGN_SEEDBYTES);
@@ -42,4 +60,23 @@ if (
   exit 1
 fi
 
-echo 'Signature interoperability: 3 checks passed.'
+(
+  cd "$ROOT/sitepack-tools-node"
+  $NODE src/cli.js sign "$TMP/sitepack.volumes.json" --key-id interop --private-key "$TMP/seed" >/dev/null
+)
+test -f "$TMP/sitepack.volumes.json.sig.json"
+(
+  cd "$ROOT/sitepack-tools-php"
+  $PHP bin/sitepack-validate signature "$TMP/sitepack.volumes.json" "$TMP/sitepack.volumes.json.sig.json" --trust-store="$TMP/trust.json" >/dev/null
+)
+
+printf '\n' >> "$TMP/sitepack.volumes.json"
+if (
+  cd "$ROOT/sitepack-tools-php"
+  $PHP bin/sitepack-validate signature "$TMP/sitepack.volumes.json" "$TMP/sitepack.volumes.json.sig.json" --trust-store="$TMP/trust.json" >/dev/null 2>&1
+); then
+  echo 'Tampered Volume Set descriptor unexpectedly verified.' >&2
+  exit 1
+fi
+
+echo 'Signature interoperability: 5 checks passed.'

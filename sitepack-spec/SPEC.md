@@ -48,6 +48,14 @@ Volume Sets describe a split package distributed across multiple volumes.
 - Volumes **MAY** be encrypted individually using SitePack envelope + age.
 - If `encryption.scheme = "age"`, the volume file is an encrypted payload; `envelopeFile` **MUST** point to the corresponding SitePack envelope header (`*.sitepack.enc.json`).
 
+### 3.2 Distribution filenames
+
+Exporters **SHOULD** follow `DISTRIBUTION-NAMING.md` for human-readable package
+and volume filenames. Importers **MUST NOT** infer package semantics from a
+filename and **MUST NOT** reject an otherwise valid package only because it
+uses another safe name. The manifest, catalog, and Volume Set descriptor remain
+the source of truth.
+
 ## 4. Required files
 The root of an unpacked package **MUST** contain:
 - `sitepack.manifest.json`

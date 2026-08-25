@@ -34,7 +34,11 @@ node bin/sitepack-validate volumes <path-to-volumes-json>
 
 Create a volume set:
 ```
-node bin/sitepack-volumes create <packageRoot> <outDir> --max-part-size 104857600
+node bin/sitepack-volumes create <packageRoot> <outDir> \
+  --max-part-size 104857600 \
+  --site school.obr.site \
+  --created-at 2026-08-25T11:35:22Z \
+  --mode full
 ```
 
 PHP quickstart:

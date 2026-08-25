@@ -46,6 +46,10 @@ Sign and verify final package bytes:
 The private seed and trust store are external protected configuration and must
 not be included in the package.
 
+`SitePack\Distribution\Naming` implements the recommended single-file and
+multi-volume names from `sitepack-spec/DISTRIBUTION-NAMING.md`. PHP exporters
+should use it when building snapshot distribution filenames.
+
 Options:
 - `--schemas=<dir>` — path to schemas directory (default `./schemas`).
 - `--no-digest` — skip digest verification.

@@ -5,6 +5,8 @@
 - Defined an external trust-store boundary and stable signature input.
 - Added package and Volume Set signing rules without weakening ordinary
   package validation or import security.
+- Added deterministic snapshot distribution naming for packages, signatures,
+  and zero-padded multi-volume parts.
 
 ## 1.0.0 - 2026-08-19
 - Added explicit embedded, chunked, and external asset storage variants.
