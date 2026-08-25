@@ -3,9 +3,10 @@
   "description": "CLI validator for unpacked SitePack 1.0 packages",
   "type": "project",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "require": {
     "php": ">=8.1",
+    "ext-sodium": "*",
     "symfony/console": "^6.4",
     "opis/json-schema": "^2.3"
   },

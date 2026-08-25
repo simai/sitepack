@@ -1,6 +1,6 @@
 # sitepack-tools-node
 
-CLI validator for unpacked SitePack 1.0 packages. It validates manifest, catalog, artifacts, and content against schemas, and writes `reports/validate.json`.
+CLI validator and detached-signature tool for SitePack packages. It validates manifest, catalog, artifacts, and content against schemas, and writes `reports/validate.json`.
 
 ## Requirements
 - Node.js >= 18
@@ -35,6 +35,24 @@ Validate a volume set:
 ```
 sitepack-validate volumes /path/to/sitepack.volumes.json
 ```
+
+Sign final package bytes with an Ed25519 seed stored outside the package:
+```
+sitepack-validate sign /path/to/archive.sitepack \
+  --key-id backup-production-2026 \
+  --private-key /protected/path/private-seed.base64
+```
+
+Verify the detached sidecar against an external trust store:
+```
+sitepack-validate signature /path/to/archive.sitepack \
+  /path/to/archive.sitepack.sig.json \
+  --trust-store /protected/path/trust-store.json
+```
+
+The private-key file contains a base64-encoded raw 32-byte Ed25519 seed. The
+trust store contains base64-encoded raw 32-byte public keys indexed by `keyId`.
+Neither file belongs inside a SitePack package.
 
 Create a volume set from an unpacked package:
 ```

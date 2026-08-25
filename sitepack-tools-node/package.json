@@ -1,6 +1,6 @@
 {
   "name": "sitepack-tools-node",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI validator for unpacked SitePack 1.0 packages",
   "license": "MIT",
   "bin": {
@@ -11,7 +11,8 @@
   "scripts": {
     "validate-examples": "node scripts/validate-examples.js",
     "validate-invalid-examples": "node scripts/validate-invalid-examples.js ../sitepack-spec/examples-invalid",
-    "validate-volume-examples": "node scripts/validate-volume-examples.js ../sitepack-spec/examples"
+    "validate-volume-examples": "node scripts/validate-volume-examples.js ../sitepack-spec/examples",
+    "test-signatures": "node scripts/test-signatures.js"
   },
   "engines": {
     "node": ">=18"

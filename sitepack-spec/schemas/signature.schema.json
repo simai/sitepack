@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sitepack.org/schemas/signature.schema.json",
+  "title": "SitePack Detached Signature",
+  "type": "object",
+  "required": ["spec", "createdAt", "algorithm", "keyId", "payload", "signature"],
+  "properties": {
+    "spec": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "sitepack-signature" },
+        "version": { "const": "1.0.0" }
+      },
+      "additionalProperties": false
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "algorithm": { "const": "Ed25519" },
+    "keyId": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$" },
+    "payload": {
+      "type": "object",
+      "required": ["digest", "size"],
+      "properties": {
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "size": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "signature": { "type": "string", "minLength": 1 },
+    "annotations": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": false
+}

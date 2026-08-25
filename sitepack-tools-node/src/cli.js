@@ -3,6 +3,7 @@ const fs = require('fs');
 const { Command } = require('commander');
 const pkg = require('../package.json');
 const { validatePackage, validateEnvelope, validateVolumes } = require('./validator');
+const { signFile, verifyFileSignature } = require('./signature');
 
 const defaultSchemasDir = path.resolve(__dirname, '..', 'schemas');
 
@@ -146,6 +147,25 @@ async function runVolumesValidation(volumesPath, options) {
   process.exit(computeExitCode(report, options.strict));
 }
 
+async function runSignatureSign(filePath, options) {
+  const payloadPath = path.resolve(filePath);
+  const privateKeyPath = path.resolve(options.privateKey);
+  const privateSeed = fs.readFileSync(privateKeyPath, 'utf8').trim();
+  const document = await signFile(payloadPath, options.keyId, privateSeed);
+  const outputPath = path.resolve(options.output || `${payloadPath}.sig.json`);
+  fs.writeFileSync(outputPath, `${JSON.stringify(document, null, 2)}\n`, { mode: 0o640 });
+  console.log(outputPath);
+}
+
+async function runSignatureVerify(filePath, signaturePath, options) {
+  const payloadPath = path.resolve(filePath);
+  const document = JSON.parse(fs.readFileSync(path.resolve(signaturePath), 'utf8'));
+  const trustStore = JSON.parse(fs.readFileSync(path.resolve(options.trustStore), 'utf8'));
+  const result = await verifyFileSignature(payloadPath, document, trustStore);
+  console.log(options.format === 'json' ? JSON.stringify(result, null, 2) : `${result.status}: ${result.code}`);
+  process.exit(result.status === 'valid' ? 0 : 1);
+}
+
 async function main() {
   const program = new Command();
   program.name('sitepack-validate');
@@ -183,6 +203,21 @@ async function main() {
     .option('--no-digest', 'Skip digest verification even if present')
     .option('--check-asset-blobs', 'Check existence and integrity of files referenced in asset-index')
     .action(runVolumesValidation);
+
+  program
+    .command('sign <pathToFile>')
+    .description('Create an Ed25519 detached SitePack signature')
+    .requiredOption('--key-id <id>', 'Trusted key identifier')
+    .requiredOption('--private-key <path>', 'Path to a file containing a base64 Ed25519 seed')
+    .option('--output <path>', 'Output signature path')
+    .action(runSignatureSign);
+
+  program
+    .command('signature <pathToFile> <pathToSignature>')
+    .description('Verify an Ed25519 detached SitePack signature')
+    .requiredOption('--trust-store <path>', 'JSON trust store with public keys')
+    .option('-f, --format <format>', 'Output format: text|json', 'text')
+    .action(runSignatureVerify);
 
   program.exitOverride();
 

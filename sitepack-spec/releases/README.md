@@ -10,6 +10,7 @@ step.
 ## Stable releases
 
 - [1.0.0](1.0.0.md)
+- [1.1.0](1.1.0.md)
 
 ## Historical release candidates
 

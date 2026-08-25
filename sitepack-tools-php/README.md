@@ -1,6 +1,6 @@
 # sitepack-tools-php
 
-CLI validator for unpacked SitePack 1.0 packages on PHP 8.1+. It validates manifest, catalog, artifacts, and NDJSON against draft 2020-12 JSON Schema and writes `reports/validate.json`.
+CLI validator and detached-signature tool for SitePack packages on PHP 8.1+. It validates manifest, catalog, artifacts, and NDJSON against draft 2020-12 JSON Schema and writes `reports/validate.json`.
 
 ## Requirements
 - PHP 8.1+
@@ -31,6 +31,20 @@ Validate a volume set:
 ```
 ./bin/sitepack-validate volumes /path/to/sitepack.volumes.json
 ```
+
+Sign and verify final package bytes:
+```
+./bin/sitepack-validate sign /path/to/archive.sitepack \
+  --key-id=backup-production-2026 \
+  --private-key=/protected/path/private-seed.base64
+
+./bin/sitepack-validate signature /path/to/archive.sitepack \
+  /path/to/archive.sitepack.sig.json \
+  --trust-store=/protected/path/trust-store.json
+```
+
+The private seed and trust store are external protected configuration and must
+not be included in the package.
 
 Options:
 - `--schemas=<dir>` — path to schemas directory (default `./schemas`).

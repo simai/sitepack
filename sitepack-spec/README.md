@@ -1,4 +1,4 @@
-# SitePack 1.0.0
+# SitePack 1.1.0
 
 SitePack is an open format for packaging website data for export/import between systems. A package contains two required files (manifest and catalog) and a set of artifacts (entities, assets, config, recordsets, etc.).
 
@@ -13,6 +13,7 @@ Key decisions:
 - Conformance levels define what Reader, Validator, Archive, Previewer, Importer, and Exporter support mean.
 - Profile contracts describe portable obligations for configuration, site structure, content/assets, snapshots, and product packages.
 - Extension governance keeps Bitrix, Larena, WordPress, and other platform-specific data outside SitePack Core.
+- Optional detached Ed25519 signatures authenticate final package bytes without embedding trust or private keys in the archive.
 
 Documentation and materials:
 - Specification: `SPEC.md`.
@@ -21,6 +22,7 @@ Documentation and materials:
 - Extension governance: `extensions/`.
 - Adapter proofs: `adapter-proofs/`.
 - Release notes: `releases/`.
+- Detached signature contract: `SIGNATURES.md`.
 - JSON schemas: `schemas/`.
 - Registries: `registry/`.
 - Example packages: `examples/`.

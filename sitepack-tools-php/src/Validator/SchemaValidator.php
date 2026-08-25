@@ -92,6 +92,7 @@ class SchemaValidator
             'transform-plan' => 'transform-plan.schema.json',
             'envelope' => 'envelope.schema.json',
             'volume-set' => 'volume-set.schema.json',
+            'signature' => 'signature.schema.json',
         ];
 
         foreach ($schemaFiles as $name => $file) {

@@ -40,6 +40,9 @@ Requirements:
 - MUST verify catalog paths and artifact existence.
 - MUST verify `size`.
 - SHOULD verify `digest` when present.
+- When detached signature verification is requested, MUST distinguish valid,
+  untrusted, and invalid results and MUST obtain trusted public keys outside
+  the package.
 - MUST validate known core media types against their schemas.
 - MUST validate external locator safety without resolving provider credentials.
 - MUST check declared profile requirements when profile contracts are available.

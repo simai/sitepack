@@ -1,4 +1,4 @@
-# SitePack 1.0.0 — Specification
+# SitePack 1.1.0 — Specification
 
 ## Keywords
 The keywords **MUST**, **SHOULD**, and **MAY** are to be interpreted as described in RFC 2119.
@@ -27,6 +27,7 @@ SitePack is an open format for packaging website data for transfer between syste
 - **Capabilities**: tool capabilities (export/import).
 - **Transform Plan**: plan of transformations applied during import/export.
 - **Envelope**: external JSON header for encrypted transfer.
+- **Detached Signature**: a sidecar that authenticates the final package bytes without changing the package container.
 
 ## 3. Container and file extensions
 - Canonical package extension: `.sitepack`.
@@ -291,13 +292,49 @@ age -d input.sitepack.enc > output.sitepack
 ```
 After decryption, the package **MUST** be validated as a regular `.sitepack`.
 
-## 16. Version compatibility
+## 16. Detached Signature (optional extension)
+
+SitePack packages and Volume Set descriptors MAY be authenticated with an
+Ed25519 detached signature:
+
+- package: `<name>.sitepack` and `<name>.sitepack.sig.json`;
+- volume set: `sitepack.volumes.json` and `sitepack.volumes.json.sig.json`.
+
+The signature document MUST conform to `schemas/signature.schema.json`.
+`payload.digest` and `payload.size` describe the exact signed file bytes. The
+signature input is the following UTF-8 byte sequence, without a final newline:
+
+```text
+sitepack-signature-v1\n<payload.digest>\n<payload.size>
+```
+
+Rules:
+
+- implementations MUST calculate the digest and size from the signed file;
+- implementations MUST verify the Ed25519 signature with a trusted public key
+  selected by `keyId` before treating the package as trusted;
+- a key embedded in the package or signature document MUST NOT establish
+  trust; trust stores are host configuration;
+- private keys and shared secrets MUST NOT be stored in a SitePack package;
+- an unknown key produces an `untrusted` result, not a valid signature;
+- a malformed signature, digest mismatch, size mismatch, revoked key, or
+  cryptographic verification failure produces an `invalid` result;
+- package validation, import security checks, and malware policy remain
+  mandatory after successful signature verification;
+- signatures provide technical authenticity and integrity, not a qualified
+  legal electronic signature.
+
+For a Volume Set, the signed descriptor authenticates the SHA-256 and size of
+every listed volume. Importers MUST still verify every volume against that
+descriptor before unpacking.
+
+## 17. Version compatibility
 SitePack uses SemVer.
 - A **major** mismatch indicates incompatibility; the importer **MUST** reject such packages.
 - With matching **major**, the importer **MUST** accept packages with **minor** less than or equal to the supported version.
 - The importer **MAY** accept a higher **minor** if it can safely ignore unknown fields/artifacts.
 
-## 17. Appendix: recommended directory structure
+## 18. Appendix: recommended directory structure
 Recommended unpacked structure:
 ```
 sitepack.manifest.json

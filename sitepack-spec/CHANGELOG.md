@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0 - 2026-08-25
+- Added the optional Ed25519 detached signature contract.
+- Defined an external trust-store boundary and stable signature input.
+- Added package and Volume Set signing rules without weakening ordinary
+  package validation or import security.
+
 ## 1.0.0 - 2026-08-19
 - Added explicit embedded, chunked, and external asset storage variants.
 - Added compact and full snapshot profiles and a portable enrichment report.
