@@ -18,9 +18,6 @@ Path to the unpacked package (directory).
 - Enforce path safety (no traversal, no absolute, no null bytes).
 - If a `sitepack.volumes.json` descriptor is provided, validate it, verify each volume `sha256`/`size`, and assemble volumes into a temporary directory before importing.
 - If a volume entry uses `encryption.scheme = "age"`, the importer MUST use the referenced envelope header to locate the encrypted payload and decrypt before assembly (or fail with a clear error if unsupported).
-- Treat distribution filenames as informational only. Do not infer site,
-  timestamp, mode, or volume membership without validating package metadata
-  and `sitepack.volumes.json`.
 
 ## Chunked assets
 - Asset index entries may be single-blob (`path`) or chunked (`chunks[]`).

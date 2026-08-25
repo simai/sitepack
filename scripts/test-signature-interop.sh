@@ -19,7 +19,7 @@ cat > "$TMP/sitepack.volumes.json" <<'JSON'
     {
       "index": 1,
       "count": 1,
-      "file": "example.part-0001-of-0001.sitepack",
+      "file": "arbitrary-volume-name.sitepack",
       "size": 1,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     }
@@ -62,18 +62,17 @@ fi
 
 (
   cd "$ROOT/sitepack-tools-node"
-  $NODE src/cli.js sign "$TMP/sitepack.volumes.json" --key-id interop --private-key "$TMP/seed" >/dev/null
+  $NODE src/cli.js sign "$TMP/sitepack.volumes.json" --key-id interop --private-key "$TMP/seed" --output "$TMP/volumes.sig.json" >/dev/null
 )
-test -f "$TMP/sitepack.volumes.json.sig.json"
 (
   cd "$ROOT/sitepack-tools-php"
-  $PHP bin/sitepack-validate signature "$TMP/sitepack.volumes.json" "$TMP/sitepack.volumes.json.sig.json" --trust-store="$TMP/trust.json" >/dev/null
+  $PHP bin/sitepack-validate signature "$TMP/sitepack.volumes.json" "$TMP/volumes.sig.json" --trust-store="$TMP/trust.json" >/dev/null
 )
 
 printf '\n' >> "$TMP/sitepack.volumes.json"
 if (
   cd "$ROOT/sitepack-tools-php"
-  $PHP bin/sitepack-validate signature "$TMP/sitepack.volumes.json" "$TMP/sitepack.volumes.json.sig.json" --trust-store="$TMP/trust.json" >/dev/null 2>&1
+  $PHP bin/sitepack-validate signature "$TMP/sitepack.volumes.json" "$TMP/volumes.sig.json" --trust-store="$TMP/trust.json" >/dev/null 2>&1
 ); then
   echo 'Tampered Volume Set descriptor unexpectedly verified.' >&2
   exit 1

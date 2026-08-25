@@ -4,7 +4,10 @@
 The keywords **MUST**, **SHOULD**, and **MAY** are to be interpreted as described in RFC 2119.
 
 ## 1. Overview and goals
-SitePack is an open format for packaging website data for transfer between systems. The format defines required package metadata, an artifact catalog, and artifact content. Goals:
+SitePack is an open format for packaging structured data and digital assets for
+transfer between systems. The format defines required package metadata, an
+artifact catalog, and artifact content. Websites, backups, installers, and
+other scenarios are described by profiles and extensions. Goals:
 - interoperability for export/import across platforms;
 - predictable structure and safe parsing;
 - extensibility without breaking core compatibility.
@@ -35,6 +38,9 @@ SitePack is an open format for packaging website data for transfer between syste
 - Implementations **MUST** support ZIP.
 - TAR support **MAY** be implemented additionally.
 - Importers **MUST** detect container format by content, not by extension.
+- The external container filename is transport metadata and has no semantic
+  meaning in SitePack. Importers **MUST NOT** require a domain, timestamp,
+  mode, or another filename pattern to interpret a package.
 
 ### 3.1 Distribution: Volume Sets
 Volume Sets describe a split package distributed across multiple volumes.
@@ -47,14 +53,6 @@ Volume Sets describe a split package distributed across multiple volumes.
 - Before unpacking, importers **MUST** verify each volume file `sha256` and `size` against the Volume Set descriptor.
 - Volumes **MAY** be encrypted individually using SitePack envelope + age.
 - If `encryption.scheme = "age"`, the volume file is an encrypted payload; `envelopeFile` **MUST** point to the corresponding SitePack envelope header (`*.sitepack.enc.json`).
-
-### 3.2 Distribution filenames
-
-Exporters **SHOULD** follow `DISTRIBUTION-NAMING.md` for human-readable package
-and volume filenames. Importers **MUST NOT** infer package semantics from a
-filename and **MUST NOT** reject an otherwise valid package only because it
-uses another safe name. The manifest, catalog, and Volume Set descriptor remain
-the source of truth.
 
 ## 4. Required files
 The root of an unpacked package **MUST** contain:

@@ -1,7 +1,9 @@
 # SitePack 1.0.0 — Short Specification
 
 ## 1. Purpose
-SitePack is a packaging format for website data export/import. A package includes required metadata and a set of artifacts.
+SitePack is a packaging format for structured data and digital assets. A
+package includes required metadata and a set of artifacts; scenario-specific
+meaning belongs to profiles and extensions.
 
 ## 2. Container
 - Canonical extension: `.sitepack`.

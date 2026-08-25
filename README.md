@@ -1,6 +1,11 @@
 # SitePack
 
-SitePack is an open standard for packaging website data for backup and migration between systems. It is intended as a portable, document-like interchange format for websites: different systems can export, validate, archive, preview, and import packages through platform adapters.
+SitePack is an open standard for packaging structured data and digital assets
+for transfer between systems. It is a portable, document-like interchange
+format: different systems can export, validate, archive, preview, and import
+packages through profiles and platform adapters. Websites, backups,
+installable products, and datasets are application scenarios rather than
+assumptions of the core format.
 
 ## Projects
 - `sitepack-spec/` — specification, schemas, registries, and examples.
@@ -34,11 +39,7 @@ node bin/sitepack-validate volumes <path-to-volumes-json>
 
 Create a volume set:
 ```
-node bin/sitepack-volumes create <packageRoot> <outDir> \
-  --max-part-size 104857600 \
-  --site school.obr.site \
-  --created-at 2026-08-25T11:35:22Z \
-  --mode full
+node bin/sitepack-volumes create <packageRoot> <outDir> --max-part-size 104857600
 ```
 
 PHP quickstart:

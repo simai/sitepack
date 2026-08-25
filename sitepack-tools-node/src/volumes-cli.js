@@ -7,13 +7,9 @@ const unzipper = require('unzipper');
 const yazl = require('yazl');
 const { resolveSafePath } = require('./validator/path-safe');
 const { computeSha256Hex } = require('./validator/digest');
-const {
-  buildDistributionBaseName,
-  buildVolumeFileName
-} = require('./distribution-naming');
 
 const DEFAULT_MAX_PART_SIZE = 104857600;
-const TOOL_VERSION = '1.1.0';
+const TOOL_VERSION = '1.0.0';
 
 function normalizeRelPath(relPath) {
   const posixPath = relPath.replace(/\\/g, '/');
@@ -270,11 +266,10 @@ async function createVolumes(packageDir, outDir, options) {
 
   const volumeMetadata = [];
   const outputFiles = [];
-  const volumeCount = volumes.length;
 
   for (let i = 0; i < volumes.length; i += 1) {
     const index = i + 1;
-    const filename = buildVolumeFileName(baseName, index, volumeCount);
+    const filename = `${baseName}.part${index}.sitepack`;
     const outputPath = path.join(outDir, filename);
     outputFiles.push(outputPath);
 
@@ -419,10 +414,7 @@ async function main() {
     .description('Create sitepack.volumes.json and volume parts from an unpacked package')
     .option('--max-part-size <bytes>', 'Maximum size per volume in bytes', String(DEFAULT_MAX_PART_SIZE))
     .option('--package-id <id>', 'Override packageId in sitepack.volumes.json')
-    .option('--base-name <name>', 'Safe base filename override for volume parts')
-    .option('--site <host>', 'Canonical DNS host used in the recommended base filename')
-    .option('--created-at <date-time>', 'Creation date-time used in the recommended UTC filename')
-    .option('--mode <mode>', 'Distribution mode token, for example compact or full')
+    .option('--base-name <name>', 'Base filename for volume parts', 'sitepack')
     .option('--overwrite', 'Overwrite existing output files')
     .action(async (packageDir, outDir, opts) => {
       try {
@@ -431,21 +423,10 @@ async function main() {
           throw new Error('max-part-size must be a positive integer');
         }
 
-        const namingValues = [opts.site, opts.createdAt, opts.mode].filter((value) => value !== undefined);
-        if (opts.baseName && namingValues.length > 0) {
-          throw new Error('base-name cannot be combined with site, created-at, or mode');
-        }
-        if (namingValues.length > 0 && namingValues.length !== 3) {
-          throw new Error('site, created-at, and mode must be provided together');
-        }
-        const baseName = namingValues.length === 3
-          ? buildDistributionBaseName(opts.site, opts.createdAt, opts.mode)
-          : (opts.baseName || 'sitepack');
-
         const result = await createVolumes(path.resolve(packageDir), path.resolve(outDir), {
           maxPartSize,
           packageId: opts.packageId || null,
-          baseName,
+          baseName: opts.baseName || 'sitepack',
           overwrite: Boolean(opts.overwrite)
         });
 

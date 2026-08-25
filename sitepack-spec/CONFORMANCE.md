@@ -8,12 +8,11 @@ This document makes the phrase "supports SitePack" precise. A tool MUST NOT clai
 
 - SitePack Core is platform-neutral. Bitrix, Larena, WordPress, Drupal, static-site and custom-system behavior belongs in adapters or declared extensions.
 - The manifest and catalog are the package source of truth.
+- External archive filenames are transport metadata. Conforming tools MUST NOT
+  infer package semantics from a filename pattern.
 - Unknown artifacts and extensions MUST be handled predictably: preserve, skip, warn, or partially import with a report.
 - Importers and exporters SHOULD declare supported profiles and extensions.
 - Importers MUST produce a machine-readable report for unsupported, skipped, partially applied, or failed artifacts.
-- Snapshot exporters SHOULD use the deterministic distribution names defined
-  in `DISTRIBUTION-NAMING.md`; importers MUST continue to resolve content from
-  package metadata and Volume Set descriptors rather than filenames.
 
 ## Reader
 

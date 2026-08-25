@@ -56,17 +56,9 @@ Neither file belongs inside a SitePack package.
 
 Create a volume set from an unpacked package:
 ```
-sitepack-volumes create /path/to/unpacked/sitepack /path/to/output \
-  --max-part-size 104857600 \
-  --site school.obr.site \
-  --created-at 2026-08-25T11:35:22Z \
-  --mode full
+sitepack-volumes create /path/to/unpacked/sitepack /path/to/output --max-part-size 104857600
 ```
 Recommended `--max-part-size` is 104857600 (100 MiB) unless you need smaller parts.
-The three naming options must be supplied together. They produce names such as
-`school.obr.site_20260825_113522_full.part-0001-of-0012.sitepack`. Use
-`--base-name` only for an explicit safe override. The descriptor remains
-`sitepack.volumes.json`.
 
 Extract volumes into a directory (ZIP overlay):
 ```

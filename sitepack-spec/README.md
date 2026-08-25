@@ -1,6 +1,10 @@
 # SitePack 1.1.0
 
-SitePack is an open format for packaging website data for export/import between systems. A package contains two required files (manifest and catalog) and a set of artifacts (entities, assets, config, recordsets, etc.).
+SitePack is an open format for packaging structured data and digital assets for
+transfer between systems. A package contains two required files (manifest and
+catalog) and a set of artifacts (entities, assets, config, recordsets, etc.).
+Websites, backups, installers, and other distributions are expressed through
+profiles and extensions without changing the core package contract.
 
 Key decisions:
 - Canonical package extension: `.sitepack`.
@@ -14,7 +18,6 @@ Key decisions:
 - Profile contracts describe portable obligations for configuration, site structure, content/assets, snapshots, and product packages.
 - Extension governance keeps Bitrix, Larena, WordPress, and other platform-specific data outside SitePack Core.
 - Optional detached Ed25519 signatures authenticate final package bytes without embedding trust or private keys in the archive.
-- Distribution naming gives snapshot files deterministic site, UTC timestamp, mode, and volume-part names.
 
 Documentation and materials:
 - Specification: `SPEC.md`.
@@ -24,7 +27,6 @@ Documentation and materials:
 - Adapter proofs: `adapter-proofs/`.
 - Release notes: `releases/`.
 - Detached signature contract: `SIGNATURES.md`.
-- Distribution naming contract: `DISTRIBUTION-NAMING.md`.
 - JSON schemas: `schemas/`.
 - Registries: `registry/`.
 - Example packages: `examples/`.

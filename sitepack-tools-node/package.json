@@ -12,8 +12,6 @@
     "validate-examples": "node scripts/validate-examples.js",
     "validate-invalid-examples": "node scripts/validate-invalid-examples.js ../sitepack-spec/examples-invalid",
     "validate-volume-examples": "node scripts/validate-volume-examples.js ../sitepack-spec/examples",
-    "test-distribution-naming": "node scripts/test-distribution-naming.js",
-    "test-volume-naming": "node scripts/test-volume-naming.js",
     "test-signatures": "node scripts/test-signatures.js"
   },
   "engines": {

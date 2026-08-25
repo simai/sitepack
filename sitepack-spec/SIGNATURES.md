@@ -4,11 +4,10 @@ SitePack signatures are optional detached JSON sidecars named
 `<package>.sig.json`. A signature authenticates the exact final bytes of a
 `.sitepack`, encrypted payload or volume descriptor.
 
-For a multi-volume distribution, sign the canonical `sitepack.volumes.json`
-descriptor as `sitepack.volumes.json.sig.json`. The signed descriptor binds the
-name, size, and SHA-256 digest of every volume; each part must still be verified
-against it before extraction. See `DISTRIBUTION-NAMING.md` for recommended
-human-readable part names.
+For a multi-volume distribution, applications may sign the
+`sitepack.volumes.json` descriptor. The signed descriptor binds the exact list
+of volume filenames, sizes and SHA-256 digests. Importers must verify the
+descriptor signature and then verify every listed volume before extraction.
 
 The sidecar contains:
 

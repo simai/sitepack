@@ -1,4 +1,4 @@
-.PHONY: validate-node validate-php validate-distribution check-schema-sync validate-all
+.PHONY: validate-node validate-php validate-volumes validate-signatures check-schema-sync validate-all
 
 check-schema-sync:
 	diff -rq sitepack-spec/schemas sitepack-tools-node/schemas
@@ -11,11 +11,10 @@ validate-php:
 	cd sitepack-tools-php && composer install && php scripts/validate-examples.php ../sitepack-spec/examples
 	cd sitepack-tools-php && php scripts/validate-invalid-examples.php ../sitepack-spec/examples-invalid
 
-validate-distribution:
-	cd sitepack-tools-node && npm run test-distribution-naming
-	cd sitepack-tools-node && npm run test-volume-naming
-	cd sitepack-tools-php && php scripts/test-distribution-naming.php
+validate-volumes:
 	cd sitepack-tools-node && npm run validate-volume-examples -- ../sitepack-spec/examples
+
+validate-signatures:
 	./scripts/test-signature-interop.sh
 
-validate-all: check-schema-sync validate-node validate-php validate-distribution
+validate-all: check-schema-sync validate-node validate-php validate-volumes validate-signatures
