@@ -36,6 +36,20 @@ Validate a volume set:
 sitepack-validate volumes /path/to/sitepack.volumes.json
 ```
 
+Validate semantic mapping documents:
+```
+sitepack-validate mapping-profile /path/to/semantic-profile.json
+sitepack-validate mapping-recipe /path/to/mapping-recipe.json
+```
+
+Compile a side-effect-free compatibility plan using local target capabilities:
+```
+sitepack-compatibility /path/to/unpacked/sitepack \
+  --capabilities /path/to/target-capabilities.json \
+  --recipe /path/to/mapping-recipe.json \
+  --output /path/to/reports
+```
+
 Sign final package bytes with an Ed25519 seed stored outside the package:
 ```
 sitepack-validate sign /path/to/archive.sitepack \
@@ -83,7 +97,7 @@ Options:
 3. Core NDJSON types are validated line-by-line against schemas:
    - entity-graph, asset-index, config-kv, recordset.
    - asset-index supports both single-blob and chunked assets.
-4. JSON artifacts (capabilities/transform-plan) are validated as full JSON documents.
+4. JSON artifacts, including capabilities, semantic profiles, mapping recipes, transform plans, and compatibility reports, are validated as full JSON documents.
 5. Object index/passport artifacts are validated and cross-checked when an object index is present.
 6. Unknown `mediaType` does not fail validation: file/size/digest are checked, content is skipped with a warning.
 7. Volume Set descriptors can be validated and assembled with the `volumes` command.
@@ -102,7 +116,7 @@ After validation, the tool writes:
 Report structure:
 ```json
 {
-  "tool": { "name": "sitepack-validate", "version": "1.0.0" },
+  "tool": { "name": "sitepack-validate", "version": "1.2.0" },
   "startedAt": "...",
   "finishedAt": "...",
   "target": { "type": "package|envelope|volume-set", "path": "..." },

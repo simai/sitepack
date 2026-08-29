@@ -1,0 +1,25 @@
+{
+  "artifacts": [
+    {
+      "id": "portable.entities",
+      "mediaType": "application/vnd.sitepack.entity-graph+ndjson",
+      "path": "artifacts/entities/content.ndjson",
+      "size": 307,
+      "digest": "sha256:7684fc8c6bf324da3dd476a3d22266f6f7d4aa3508c1dc183d0d7ad0b3026c3f"
+    },
+    {
+      "id": "portable.profile",
+      "mediaType": "application/vnd.sitepack.semantic-profile+json",
+      "path": "artifacts/mapping/profile.json",
+      "size": 849,
+      "digest": "sha256:20e9abfacca05b4ea9b2b8f147801e19d66e90c682488921c0cec13307c57618"
+    },
+    {
+      "id": "source.raw",
+      "mediaType": "application/vnd.example.raw-content+json",
+      "path": "artifacts/extensions/raw.json",
+      "size": 113,
+      "digest": "sha256:0c79b015cb16633329ab305a87f6c500e27d1539ead4fd9f35b0bb61485f4961"
+    }
+  ]
+}

@@ -93,6 +93,9 @@ class SchemaValidator
             'envelope' => 'envelope.schema.json',
             'volume-set' => 'volume-set.schema.json',
             'signature' => 'signature.schema.json',
+            'semantic-profile' => 'semantic-profile.schema.json',
+            'mapping-recipe' => 'mapping-recipe.schema.json',
+            'compatibility-report' => 'compatibility-report.schema.json',
         ];
 
         foreach ($schemaFiles as $name => $file) {

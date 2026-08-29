@@ -1,0 +1,25 @@
+{
+  "spec": { "name": "sitepack-semantic-profile", "version": "1.0.0" },
+  "id": "example.portable-site",
+  "version": "1.0.0",
+  "title": "Portable site fixture",
+  "entities": {
+    "page": {
+      "fields": {
+        "title": { "valueType": "string", "required": true },
+        "body": { "valueType": "string", "format": "html" },
+        "status": { "valueType": "string", "enum": ["draft", "published"] }
+      },
+      "relations": { "parent": { "targets": ["page"], "cardinality": "one" } },
+      "assets": { "media": { "cardinality": "many", "roles": ["inline"] } }
+    },
+    "news": {
+      "fields": {
+        "title": { "valueType": "string", "required": true },
+        "body": { "valueType": "string", "format": "html" },
+        "category": { "valueType": "string" }
+      }
+    }
+  },
+  "extensions": ["org.example.raw/content"]
+}

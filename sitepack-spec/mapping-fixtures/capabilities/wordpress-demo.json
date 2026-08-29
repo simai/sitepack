@@ -1,0 +1,16 @@
+{
+  "tool": { "name": "wordpress-demo-adapter", "version": "1.0.0" },
+  "export": { "profiles": ["content-only"], "mediaTypes": ["application/vnd.sitepack.entity-graph+ndjson"] },
+  "import": { "profiles": ["content-only"], "mediaTypes": ["application/vnd.sitepack.entity-graph+ndjson"] },
+  "mapping": {
+    "semanticProfiles": [{ "id": "example.portable-site", "versions": ["1.0.0"] }],
+    "entities": {
+      "page": { "fields": ["title", "body", "status"], "relations": ["parent"], "assets": ["media"] },
+      "news": { "fields": ["title", "body"], "relations": [], "assets": [] }
+    },
+    "contentFormats": ["html"],
+    "assetStorage": ["embedded", "external"],
+    "transforms": [],
+    "extensions": []
+  }
+}

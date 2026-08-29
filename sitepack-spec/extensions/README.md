@@ -55,6 +55,11 @@ An importer MUST:
 
 An importer MUST NOT silently apply extension artifacts it does not understand.
 
+An embedded semantic profile, mapping recipe, transform plan, capabilities
+document, or compatibility report is package data. A package signature proves
+integrity but does not establish author trust or authorize automatic mapping.
+Target capabilities MUST come from the locally installed adapter.
+
 ## Exporter behavior
 
 An exporter MUST:

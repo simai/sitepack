@@ -1,0 +1,17 @@
+{
+  "spec": { "name": "sitepack-mapping-recipe", "version": "1.0.0" },
+  "id": "example.unknown-optional",
+  "version": "1.0.0",
+  "author": { "name": "SitePack fixture" },
+  "source": { "profile": "example.portable-site", "version": "1.0.0" },
+  "target": { "profile": "example.portable-site", "version": "1.0.0" },
+  "rules": [
+    {
+      "id": "optional.future-rule",
+      "kind": "future.operation",
+      "required": false,
+      "from": { "entity": "news", "field": "category" },
+      "to": { "entity": "news", "field": "category" }
+    }
+  ]
+}

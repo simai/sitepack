@@ -32,6 +32,20 @@ Validate a volume set:
 ./bin/sitepack-validate volumes /path/to/sitepack.volumes.json
 ```
 
+Validate semantic mapping documents:
+```
+./bin/sitepack-validate mapping-profile /path/to/semantic-profile.json
+./bin/sitepack-validate mapping-recipe /path/to/mapping-recipe.json
+```
+
+Compile a side-effect-free compatibility plan using local target capabilities:
+```
+./bin/sitepack-compatibility /path/to/unpacked/sitepack \
+  --capabilities=/path/to/target-capabilities.json \
+  --recipe=/path/to/mapping-recipe.json \
+  --output=/path/to/reports
+```
+
 Sign and verify final package bytes:
 ```
 ./bin/sitepack-validate sign /path/to/archive.sitepack \
@@ -65,6 +79,7 @@ For envelope mode, the report is written next to the header file in `reports/val
 - Unknown `mediaType` does not fail validation: path/size/digest are still checked, content is skipped with a warning.
 - Empty NDJSON lines are skipped with a warning.
 - Volume Set descriptors can be validated and assembled with the `volumes` command.
+- Unknown optional mapping operations are reported; unknown required operations block compatibility planning.
 
 ## Examples
 Run example validation for `sitepack-spec/examples`:

@@ -1,0 +1,96 @@
+{
+  "spec": { "name": "sitepack-semantic-profile", "version": "1.0.0" },
+  "id": "sitepack.website-core",
+  "version": "1.0.0",
+  "title": "SitePack portable website core",
+  "description": "Minimal portable website semantics shared by platform adapters.",
+  "entities": {
+    "organization": {
+      "fields": {
+        "name": { "valueType": "string", "required": true },
+        "description": { "valueType": "string", "format": "html" },
+        "website": { "valueType": "string", "format": "uri" }
+      },
+      "relations": { "contacts": { "targets": ["contact"], "cardinality": "many" } },
+      "assets": { "logo": { "cardinality": "one", "roles": ["image"] } }
+    },
+    "contact": {
+      "fields": {
+        "name": { "valueType": "string" },
+        "email": { "valueType": "string", "format": "email" },
+        "phone": { "valueType": "string" },
+        "address": { "valueType": "string" }
+      }
+    },
+    "page": {
+      "fields": {
+        "title": { "valueType": "string", "required": true },
+        "slug": { "valueType": "string" },
+        "body": { "valueType": "string", "format": "html" },
+        "status": { "valueType": "string", "enum": ["draft", "published", "hidden"] }
+      },
+      "relations": { "parent": { "targets": ["page", "custom-section"], "cardinality": "one" } },
+      "assets": { "attachments": { "cardinality": "many", "roles": ["attachment", "inline"] } }
+    },
+    "menu": {
+      "fields": {
+        "title": { "valueType": "string", "required": true },
+        "location": { "valueType": "string" }
+      },
+      "relations": { "items": { "targets": ["page", "news", "document", "custom-section"], "cardinality": "many" } }
+    },
+    "news": {
+      "fields": {
+        "title": { "valueType": "string", "required": true },
+        "summary": { "valueType": "string", "format": "html" },
+        "body": { "valueType": "string", "format": "html" },
+        "published-at": { "valueType": "string", "format": "date-time" }
+      },
+      "relations": { "author": { "targets": ["employee"], "cardinality": "one" } },
+      "assets": { "media": { "cardinality": "many", "roles": ["preview", "inline", "attachment"] } }
+    },
+    "document": {
+      "fields": {
+        "title": { "valueType": "string", "required": true },
+        "description": { "valueType": "string", "format": "html" },
+        "published-at": { "valueType": "string", "format": "date-time" }
+      },
+      "assets": { "files": { "required": true, "cardinality": "many", "roles": ["document"] } }
+    },
+    "employee": {
+      "fields": {
+        "name": { "valueType": "string", "required": true },
+        "position": { "valueType": "string" },
+        "biography": { "valueType": "string", "format": "html" },
+        "email": { "valueType": "string", "format": "email" }
+      },
+      "assets": { "photo": { "cardinality": "one", "roles": ["portrait"] } }
+    },
+    "gallery": {
+      "fields": {
+        "title": { "valueType": "string", "required": true },
+        "description": { "valueType": "string", "format": "html" }
+      },
+      "assets": { "items": { "required": true, "cardinality": "many", "roles": ["image", "video"] } }
+    },
+    "file": {
+      "fields": {
+        "title": { "valueType": "string" },
+        "media-type": { "valueType": "string" },
+        "description": { "valueType": "string" }
+      },
+      "assets": { "blob": { "required": true, "cardinality": "one", "roles": ["source"] } }
+    },
+    "custom-section": {
+      "fields": {
+        "title": { "valueType": "string", "required": true },
+        "slug": { "valueType": "string" },
+        "description": { "valueType": "string", "format": "html" }
+      },
+      "relations": {
+        "parent": { "targets": ["custom-section"], "cardinality": "one" },
+        "children": { "targets": ["custom-section", "page", "news", "document"], "cardinality": "many" }
+      }
+    }
+  }
+}

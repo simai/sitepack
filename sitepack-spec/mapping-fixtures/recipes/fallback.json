@@ -1,0 +1,26 @@
+{
+  "spec": { "name": "sitepack-mapping-recipe", "version": "1.0.0" },
+  "id": "example.news-to-page",
+  "version": "1.0.0",
+  "author": { "name": "SitePack fixture" },
+  "source": { "profile": "example.portable-site", "version": "1.0.0" },
+  "target": { "profile": "example.portable-target", "version": "1.0.0", "adapter": "limited-target" },
+  "rules": [
+    {
+      "id": "news.fallback",
+      "kind": "fallback.wrap",
+      "from": { "entity": "news" },
+      "to": { "entity": "page" },
+      "params": { "sectionTitle": "Imported materials", "preserveOriginalType": true },
+      "loss": "representational"
+    },
+    {
+      "id": "news.category.drop",
+      "kind": "value.drop",
+      "required": false,
+      "from": { "entity": "news", "field": "category" },
+      "loss": "content"
+    }
+  ],
+  "lossPolicy": { "allowed": ["none", "representational", "content"], "failOn": ["security"] }
+}

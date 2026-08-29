@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sitepack.org/schemas/compatibility-report.schema.json",
+  "title": "SitePack Compatibility Report",
+  "type": "object",
+  "required": ["spec", "status", "source", "target", "recipe", "inputsDigest", "planDigest", "inventory", "summary", "findings"],
+  "properties": {
+    "spec": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "sitepack-compatibility-report" },
+        "version": { "const": "1.0.0" }
+      },
+      "additionalProperties": false
+    },
+    "status": { "enum": ["compatible", "partial", "incompatible"] },
+    "source": { "$ref": "#/$defs/ref" },
+    "target": { "$ref": "#/$defs/ref" },
+    "recipe": { "$ref": "#/$defs/ref" },
+    "inputsDigest": { "$ref": "#/$defs/digest" },
+    "planDigest": { "$ref": "#/$defs/digest" },
+    "inventory": {
+      "type": "object",
+      "required": ["entities", "fields", "relations", "assets"],
+      "properties": {
+        "entities": { "type": "integer", "minimum": 0 },
+        "fields": { "type": "integer", "minimum": 0 },
+        "relations": { "type": "integer", "minimum": 0 },
+        "assets": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["exact", "transformed", "fallback", "skipped", "blocked"],
+      "properties": {
+        "exact": { "type": "integer", "minimum": 0 },
+        "transformed": { "type": "integer", "minimum": 0 },
+        "fallback": { "type": "integer", "minimum": 0 },
+        "skipped": { "type": "integer", "minimum": 0 },
+        "blocked": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "losses": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["none", "representational", "content", "behavioral", "security"] }
+    },
+    "missingRequired": { "type": "array", "items": { "type": "string", "maxLength": 512 } },
+    "unsupportedExtensions": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["category", "subject", "message"],
+        "properties": {
+          "category": { "enum": ["exact", "transformed", "fallback", "skipped", "blocked"] },
+          "subject": { "type": "string", "minLength": 1, "maxLength": 512 },
+          "rule": { "type": "string", "maxLength": 128 },
+          "loss": { "enum": ["none", "representational", "content", "behavioral", "security"] },
+          "message": { "type": "string", "minLength": 1, "maxLength": 2048 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "ref": {
+      "type": "object",
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "version": { "type": "string", "minLength": 1, "maxLength": 64 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

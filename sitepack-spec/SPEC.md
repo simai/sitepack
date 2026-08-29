@@ -1,4 +1,4 @@
-# SitePack 1.1.0 — Specification
+# SitePack 1.2.0 — Specification
 
 ## Keywords
 The keywords **MUST**, **SHOULD**, and **MAY** are to be interpreted as described in RFC 2119.
@@ -29,6 +29,9 @@ other scenarios are described by profiles and extensions. Goals:
 - **Provenance**: origin metadata (source, version, authors), optional in metadata.
 - **Capabilities**: tool capabilities (export/import).
 - **Transform Plan**: plan of transformations applied during import/export.
+- **Semantic Profile**: versioned, machine-readable portable vocabulary for entities, fields, relations, and assets.
+- **Mapping Recipe**: reusable declarative mapping from a semantic profile to another profile or adapter surface.
+- **Compatibility Report**: deterministic pre-import report of supported, transformed, degraded, skipped, and blocked data.
 - **Envelope**: external JSON header for encrypted transfer.
 - **Detached Signature**: a sidecar that authenticates the final package bytes without changing the package container.
 
@@ -282,6 +285,33 @@ Extension for describing tool export/import capabilities. Media type:
 ## 14. Transform Plan (optional extension)
 Extension for describing transformation steps. Media type:
 `application/vnd.sitepack.transform-plan+json`.
+
+SitePack 1.2 mapping compilers use Transform Plan as an immutable result bound
+to exact semantic profile, recipe, target capability, and input digests. The
+mapping lifecycle and trust boundary are defined in `MAPPING.md`.
+
+## 14.1 Semantic Profile (optional portable artifact)
+
+Media type: `application/vnd.sitepack.semantic-profile+json`.
+
+The document MUST conform to `schemas/semantic-profile.schema.json`. SitePack
+publishes `sitepack.website-core@1.0.0`; domain vocabularies use separate
+versioned profiles.
+
+## 14.2 Mapping Recipe (optional portable artifact)
+
+Media type: `application/vnd.sitepack.mapping-recipe+json`.
+
+The document MUST conform to `schemas/mapping-recipe.schema.json`. A recipe MUST
+be declarative and MUST NOT contain executable code or arbitrary expressions.
+
+## 14.3 Compatibility Report (optional report artifact)
+
+Media type: `application/vnd.sitepack.compatibility-report+json`.
+
+The document MUST conform to `schemas/compatibility-report.schema.json`. A
+report is advisory and MUST NOT authorize import, code execution, or destructive
+operations.
 
 ## 15. Encrypted Envelope (optional extension)
 For secure transfer, an external envelope is allowed:

@@ -19,7 +19,10 @@ const schemaFiles = {
   objectIndex: 'object-index.schema.json',
   objectPassport: 'object-passport.schema.json',
   enrichmentReport: 'enrichment-report.schema.json',
-  portableMetadata: 'portable-metadata.schema.json'
+  portableMetadata: 'portable-metadata.schema.json',
+  semanticProfile: 'semantic-profile.schema.json',
+  mappingRecipe: 'mapping-recipe.schema.json',
+  compatibilityReport: 'compatibility-report.schema.json'
 };
 
 function loadSchemas(schemasDir) {

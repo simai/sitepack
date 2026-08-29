@@ -15,6 +15,11 @@ Path to the unpacked package (directory).
 - Unknown `entity.type` MUST NOT crash; MAY import as opaque.
 - Respect `applyPolicy` for config (e.g., `never` is not auto-applied).
 - If a `Transform Plan` exists and is supported, MAY apply steps in order.
+- Treat embedded semantic profiles and mapping recipes as data, not trusted code.
+- Obtain target mapping capabilities from the local adapter.
+- Before cross-platform import, compile a deterministic transform plan and compatibility report.
+- Block unknown required mapping operations; report and skip unknown optional operations.
+- Never execute PHP, JavaScript, SQL, shell commands, or arbitrary expressions from a recipe.
 - Enforce path safety (no traversal, no absolute, no null bytes).
 - If a `sitepack.volumes.json` descriptor is provided, validate it, verify each volume `sha256`/`size`, and assemble volumes into a temporary directory before importing.
 - If a volume entry uses `encryption.scheme = "age"`, the importer MUST use the referenced envelope header to locate the encrypted payload and decrypt before assembly (or fail with a clear error if unsupported).
@@ -50,3 +55,5 @@ Create `reports/import.json` with at least this structure:
   "errors": []
 }
 ```
+
+For semantic mapping, also emit `application/vnd.sitepack.compatibility-report+json` before applying data.

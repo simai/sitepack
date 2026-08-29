@@ -1,0 +1,71 @@
+{
+  "spec": { "name": "sitepack-mapping-recipe", "version": "1.0.0" },
+  "id": "sitepack.legacy-entity-types-to-website-core",
+  "version": "1.0.0",
+  "author": { "name": "SitePack" },
+  "source": { "profile": "sitepack.legacy-entity-types", "version": "1.x" },
+  "target": { "profile": "sitepack.website-core", "version": "1.0.0" },
+  "rules": [
+    {
+      "id": "legacy.content-page",
+      "kind": "entity.map",
+      "from": { "entity": "content.page" },
+      "to": { "entity": "page" },
+      "loss": "none"
+    },
+    {
+      "id": "legacy.content-post",
+      "kind": "entity.map",
+      "from": { "entity": "content.post" },
+      "to": { "entity": "news" },
+      "loss": "representational"
+    },
+    {
+      "id": "legacy.document-page",
+      "kind": "entity.map",
+      "from": { "entity": "document.page" },
+      "to": { "entity": "document" },
+      "loss": "representational"
+    },
+    {
+      "id": "legacy.content-item",
+      "kind": "fallback.wrap",
+      "from": { "entity": "content.item" },
+      "to": { "entity": "page" },
+      "params": { "sectionTitle": "Imported materials" },
+      "loss": "representational"
+    },
+    {
+      "id": "legacy.taxonomy-category",
+      "kind": "fallback.wrap",
+      "from": { "entity": "taxonomy.category" },
+      "to": { "entity": "custom-section" },
+      "loss": "representational"
+    },
+    {
+      "id": "legacy.taxonomy-tag",
+      "kind": "value.drop",
+      "required": false,
+      "from": { "entity": "taxonomy.tag" },
+      "loss": "content"
+    },
+    {
+      "id": "legacy.route-redirect",
+      "kind": "value.drop",
+      "required": false,
+      "from": { "entity": "route.redirect" },
+      "loss": "behavioral"
+    },
+    {
+      "id": "legacy.system-user",
+      "kind": "entity.map",
+      "from": { "entity": "system.user" },
+      "to": { "entity": "employee" },
+      "loss": "representational"
+    }
+  ],
+  "lossPolicy": {
+    "allowed": ["none", "representational", "content", "behavioral"],
+    "failOn": ["security"]
+  }
+}

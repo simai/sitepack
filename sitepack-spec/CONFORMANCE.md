@@ -12,6 +12,7 @@ This document makes the phrase "supports SitePack" precise. A tool MUST NOT clai
   infer package semantics from a filename pattern.
 - Unknown artifacts and extensions MUST be handled predictably: preserve, skip, warn, or partially import with a report.
 - Importers and exporters SHOULD declare supported profiles and extensions.
+- Mapping-aware adapters SHOULD declare supported semantic profiles, operations, formats, relations, and asset storage.
 - Importers MUST produce a machine-readable report for unsupported, skipped, partially applied, or failed artifacts.
 
 ## Reader
@@ -137,6 +138,24 @@ Allowed degradation:
 
 - MAY skip optional extension artifacts with warnings.
 - MUST fail or request user confirmation when a required extension artifact cannot be applied safely.
+
+## Mapping Planner
+
+A Mapping Planner evaluates a package without applying it.
+
+Requirements:
+
+- MUST satisfy Validator.
+- MUST validate semantic profiles, mapping recipes, capabilities, transform plans, and compatibility reports.
+- MUST obtain target capabilities from the local adapter boundary.
+- MUST reject executable content and unknown required mapping operations.
+- MUST compile deterministic input and plan digests.
+- MUST emit a machine-readable compatibility report.
+
+Allowed degradation:
+
+- MAY skip unknown optional operations with an explicit report entry.
+- MUST NOT claim import readiness when the report is `incompatible`.
 
 ## Exporter Core
 

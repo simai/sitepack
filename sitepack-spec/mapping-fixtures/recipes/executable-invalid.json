@@ -1,0 +1,17 @@
+{
+  "spec": { "name": "sitepack-mapping-recipe", "version": "1.0.0" },
+  "id": "example.executable-invalid",
+  "version": "1.0.0",
+  "author": { "name": "SitePack fixture" },
+  "source": { "profile": "example.portable-site", "version": "1.0.0" },
+  "target": { "profile": "example.portable-site", "version": "1.0.0" },
+  "rules": [
+    {
+      "id": "forbidden.script",
+      "kind": "field.copy",
+      "from": { "entity": "page", "field": "title" },
+      "to": { "entity": "page", "field": "title" },
+      "params": { "script": "return value;" }
+    }
+  ]
+}

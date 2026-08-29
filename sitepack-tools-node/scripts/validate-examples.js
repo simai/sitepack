@@ -27,7 +27,8 @@ const examples = [
   'objects-two-objects',
   'small-docs-site',
   'small-blog-site',
-  'compact-external'
+  'compact-external',
+  'semantic-mapping'
 ];
 
 for (const name of examples) {

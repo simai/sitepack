@@ -7,6 +7,17 @@ description: Changelog
 
 # Changelog
 
+## 1.2.0 - 2026-08-29
+- Added semantic profiles, declarative mapping recipes, and compatibility reports.
+- Added deterministic recipe compilation and adapter mapping capabilities.
+- Added the portable `sitepack.website-core@1.0.0` semantic profile.
+
+## 1.1.0 - 2026-08-25
+- Added optional detached Ed25519 signatures and an external trust-store boundary.
+
+## 1.0.0 - 2026-08-19
+- Stabilized external, embedded, and chunked assets, compact/full snapshots, and enrichment reports.
+
 ## 0.4.0 - 2025-12-23
 - Added Objects layer (objects/index.json + passports + dataset selectors).
 - Added objects example package `examples/objects-two-objects`.

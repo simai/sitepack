@@ -1,0 +1,16 @@
+{
+  "spec": { "name": "sitepack-mapping-recipe", "version": "1.0.0" },
+  "id": "example.unknown-required",
+  "version": "1.0.0",
+  "author": { "name": "SitePack fixture" },
+  "source": { "profile": "example.portable-site", "version": "1.0.0" },
+  "target": { "profile": "example.portable-site", "version": "1.0.0" },
+  "rules": [
+    {
+      "id": "required.future-rule",
+      "kind": "future.operation",
+      "from": { "entity": "page", "field": "title" },
+      "to": { "entity": "page", "field": "title" }
+    }
+  ]
+}

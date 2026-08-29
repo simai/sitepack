@@ -9,6 +9,7 @@ const { validateWithSchema } = require('./json-validate');
 const { validateNdjson } = require('./ndjson-validate');
 const { computeSha256, computeSha256Hex, computeSha256HexFromFiles } = require('./digest');
 const { resolveSafePath } = require('./path-safe');
+const { validateMappingRecipeSemantics } = require('../mapping-validation');
 
 function addMessage(report, level, code, message, context = {}) {
   report.messages.push({ level, code, message, context });
@@ -872,7 +873,10 @@ async function validatePackage(options) {
     'application/vnd.sitepack.object-index+json': validators.objectIndex,
     'application/vnd.sitepack.object-passport+json': validators.objectPassport,
     'application/vnd.sitepack.enrichment-report+json': validators.enrichmentReport,
-    'application/vnd.sitepack.portable-metadata+json': validators.portableMetadata
+    'application/vnd.sitepack.portable-metadata+json': validators.portableMetadata,
+    'application/vnd.sitepack.semantic-profile+json': validators.semanticProfile,
+    'application/vnd.sitepack.mapping-recipe+json': validators.mappingRecipe,
+    'application/vnd.sitepack.compatibility-report+json': validators.compatibilityReport
   };
 
   const validatedIds = new Set();
@@ -996,6 +1000,10 @@ async function validatePackage(options) {
               err.message
             );
           }
+        } else if (art.mediaType === 'application/vnd.sitepack.mapping-recipe+json') {
+          for (const message of validateMappingRecipeSemantics(jsonResult.data)) {
+            addArtifactDetail(report, artifactEntry, message.level, message.code, message.message);
+          }
         }
       }
     } else {
@@ -1021,7 +1029,9 @@ async function validatePackage(options) {
   });
 
   finalizeReport(report);
-  await writeReport(report, packageRoot);
+  if (options.writeValidationReport !== false) {
+    await writeReport(report, packageRoot);
+  }
   return report;
 }
 

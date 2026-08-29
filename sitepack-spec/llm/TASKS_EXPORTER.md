@@ -16,6 +16,8 @@ Any site data model (content, assets, config, tables). The exporter decides whic
 - `size` — byte length of the file.
 - `digest` — `sha256:<hex>`.
 - `relations` MUST be emitted as an object mapping relation keys to `Link[]`.
+- For portable cross-platform data, emit a semantic profile artifact and retain platform-specific raw fields in a declared extension.
+- Use stable logical ids across raw and portable layers.
 - A Link MUST be either a string or an object with `ref` and optional `meta`.
 - If producing a split distribution, generate `sitepack.volumes.json` with `spec.version = 1.0.0`, `kind = volume-set`, and a `volumes[]` list.
 - `maxPartSize` SHOULD be 104857600 bytes (100 MiB) unless the user specifies otherwise.
@@ -39,6 +41,7 @@ Any site data model (content, assets, config, tables). The exporter decides whic
 ## Output
 - Unpacked package directory.
 - Optional: ZIP file with `.sitepack` extension.
+- Optional: declarative, separately versioned mapping recipe without executable code.
 - `reports/export.json` summary:
 ```json
 {

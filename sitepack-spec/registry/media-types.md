@@ -13,5 +13,8 @@
 - `application/vnd.sitepack.object-passport+json` — object passport (`objects/<objectId>/passport.json`).
 - `application/vnd.sitepack.capabilities+json` — tool capabilities.
 - `application/vnd.sitepack.transform-plan+json` — transform plan.
+- `application/vnd.sitepack.semantic-profile+json` — machine-readable portable entity vocabulary.
+- `application/vnd.sitepack.mapping-recipe+json` — declarative mapping between semantic profiles and adapter surfaces.
+- `application/vnd.sitepack.compatibility-report+json` — deterministic pre-import compatibility and loss report.
 - `application/vnd.sitepack.software-manifest+json` — code/software metadata.
 - `text/markdown` — text documents under `artifacts/code/`.

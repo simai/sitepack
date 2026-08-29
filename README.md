@@ -37,6 +37,13 @@ Validate a volume set:
 node bin/sitepack-validate volumes <path-to-volumes-json>
 ```
 
+Validate mapping contracts and build a read-only compatibility report:
+```
+node bin/sitepack-validate mapping-profile <profile.json>
+node bin/sitepack-validate mapping-recipe <recipe.json>
+node bin/sitepack-compatibility <packageRoot> --capabilities <capabilities.json> --recipe <recipe.json>
+```
+
 Create a volume set:
 ```
 node bin/sitepack-volumes create <packageRoot> <outDir> --max-part-size 104857600
@@ -68,6 +75,7 @@ The specification and tools follow SemVer. See subproject changelogs for details
 - Conformance: `sitepack-spec/CONFORMANCE.md`.
 - Profiles: `sitepack-spec/profiles/`.
 - Extensions: `sitepack-spec/extensions/`.
+- Semantic mapping and compatibility: `sitepack-spec/MAPPING.md`.
 - Release notes: `sitepack-spec/releases/`.
 
 ## License

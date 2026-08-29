@@ -7,6 +7,7 @@ namespace SitePack\Validator;
 use SitePack\Report\ArtifactResult;
 use SitePack\Report\ValidationReport;
 use Throwable;
+use SitePack\Mapping\MappingRecipeValidator;
 
 class PackageValidator
 {
@@ -122,6 +123,7 @@ class PackageValidator
      * @param bool $skipDigest
      * @param bool $checkAssetBlobs
      * @param array<string, string> $toolInfo
+     * @param bool $writeValidationReport
      * @return array{report:ValidationReport,reportPath:string,usageError:bool}
      */
     public function validate(
@@ -129,7 +131,8 @@ class PackageValidator
         ?string $profile,
         bool $skipDigest,
         bool $checkAssetBlobs,
-        array $toolInfo
+        array $toolInfo,
+        bool $writeValidationReport = true
     ): array {
         $report = new ValidationReport($toolInfo, 'package', $packageRoot);
         $usageError = false;
@@ -201,6 +204,9 @@ class PackageValidator
             'application/vnd.sitepack.object-passport+json' => 'object-passport',
             'application/vnd.sitepack.enrichment-report+json' => 'enrichment-report',
             'application/vnd.sitepack.portable-metadata+json' => 'portable-metadata',
+            'application/vnd.sitepack.semantic-profile+json' => 'semantic-profile',
+            'application/vnd.sitepack.mapping-recipe+json' => 'mapping-recipe',
+            'application/vnd.sitepack.compatibility-report+json' => 'compatibility-report',
         ];
 
         foreach ($catalogArtifacts as $artifact) {
@@ -314,6 +320,11 @@ class PackageValidator
                             $artifactEntry->addDetail('error', 'SCHEMA_VALIDATION_FAILED', $message);
                             $report->incrementError();
                         }
+                    } elseif ($mediaType === 'application/vnd.sitepack.mapping-recipe+json') {
+                        foreach ((new MappingRecipeValidator())->validate($jsonResult['data']) as $message) {
+                            $artifactEntry->addDetail($message['level'], $message['code'], $message['message']);
+                            $this->incrementReportLevel($report, $message['level']);
+                        }
                     }
                 }
             } else {
@@ -328,7 +339,9 @@ class PackageValidator
         $this->validateObjectsLayer($packageRoot, $catalogArtifacts, $report);
 
         $report->markFinished();
-        $reportPath = $this->reportWriter->write($report, $packageRoot);
+        $reportPath = $writeValidationReport
+            ? $this->reportWriter->write($report, $packageRoot)
+            : '';
 
         return [
             'report' => $report,

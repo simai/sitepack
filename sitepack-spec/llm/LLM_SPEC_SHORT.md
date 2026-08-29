@@ -90,3 +90,10 @@ After decryption, the package MUST be validated as a regular SitePack.
 ## 13. Optional extensions
 - `Capabilities`: `application/vnd.sitepack.capabilities+json`
 - `Transform Plan`: `application/vnd.sitepack.transform-plan+json`
+- `Semantic Profile`: `application/vnd.sitepack.semantic-profile+json`
+- `Mapping Recipe`: `application/vnd.sitepack.mapping-recipe+json`
+- `Compatibility Report`: `application/vnd.sitepack.compatibility-report+json`
+
+Mapping recipes are declarative data. Target capabilities come from the local
+adapter. Unknown required operations block planning; package code is never
+executed automatically.

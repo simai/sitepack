@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sitepack.org/schemas/semantic-profile.schema.json",
+  "title": "SitePack Semantic Profile",
+  "type": "object",
+  "required": ["spec", "id", "version", "entities"],
+  "properties": {
+    "spec": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "sitepack-semantic-profile" },
+        "version": { "const": "1.0.0" }
+      },
+      "additionalProperties": false
+    },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]{2,127}$" },
+    "version": { "$ref": "#/$defs/semver" },
+    "title": { "type": "string", "maxLength": 255 },
+    "description": { "type": "string", "maxLength": 4096 },
+    "extends": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/profileRef" }
+    },
+    "entities": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/semanticId" },
+      "additionalProperties": { "$ref": "#/$defs/entity" }
+    },
+    "extensions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+(?:/[a-z0-9._-]+)?$" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$" },
+    "semanticId": { "type": "string", "pattern": "^[a-z][a-z0-9._-]{1,127}$" },
+    "profileRef": {
+      "type": "object",
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]{2,127}$" },
+        "version": { "$ref": "#/$defs/semver" },
+        "digest": { "$ref": "#/$defs/digest" }
+      },
+      "additionalProperties": false
+    },
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "field": {
+      "type": "object",
+      "required": ["valueType"],
+      "properties": {
+        "valueType": { "enum": ["boolean", "integer", "number", "string", "object", "array"] },
+        "format": { "type": "string", "pattern": "^[a-z][a-z0-9._-]{1,127}$" },
+        "required": { "type": "boolean", "default": false },
+        "nullable": { "type": "boolean", "default": false },
+        "cardinality": { "enum": ["one", "many"], "default": "one" },
+        "enum": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": ["string", "number", "integer", "boolean"] }
+        },
+        "description": { "type": "string", "maxLength": 2048 }
+      },
+      "additionalProperties": false
+    },
+    "relation": {
+      "type": "object",
+      "required": ["targets"],
+      "properties": {
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/semanticId" }
+        },
+        "required": { "type": "boolean", "default": false },
+        "cardinality": { "enum": ["one", "many"], "default": "many" },
+        "description": { "type": "string", "maxLength": 2048 }
+      },
+      "additionalProperties": false
+    },
+    "assetBinding": {
+      "type": "object",
+      "properties": {
+        "required": { "type": "boolean", "default": false },
+        "cardinality": { "enum": ["one", "many"], "default": "many" },
+        "roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/semanticId" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "entity": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 255 },
+        "description": { "type": "string", "maxLength": 4096 },
+        "fields": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/semanticId" },
+          "additionalProperties": { "$ref": "#/$defs/field" }
+        },
+        "relations": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/semanticId" },
+          "additionalProperties": { "$ref": "#/$defs/relation" }
+        },
+        "assets": {
+          "type": "object",
+          "propertyNames": { "$ref": "#/$defs/semanticId" },
+          "additionalProperties": { "$ref": "#/$defs/assetBinding" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

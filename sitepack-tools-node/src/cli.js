@@ -3,6 +3,9 @@ const fs = require('fs');
 const { Command } = require('commander');
 const pkg = require('../package.json');
 const { validatePackage, validateEnvelope, validateVolumes } = require('./validator');
+const { loadSchemas } = require('./validator/schema-loader');
+const { validateWithSchema } = require('./validator/json-validate');
+const { validateMappingRecipeSemantics } = require('./mapping-validation');
 const { signFile, verifyFileSignature } = require('./signature');
 
 const defaultSchemasDir = path.resolve(__dirname, '..', 'schemas');
@@ -166,10 +169,35 @@ async function runSignatureVerify(filePath, signaturePath, options) {
   process.exit(result.status === 'valid' ? 0 : 1);
 }
 
+async function runMappingDocumentValidation(filePath, options, schemaKey) {
+  options = typeof options.opts === 'function' ? options.opts() : options;
+  const formatIndex = Math.max(process.argv.lastIndexOf('--format'), process.argv.lastIndexOf('-f'));
+  const outputFormat = formatIndex >= 0 && process.argv[formatIndex + 1] ? process.argv[formatIndex + 1] : options.format;
+  const targetPath = path.resolve(filePath);
+  const schemasDir = options.schemas ? path.resolve(options.schemas) : defaultSchemasDir;
+  const document = JSON.parse(fs.readFileSync(targetPath, 'utf8'));
+  const { validators } = loadSchemas(schemasDir);
+  const result = validateWithSchema(validators[schemaKey], document);
+  if (result.valid && schemaKey === 'mappingRecipe') {
+    const semanticMessages = validateMappingRecipeSemantics(document);
+    result.messages = semanticMessages;
+    result.valid = !semanticMessages.some((message) => message.level === 'error');
+  }
+  if (outputFormat === 'json') {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    console.log(result.valid ? 'valid' : result.errors.map((error) => error.message).join('\n'));
+    for (const message of result.messages || []) {
+      console.log(`[${message.level}] ${message.code}: ${message.message}`);
+    }
+  }
+  process.exit(result.valid ? 0 : 1);
+}
+
 async function main() {
   const program = new Command();
   program.name('sitepack-validate');
-  program.description('CLI validator for unpacked SitePack 1.0 packages');
+  program.description('CLI validator for SitePack packages and semantic mapping documents');
   program.option('-f, --format <format>', 'Output format: text|json', 'text');
   program.option('--quiet', 'Minimal console output');
   program.option('--strict', 'Treat warnings as errors');
@@ -181,6 +209,20 @@ async function main() {
     .option('--no-digest', 'Skip digest verification even if present')
     .option('--check-asset-blobs', 'Check existence of files referenced in asset-index')
     .action(runPackageValidation);
+
+  program
+    .command('mapping-profile <file>')
+    .description('Validate a SitePack semantic profile')
+    .option('--schemas <dir>', 'Path to JSON schemas directory', defaultSchemasDir)
+    .option('-f, --format <format>', 'Output format: text|json', 'text')
+    .action((file, options) => runMappingDocumentValidation(file, options, 'semanticProfile'));
+
+  program
+    .command('mapping-recipe <file>')
+    .description('Validate a declarative SitePack mapping recipe')
+    .option('--schemas <dir>', 'Path to JSON schemas directory', defaultSchemasDir)
+    .option('-f, --format <format>', 'Output format: text|json', 'text')
+    .action((file, options) => runMappingDocumentValidation(file, options, 'mappingRecipe'));
 
   program
     .command('envelope <pathToEncJson>')

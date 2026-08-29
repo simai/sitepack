@@ -1,4 +1,4 @@
-.PHONY: validate-node validate-php validate-volumes validate-signatures check-schema-sync validate-all
+.PHONY: validate-node validate-php validate-volumes validate-signatures validate-mapping check-schema-sync validate-all
 
 check-schema-sync:
 	diff -rq sitepack-spec/schemas sitepack-tools-node/schemas
@@ -17,4 +17,7 @@ validate-volumes:
 validate-signatures:
 	./scripts/test-signature-interop.sh
 
-validate-all: check-schema-sync validate-node validate-php validate-volumes validate-signatures
+validate-mapping:
+	./scripts/test-mapping-interop.sh
+
+validate-all: check-schema-sync validate-node validate-php validate-volumes validate-signatures validate-mapping

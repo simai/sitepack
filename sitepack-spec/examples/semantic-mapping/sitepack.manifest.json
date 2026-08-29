@@ -1,0 +1,16 @@
+{
+  "spec": { "name": "sitepack", "version": "1.2.0" },
+  "package": { "id": "semantic-mapping-example" },
+  "createdAt": "2026-08-29T00:00:00Z",
+  "profiles": ["content-only"],
+  "artifacts": ["portable.entities", "portable.profile", "source.raw"],
+  "extensions": [
+    {
+      "id": "org.example.raw.content",
+      "version": "1.0.0",
+      "required": false,
+      "artifacts": ["source.raw"]
+    }
+  ],
+  "provenance": { "sourcePlatform": "example-cms", "sourceVersion": "1.0.0" }
+}

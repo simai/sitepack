@@ -1,0 +1,16 @@
+{
+  "tool": { "name": "larena-demo-adapter", "version": "1.0.0" },
+  "export": { "profiles": ["content-only"], "mediaTypes": ["application/vnd.sitepack.entity-graph+ndjson"] },
+  "import": { "profiles": ["content-only"], "mediaTypes": ["application/vnd.sitepack.entity-graph+ndjson"] },
+  "mapping": {
+    "semanticProfiles": [{ "id": "example.portable-site", "versions": ["1.0.0"] }],
+    "entities": {
+      "page": { "fields": ["title", "body", "status"], "relations": ["parent"], "assets": ["media"] },
+      "news": { "fields": ["title", "body", "category"], "relations": [], "assets": [] }
+    },
+    "contentFormats": ["html", "markdown"],
+    "assetStorage": ["embedded", "external"],
+    "transforms": ["html-to-markdown"],
+    "extensions": []
+  }
+}

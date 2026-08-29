@@ -1,5 +1,25 @@
 # Transform Kind Registry
 
+Transform kinds are declarative identifiers. They MUST NOT execute package code
+or an arbitrary expression. Mapping recipe compilers support the following
+portable operations:
+
+- `entity.map`
+- `field.copy`
+- `field.rename`
+- `field.cast`
+- `value.default`
+- `enum.map`
+- `relation.map`
+- `asset.bind`
+- `content.convert`
+- `fallback.wrap`
+- `value.drop`
+
+`content.convert` names a converter that MUST be registered in local adapter
+capabilities. The legacy operations below remain valid transform-plan kinds but
+do not expand the portable mapping allowlist.
+
 ## rewrite.links
 Rewrite links inside content and assets.
 

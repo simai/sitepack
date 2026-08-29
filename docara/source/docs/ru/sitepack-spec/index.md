@@ -1,13 +1,13 @@
 ---
 extends: _core._layouts.documentation
 section: content
-title: SitePack v0.4.0
-description: SitePack v0.4.0
+title: SitePack 1.2
+description: Универсальный формат переноса и резервного копирования сайтов
 ---
 
-# SitePack v0.4.0
+# SitePack 1.2
 
-SitePack — открытый формат упаковки данных сайта для экспорта и импорта между системами. Пакет содержит два обязательных файла, manifest и catalog, а также набор артефактов: entities, assets, config, recordsets и другие.
+SitePack — открытый формат упаковки данных сайта для экспорта, резервного копирования, просмотра и импорта между системами. Каноническая спецификация хранится в `sitepack-spec/`.
 
 Ключевые решения:
 
@@ -17,10 +17,14 @@ SitePack — открытый формат упаковки данных сай�
 - Связи стандартизированы через Link encoding с массивами в `relations`.
 - Volume Sets описывают передачу разделенных пакетов (`sitepack.volumes.json`).
 - Asset index поддерживает chunked blobs (`chunks[]`).
+- Компактные и полные снимки различают внешние и встроенные файлы.
+- Отделённая подпись Ed25519 защищает целостность пакета, не подменяя локальную модель доверия.
+- Семантические профили и декларативные рецепты обеспечивают перенос без попарных матриц платформ.
 
 Материалы документации:
 
 - Спецификация: `SPEC.md`.
+- Семантическое сопоставление и совместимость: `MAPPING.md`.
 - JSON-схемы: `schemas/`.
 - Реестры: `registry/`.
 - Примеры пакетов: `examples/`.
@@ -34,3 +38,4 @@ SitePack — открытый формат упаковки данных сай�
 - `objects-two-objects`: демонстрирует object index, passports и dataset selectors.
 - `volume-set-real`: реальный multi-volume пример с descriptor и `.sitepack` volume files.
 - `volume-set-index-only`: descriptor-only Volume Set без volume files.
+- `semantic-mapping`: исходный raw-слой и переносимый семантический слой в одном пакете.

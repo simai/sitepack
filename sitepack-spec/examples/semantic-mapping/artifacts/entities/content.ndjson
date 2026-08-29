@@ -1,0 +1,2 @@
+{"id":"page-home","type":"page","attributes":{"title":"Home","body":"<p>Portable content</p>"},"relations":{},"source":{"platform":"example"}}
+{"id":"news-1","type":"news","attributes":{"title":"News","body":"<p>Cross-platform item</p>","category":"Updates"},"relations":{},"source":{"platform":"example"}}

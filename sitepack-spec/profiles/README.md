@@ -17,6 +17,10 @@ Initial profile contracts:
 
 Profiles SHOULD be tested against at least two adapters before becoming stable. In the first phase, Bitrix and Larena are the main adapter checks. WordPress is the anti-bias check for portable website semantics.
 
+Package profiles describe intent and required artifacts. They are distinct from
+semantic profiles, which describe the portable entity vocabulary used for
+mapping. See `../MAPPING.md`.
+
 ## Common importer obligations
 
 An importer that claims a profile MUST:

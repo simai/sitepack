@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0 - 2026-08-29
+- Added semantic profiles, declarative mapping recipes, and compatibility reports.
+- Added deterministic recipe compilation and adapter mapping capabilities.
+- Added the portable `sitepack.website-core@1.0.0` semantic profile.
+- Clarified that platform-pair matrices and executable transformations do not belong in SitePack Core.
+
 ## 1.1.0 - 2026-08-25
 - Added the optional Ed25519 detached signature contract.
 - Defined an external trust-store boundary and stable signature input.

@@ -1,5 +1,10 @@
 # Entity Types Registry
 
+The names below predate the stable SitePack 1.0 website vocabulary. They remain
+valid entity type strings for backward compatibility, but they are not aliases
+for `sitepack.website-core` types. Cross-platform tools SHOULD use the explicit
+`sitepack.legacy-entity-types-to-website-core@1.0.0` mapping recipe.
+
 ## Core types
 - `content.page` — page.
 - `content.post` — post/news.

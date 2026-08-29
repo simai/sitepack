@@ -1,0 +1,10 @@
+{
+  "spec": { "name": "sitepack-mapping-recipe", "version": "1.0.0" },
+  "id": "example.identity",
+  "version": "1.0.0",
+  "author": { "name": "SitePack fixture" },
+  "source": { "profile": "example.portable-site", "version": "1.0.0" },
+  "target": { "profile": "example.portable-site", "version": "1.0.0", "adapter": "example-target" },
+  "rules": [],
+  "lossPolicy": { "allowed": ["none"], "failOn": ["security"] }
+}

@@ -1,4 +1,4 @@
-# SitePack 1.1.0
+# SitePack 1.2.0
 
 SitePack is an open format for packaging structured data and digital assets for
 transfer between systems. A package contains two required files (manifest and
@@ -18,6 +18,7 @@ Key decisions:
 - Profile contracts describe portable obligations for configuration, site structure, content/assets, snapshots, and product packages.
 - Extension governance keeps Bitrix, Larena, WordPress, and other platform-specific data outside SitePack Core.
 - Optional detached Ed25519 signatures authenticate final package bytes without embedding trust or private keys in the archive.
+- Semantic profiles, declarative recipes, and compatibility reports support cross-platform transfer without pairwise CMS matrices.
 
 Documentation and materials:
 - Specification: `SPEC.md`.
@@ -27,6 +28,7 @@ Documentation and materials:
 - Adapter proofs: `adapter-proofs/`.
 - Release notes: `releases/`.
 - Detached signature contract: `SIGNATURES.md`.
+- Semantic mapping and compatibility: `MAPPING.md`.
 - JSON schemas: `schemas/`.
 - Registries: `registry/`.
 - Example packages: `examples/`.
@@ -41,3 +43,4 @@ Examples:
 - `volume-set-index-only`: Descriptor-only Volume Set (no volume files).
 - `small-docs-site`: Adapter-neutral documentation site structure with pages, menu, redirect, and portable content entities.
 - `small-blog-site`: Adapter-neutral page/post structure with a WordPress-style extension hint.
+- `semantic-mapping`: Raw platform data and a portable semantic layer in one package.

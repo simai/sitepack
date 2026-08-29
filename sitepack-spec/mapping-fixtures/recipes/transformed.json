@@ -1,0 +1,29 @@
+{
+  "spec": { "name": "sitepack-mapping-recipe", "version": "1.0.0" },
+  "id": "example.converted-content",
+  "version": "1.0.0",
+  "author": { "name": "SitePack fixture" },
+  "source": { "profile": "example.portable-site", "version": "1.0.0" },
+  "target": { "profile": "example.portable-site", "version": "1.0.0", "adapter": "example-target" },
+  "requires": { "transforms": ["html-to-markdown"] },
+  "rules": [
+    {
+      "id": "page.body.markdown",
+      "kind": "content.convert",
+      "from": { "entity": "page", "field": "body" },
+      "to": { "entity": "page", "field": "body" },
+      "converter": "html-to-markdown",
+      "params": { "format": "markdown" },
+      "loss": "representational"
+    },
+    {
+      "id": "page.status.enum",
+      "kind": "enum.map",
+      "from": { "entity": "page", "field": "status" },
+      "to": { "entity": "page", "field": "status" },
+      "params": { "values": { "draft": "draft", "published": "published" } },
+      "loss": "none"
+    }
+  ],
+  "lossPolicy": { "allowed": ["none", "representational"], "failOn": ["security"] }
+}

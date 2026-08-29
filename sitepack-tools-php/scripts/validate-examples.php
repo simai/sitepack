@@ -32,6 +32,7 @@ $examples = [
     'small-docs-site',
     'small-blog-site',
     'compact-external',
+    'semantic-mapping',
 ];
 
 foreach ($examples as $name) {
