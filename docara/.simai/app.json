@@ -1,0 +1,4 @@
+{
+  "schema": "simai-app/1",
+  "health": {"path": "/en/"}
+}

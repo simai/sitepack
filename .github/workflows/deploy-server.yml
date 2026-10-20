@@ -1,0 +1,80 @@
+name: Deploy to the simai server
+
+# Builds the SitePack documentation for https://sitepack.simai.io/ and deploys
+# it to the simai-env server after the Pages workflow passes on main, or on a
+# manual run. It does nothing until the repository variable
+# SIMAI_SERVER_DEPLOY is "true" and the environment simai-server holds
+# SIMAI_DEPLOY_KEY (a key that the server's deploy gate lets deploy
+# sitepack.simai.io only) and SIMAI_DEPLOY_KNOWN_HOSTS.
+on:
+  workflow_run:
+    workflows: [Publish Docara Site]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: simai-server
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      vars.SIMAI_SERVER_DEPLOY == 'true' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'))
+    runs-on: ubuntu-latest
+    environment: simai-server
+    env:
+      SITE_COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ env.SITE_COMMIT }}
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
+        with:
+          php-version: "8.3"
+          coverage: none
+          tools: composer
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+
+      - name: Install Docara
+        working-directory: docara
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Build for https://sitepack.simai.io/
+        working-directory: docara
+        run: |
+          jq '.base_url = "/" | .site_url = "https://sitepack.simai.io/"' docara.json > docara.json.server
+          mv docara.json.server docara.json
+          php vendor/bin/docara build production
+          php vendor/bin/docara verify-static build_production
+          python3 scripts/write-legacy-redirects.py build_production ""
+          cp -R .simai build_production/.simai
+
+      - name: Deploy the artifact
+        env:
+          DEPLOY_KEY: ${{ secrets.SIMAI_DEPLOY_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.SIMAI_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -m 600 /dev/null "$RUNNER_TEMP/key" && printf '%s\n' "$DEPLOY_KEY" > "$RUNNER_TEMP/key"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$RUNNER_TEMP/known_hosts"
+          tar -C docara/build_production -czf "$RUNNER_TEMP/site.tgz" .
+          sum=$(sha256sum "$RUNNER_TEMP/site.tgz" | cut -d' ' -f1)
+          echo "artifact sha256 $sum"
+          ssh -i "$RUNNER_TEMP/key" -o UserKnownHostsFile="$RUNNER_TEMP/known_hosts" -o StrictHostKeyChecking=yes \
+            simai-deploy@201.51.24.222 "deploy-artifact $sum" < "$RUNNER_TEMP/site.tgz"
+
+      - name: Check the deployed release on the server
+        run: |
+          set -euo pipefail
+          curl -fsS --resolve sitepack.simai.io:443:201.51.24.222 https://sitepack.simai.io/en/ -o /dev/null || \
+            curl -fsS --resolve sitepack.simai.io:80:201.51.24.222 http://sitepack.simai.io/en/ -o /dev/null

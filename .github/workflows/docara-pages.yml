@@ -5,7 +5,9 @@ name: Publish Docara Site
 # configuration, so the same workflow serves the project path
 # (https://simai.github.io/sitepack/) and a custom domain
 # (https://sitepack.simai.io/). site_url adds sitemap.xml, robots.txt,
-# llms.txt, absolute canonical addresses and Open Graph tags.
+# llms.txt, absolute canonical addresses and Open Graph tags. This is the
+# fallback publication; the primary one is the simai-env server
+# (deploy-server.yml).
 
 on:
   push:
@@ -64,34 +66,11 @@ jobs:
         working-directory: docara
         run: php vendor/bin/docara verify-static build_production
 
-      # Docara 3 page addresses are lower case and its redirects.json accepts
-      # only those. legacy-redirects.json maps the Docara 1.x upper-case
-      # addresses (SPEC, CHANGELOG, LLM_README, ...) to the new pages.
       - name: Write redirects for the Docara 1.x addresses
         working-directory: docara
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
-        run: |
-          python3 - <<'PY'
-          import html, json, os
-          from pathlib import Path
-
-          base = os.environ.get("BASE_PATH", "").rstrip("/")
-          root = Path("build_production")
-          for source, target in json.loads(Path("legacy-redirects.json").read_text()).items():
-              assert (root / target / "index.html").is_file(), target
-              page = root / source / "index.html"
-              assert not page.exists(), source
-              url = html.escape(f"{base}/{target}/", quote=True)
-              page.parent.mkdir(parents=True, exist_ok=True)
-              page.write_text(
-                  '<!doctype html><html><head><meta charset="utf-8">'
-                  f'<meta name="robots" content="noindex"><link rel="canonical" href="{url}">'
-                  f'<meta http-equiv="refresh" content="0; url={url}"><title>Page moved</title></head>'
-                  f'<body><a href="{url}">{url}</a></body></html>\n',
-                  encoding="utf-8",
-              )
-          PY
+        run: python3 scripts/write-legacy-redirects.py build_production "$BASE_PATH"
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
