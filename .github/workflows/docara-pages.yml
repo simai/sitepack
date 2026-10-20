@@ -1,5 +1,12 @@
 name: Publish Docara Site
 
+# Builds the SitePack documentation (docara/) with Docara 3 and publishes it on
+# GitHub Pages. The build takes its base_url and site_url from the Pages
+# configuration, so the same workflow serves the project path
+# (https://simai.github.io/sitepack/) and a custom domain
+# (https://sitepack.simai.io/). site_url adds sitemap.xml, robots.txt,
+# llms.txt, absolute canonical addresses and Open Graph tags.
+
 on:
   push:
     branches: ["main"]
@@ -7,11 +14,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-env:
-  DOCARA_BASE_URL: "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
 
 concurrency:
   group: "pages"
@@ -21,104 +23,89 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           coverage: none
           tools: composer
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: "20"
+          node-version: "24"
 
-      - name: Install Composer dependencies
+      - name: Install Docara
         working-directory: docara
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Initialize Docara
+      # base_path is "/sitepack" for the project site and empty for a custom
+      # domain; base_url is the full address. The committed docara.json keeps
+      # "/" and no site_url for local builds.
+      - name: Set the site base URL and site URL
         working-directory: docara
         env:
-          DOCARA_SKIP_FRONTEND_INSTALL: "true"
-        run: php vendor/bin/docara init --update
-
-      - name: Install frontend dependencies
-        working-directory: docara
-        run: YARN_IGNORE_PATH=1 npx --yes yarn@1.22.22 --no-default-rc install --frozen-lockfile --production=false --non-interactive
-
-      - name: Build frontend assets
-        working-directory: docara
-        run: YARN_IGNORE_PATH=1 npx --yes yarn@1.22.22 --no-default-rc prod
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+        run: |
+          jq --arg base "${BASE_PATH%/}/" --arg site "${SITE_URL%/}/" \
+            '.base_url = $base | .site_url = $site' docara.json > docara.json.pages
+          mv docara.json.pages docara.json
+          jq -r '.base_url, .site_url' docara.json
 
       - name: Build Docara site
         working-directory: docara
-        env:
-          DOCARA_BASE_URL: ${{ env.DOCARA_BASE_URL }}
         run: php vendor/bin/docara build production
 
-      - name: Adjust GitHub project Pages paths
+      - name: Verify the built site
+        working-directory: docara
+        run: php vendor/bin/docara verify-static build_production
+
+      # Docara 3 page addresses are lower case and its redirects.json accepts
+      # only those. legacy-redirects.json maps the Docara 1.x upper-case
+      # addresses (SPEC, CHANGELOG, LLM_README, ...) to the new pages.
+      - name: Write redirects for the Docara 1.x addresses
+        working-directory: docara
         env:
-          DOCARA_PAGES_PREFIX: "auto"
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: |
           python3 - <<'PY'
-          import os
-          import re
+          import html, json, os
           from pathlib import Path
 
-          raw_prefix = os.environ.get("DOCARA_PAGES_PREFIX", "auto").strip()
-          if raw_prefix == "auto":
-              repository = os.environ.get("GITHUB_REPOSITORY", "")
-              repo_name = repository.split("/", 1)[1] if "/" in repository else ""
-              prefix = "" if repo_name.endswith(".github.io") else f"/{repo_name}"
-          elif raw_prefix in ("", "none", "/"):
-              prefix = ""
-          else:
-              prefix = "/" + raw_prefix.strip("/")
-
-          if not prefix:
-              raise SystemExit(0)
-
-          root = Path("docara/build_production")
-          patterns = [
-              (re.compile(r'(?P<attr>\b(?:href|src|action)=["\'])/(?!/)(?P<path>[^"\']*)'), rf'\g<attr>{prefix}/\g<path>'),
-              (re.compile(r'(?P<attr>\bcontent=["\'])/(?!/)(?P<path>[^"\']*)'), rf'\g<attr>{prefix}/\g<path>'),
-          ]
-          for path in list(root.rglob("*.html")) + list(root.rglob("*.json")) + list(root.rglob("*.js")):
-              text = path.read_text(encoding="utf-8")
-              updated = text
-              for pattern, replacement in patterns:
-                  updated = pattern.sub(replacement, updated)
-              updated = updated.replace('fetch(`/search-index_', f'fetch(`{prefix}/search-index_')
-              updated = updated.replace('fetch("/search-index_', f'fetch("{prefix}/search-index_')
-              updated = updated.replace("fetch('/search-index_", f"fetch('{prefix}/search-index_")
-              updated = updated.replace('window.location.replace("', f'window.location.replace("{prefix}/')
-              updated = updated.replace('window.location.replace(`', f'window.location.replace(`{prefix}/')
-              updated = updated.replace('"url": "\/', f'"url": "\/{prefix.strip("/")}/')
-              duplicate_locale = re.compile(r'(?P<root>' + re.escape(prefix) + r')?/(?P<locale>[a-z]{2}(?:-[a-z]{2})?)/(?P=locale)(?=[/"?#])')
-              updated = duplicate_locale.sub(lambda match: f'{match.group("root") or ""}/{match.group("locale")}', updated)
-              if updated != text:
-                  path.write_text(updated, encoding="utf-8")
+          base = os.environ.get("BASE_PATH", "").rstrip("/")
+          root = Path("build_production")
+          for source, target in json.loads(Path("legacy-redirects.json").read_text()).items():
+              assert (root / target / "index.html").is_file(), target
+              page = root / source / "index.html"
+              assert not page.exists(), source
+              url = html.escape(f"{base}/{target}/", quote=True)
+              page.parent.mkdir(parents=True, exist_ok=True)
+              page.write_text(
+                  '<!doctype html><html><head><meta charset="utf-8">'
+                  f'<meta name="robots" content="noindex"><link rel="canonical" href="{url}">'
+                  f'<meta http-equiv="refresh" content="0; url={url}"><title>Page moved</title></head>'
+                  f'<body><a href="{url}">{url}</a></body></html>\n',
+                  encoding="utf-8",
+              )
           PY
 
-      - name: Disable Jekyll
-        run: touch docara/build_production/.nojekyll
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: docara/build_production
 
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

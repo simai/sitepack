@@ -1,0 +1,30 @@
+{
+  "schema": "docara.section.v1",
+  "title": "SitePack",
+  "preset": "docs",
+  "header_navigation": {
+    "enabled": true,
+    "items": [
+      {
+        "id": "spec",
+        "label": "Specification",
+        "href": "/en/sitepack-spec/"
+      },
+      {
+        "id": "node",
+        "label": "Node.js tools",
+        "href": "/en/sitepack-tools-node/"
+      },
+      {
+        "id": "php",
+        "label": "PHP tools",
+        "href": "/en/sitepack-tools-php/"
+      },
+      {
+        "id": "github",
+        "label": "GitHub",
+        "href": "https://github.com/simai/sitepack"
+      }
+    ]
+  }
+}

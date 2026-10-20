@@ -1,0 +1,40 @@
+---
+title: "Changelog"
+description: "Changelog"
+---
+# Changelog
+
+## 1.2.0 - 2026-08-29
+- Added semantic profiles, declarative mapping recipes, and compatibility reports.
+- Added deterministic recipe compilation and adapter mapping capabilities.
+- Added the portable `sitepack.website-core@1.0.0` semantic profile.
+
+## 1.1.0 - 2026-08-25
+- Added optional detached Ed25519 signatures and an external trust-store boundary.
+
+## 1.0.0 - 2026-08-19
+- Stabilized external, embedded, and chunked assets, compact/full snapshots, and enrichment reports.
+
+## 0.4.0 - 2025-12-23
+- Added Objects layer (objects/index.json + passports + dataset selectors).
+- Added objects example package `examples/objects-two-objects`.
+
+## 0.3.0 - 2025-12-23
+- Added Volume Sets (multi-file distribution via `sitepack.volumes.json`, recommended 100 MiB parts).
+- Added Chunked Assets (large blobs split into chunks, validated by sha256).
+- Kept single-version policy across the whole project (package + envelope + volume-set).
+
+## 0.2.0 - 2025-12-22
+- Standardized relation links (Link) and `relations: relationKey -> Link[]`.
+- Added recommended relation key patterns: `property.<CODE>`, `field.<CODE>`, URN refs.
+- Tightened entity schema to enforce relations format.
+- Added canonical example `examples/cross-relations` (entity-to-entity and entity-to-asset with asset-index and blob).
+- Synced reference validators schemas and example coverage.
+- Aligned sitepack-envelope header/schema version to 0.2.0 (no format changes).
+
+## 0.1.1 - 2025-12-22
+- Standardize relation links (Link) and array-based relations encoding.
+- Update entity schema to validate relations structure.
+- Extend the entity registry with recommended relation key patterns.
+
+## 0.1.0 - 2025-12-22

@@ -1,0 +1,14 @@
+{
+  "schema": "docara.redirects.v1",
+  "version": 1,
+  "redirects": [
+    {
+      "from": "en/sitepack-spec/examples/full-code/artifacts/code",
+      "to": "en/sitepack-spec/examples/full-code/artifacts"
+    },
+    {
+      "from": "ru/sitepack-spec/examples/full-code/artifacts/code",
+      "to": "ru/sitepack-spec/examples/full-code/artifacts"
+    }
+  ]
+}

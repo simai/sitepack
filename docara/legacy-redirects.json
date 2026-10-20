@@ -1,0 +1,18 @@
+{
+  "en/sitepack-spec/CHANGELOG": "en/sitepack-spec/changelog",
+  "en/sitepack-spec/MAPPING": "en/sitepack-spec/mapping",
+  "en/sitepack-spec/SPEC": "en/sitepack-spec/spec",
+  "en/sitepack-spec/llm/LLM_README": "en/sitepack-spec/llm/llm-readme",
+  "en/sitepack-spec/llm/LLM_SPEC_SHORT": "en/sitepack-spec/llm/llm-spec-short",
+  "en/sitepack-spec/llm/TASKS_EXPORTER": "en/sitepack-spec/llm/tasks-exporter",
+  "en/sitepack-spec/llm/TASKS_IMPORTER": "en/sitepack-spec/llm/tasks-importer",
+  "en/sitepack-spec/llm/TASKS_VALIDATOR": "en/sitepack-spec/llm/tasks-validator",
+  "ru/sitepack-spec/CHANGELOG": "ru/sitepack-spec/changelog",
+  "ru/sitepack-spec/MAPPING": "ru/sitepack-spec/mapping",
+  "ru/sitepack-spec/SPEC": "ru/sitepack-spec/spec",
+  "ru/sitepack-spec/llm/LLM_README": "ru/sitepack-spec/llm/llm-readme",
+  "ru/sitepack-spec/llm/LLM_SPEC_SHORT": "ru/sitepack-spec/llm/llm-spec-short",
+  "ru/sitepack-spec/llm/TASKS_EXPORTER": "ru/sitepack-spec/llm/tasks-exporter",
+  "ru/sitepack-spec/llm/TASKS_IMPORTER": "ru/sitepack-spec/llm/tasks-importer",
+  "ru/sitepack-spec/llm/TASKS_VALIDATOR": "ru/sitepack-spec/llm/tasks-validator"
+}

@@ -10,10 +10,6 @@
 **/.docara-state/**
 !sitepack-spec/examples/volume-set-real/*.sitepack
 source/
-!docara/source/
-!docara/source/**
-/docara/source/_core/*
-**/source/docs/.translate.php
 
 .env
 .env.*

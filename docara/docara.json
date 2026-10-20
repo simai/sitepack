@@ -1,0 +1,59 @@
+{
+  "schema": "docara.site.v1",
+  "title": "SitePack",
+  "preset": "docs",
+  "content_root": "content/en",
+  "framework_lock": "simai-framework.lock.json",
+  "default_locale": "en",
+  "locales": {
+    "missing_page_policy": "skip",
+    "en": {
+      "label": "English",
+      "direction": "ltr",
+      "content_root": "content/en",
+      "public_prefix": "en",
+      "fallbacks": []
+    },
+    "ru": {
+      "label": "Русский",
+      "direction": "ltr",
+      "content_root": "content/ru",
+      "public_prefix": "ru",
+      "fallbacks": []
+    }
+  },
+  "locale_routing": {
+    "strategy": "prefixed",
+    "root": "redirect",
+    "detect_browser_language": false,
+    "legacy_unprefixed_redirects": true
+  },
+  "redirects_file": "redirects.json",
+  "base_url": "/",
+  "branding": {
+    "title": "SitePack",
+    "mode": "text",
+    "size": "large",
+    "favicon": "assets/favicon.ico"
+  },
+  "layout": {
+    "key": "docara.docs",
+    "container": {
+      "max": 7
+    }
+  },
+  "settings": {
+    "theme": "system"
+  },
+  "search": {
+    "enabled": true,
+    "indexed": true
+  },
+  "reading": {
+    "breadcrumbs": true,
+    "toc": true,
+    "mobile_toc": "auto",
+    "toc_depth": 3,
+    "previous_next": true
+  }
+}
